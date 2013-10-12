@@ -1,6 +1,7 @@
 #include "SPI.h"
 #include "Adafruit_WS2801.h"
-#include "util.h"
+#include <utils.h>
+
 
 /*****************************************************************************
 Example sketch for driving Adafruit WS2801 pixels!
@@ -86,13 +87,12 @@ void setup() {
 
 
 void loop() {
-  // Some example procedures showing how to display to the pixels
-//  pulse(100, 0, 0, 1000, 50);
+ // pulse(100, 0, 0, 1000, 50);
   oneColor(strip, Color(100, 0, 0));
+  //rainbow(20);
 //  colorWipe(Color(100, 0, 0), 50);
 //  colorWipe(Color(0, 100, 0), 50);
 //  colorWipe(Color(0, 0, 100), 50);
-//  rainbow(20);
 //  rainbowCycle(20);
 }
 
