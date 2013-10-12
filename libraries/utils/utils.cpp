@@ -20,3 +20,9 @@ uint32_t C(byte r, byte g, byte b)
   return c;
 }
 
+void setArray(Adafruit_WS2801 &strip, uint32_t arr[]) {
+	for (int j = 0; j < strip.numPixels(); j++) {
+		strip.setPixelColor(j, arr[j]);
+	}
+	strip.show();
+}

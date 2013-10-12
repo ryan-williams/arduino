@@ -87,8 +87,18 @@ void setup() {
 
 
 void loop() {
- // pulse(100, 0, 0, 1000, 50);
-  oneColor(strip, C(100, 0, 0));
+ //pulse(100, 0, 0, 1000, 50);
+  //oneColor(strip, C(0, 0, 100));
+  uint32_t r = C(100, 0, 0);
+  uint32_t g = C(0, 100, 0);
+  uint32_t b = C(0, 0, 100);
+  setArray(strip, (uint32_t[]){
+      r, r, r, r, r,
+      g, g, g, g, g,
+      b, b, b, b, b,
+      r, r, r, r, r,
+      g, g, g, g, g
+    });
   //rainbow(20);
 //  colorWipe(C(100, 0, 0), 50);
 //  colorWipe(C(0, 100, 0), 50);
