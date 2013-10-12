@@ -1,5 +1,6 @@
 #include "SPI.h"
 #include "Adafruit_WS2801.h"
+#include "util.h"
 
 /*****************************************************************************
 Example sketch for driving Adafruit WS2801 pixels!
@@ -56,20 +57,13 @@ void off() {
  strip.show();
 }
 
-void oneColor(uint32_t c) {
-  for (int j = 0; j < strip.numPixels(); j++) {
-    strip.setPixelColor(j, c);
-  }
-  strip.show();
-}
-
 void pulse(byte r, byte g, byte b, int period, int frameLength) {
   int numSteps = period / frameLength;
   int i = 0;
   bool increasing = true;
   while (true) {
     uint32_t c = Color(r * i / numSteps, g * i / numSteps, b * i / numSteps);
-    oneColor(c);
+    oneColor(strip, c);
     delay(frameLength);
     if (i >= numSteps) { increasing = false; }
     if (i <= 0) { increasing = true; }
@@ -94,7 +88,7 @@ void setup() {
 void loop() {
   // Some example procedures showing how to display to the pixels
 //  pulse(100, 0, 0, 1000, 50);
-  oneColor(Color(50, 0, 0));
+  oneColor(strip, Color(100, 0, 0));
 //  colorWipe(Color(100, 0, 0), 50);
 //  colorWipe(Color(0, 100, 0), 50);
 //  colorWipe(Color(0, 0, 100), 50);
