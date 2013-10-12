@@ -140,18 +140,6 @@ void colorWipe(uint32_t c, uint8_t wait) {
 
 /* Helper functions */
 
-// Create a 24 bit color value from R,G,B
-uint32_t C(byte r, byte g, byte b)
-{
-  uint32_t c;
-  c = r;
-  c <<= 8;
-  c |= g;
-  c <<= 8;
-  c |= b;
-  return c;
-}
-
 //Input a value 0 to 255 to get a color value.
 //The colours are a transition r - g -b - back to r
 uint32_t Wheel(byte WheelPos)
