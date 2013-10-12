@@ -2,6 +2,11 @@
 #include "Adafruit_WS2801.h"
 #include <utils.h>
 
+// include core Wiring API
+#include "Arduino.h"
+// include description files for other libraries used (if any)
+#include "HardwareSerial.h"
+
 
 /*****************************************************************************
 Example sketch for driving Adafruit WS2801 pixels!
@@ -79,6 +84,10 @@ void pulse(byte r, byte g, byte b, int period, int frameLength) {
 void setup() {
     
   strip.begin();
+  // do whatever is required to initialize the library
+  pinMode(13, OUTPUT);
+  Serial.begin(9600);
+
 
   // Update LED contents, to start they are all 'off'
   strip.show();
@@ -86,9 +95,7 @@ void setup() {
 }
 
 
-void loop() {
- //pulse(100, 0, 0, 1000, 50);
-  //oneColor(strip, C(0, 0, 100));
+void arrayExample() {
   uint32_t r = C(100, 0, 0);
   uint32_t g = C(0, 100, 0);
   uint32_t b = C(0, 0, 100);
@@ -98,12 +105,31 @@ void loop() {
       b, b, b, b, b,
       r, r, r, r, r,
       g, g, g, g, g
-    });
+    });  
+}
+
+double arr[] = {
+  0.1, 0.2, 0.4, 0.6, 0.8,
+  1.0, 0.8, 0.6, 0.4, 0.2,
+  0.1, 0.2, 0.4, 0.6, 0.8,
+  1.0, 0.8, 0.6, 0.4, 0.2,
+  0.1, 0.2, 0.4, 0.6, 0.8
+};
+void loop() {
+ //pulse(100, 0, 0, 1000, 50);
+
+  // setArray(strip, C(200, 0, 0), arr);
+
+  // delay(10);
+  // print(arr, strip.numPixels());
+  // rot(arr, strip.numPixels(), 1);
+  // oneColor(strip, CI(100, 0, 0, 1.0));
+  // delay(100);
   //rainbow(20);
 //  colorWipe(C(100, 0, 0), 50);
 //  colorWipe(C(0, 100, 0), 50);
 //  colorWipe(C(0, 0, 100), 50);
-//  rainbowCycle(20);
+ rainbowCycle(20);
 }
 
 void rainbow(uint8_t wait) {
