@@ -70,10 +70,14 @@ Strip* Strip::setColors(uint32_t colors[], double intensities[]) {
 	return this;
 }
 
-Strip* Strip::rotate(int step) {
-	if (step == 0) return this;
+uint32_t Strip::sanitizeStep(int step) {
 	while (step < 0) { step += length; }
-	step %= length;
+	return (step % length);
+}
+
+Strip* Strip::rotate(int unsanitizedStep) {
+	uint32_t step = sanitizeStep(unsanitizedStep);
+	if (step == 0) return this;
 	uint32_t startIdx = 0, numSet = 0;
 	while (numSet < length && startIdx < step) {
 		uint32_t curIdx = startIdx, tmp = pixels[curIdx];
@@ -93,6 +97,13 @@ Strip* Strip::rotate(int step) {
 	return this;
 }
 
+Strip* Strip::blendRight(uint32_t diffusion) {
+	int curIdx = 1;
+	for (; curIdx < length; ++curIdx) {
+		pixels[curIdx] = avg(pixels[curIdx], pixels[curIdx - 1], diffusion);
+	}
+	return this;
+}
 
 void Strip::clear() {
 	setColor(0);

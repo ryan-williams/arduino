@@ -1,5 +1,6 @@
 #include "SPI.h"
 #include "Adafruit_WS2801.h"
+#include "color_array.h"
 #include <utils.h>
 
 #include "strip.h"
@@ -127,10 +128,23 @@ void printFreeMemory() {
   NL;
 }
 
-uint32_t colors[] = {C(100,0,0), C(0,100,0)};
-int numColors = sizeof(colors) / sizeof(uint32_t);
 
-int curColorIdx = 0;
+uint32_t off = (uint32_t)0;
+int onNum = 10;
+int offNum = 40;
+uint32_t red = C(100,0,0);
+uint32_t green = C(0,100,0);
+uint32_t blue = C(0,0,100);
+
+ColorArray colorArray(
+  6, 
+  onNum, red, 
+  offNum, off,
+  onNum, blue,
+  offNum, off,
+  onNum, green,
+  offNum, off
+);
 
 void setup() {
   pinMode(13, OUTPUT);
@@ -138,8 +152,8 @@ void setup() {
 
   s = new Strip();
 
-  // s->setColor(C(100, 0, 0), arr);
-  // s->show(true);
+  s->setColor(C(0, 0, 0));
+  s->show(true);
 
 }
 
@@ -159,11 +173,14 @@ void loop() {
   //   delay(50);
   // }
 
-  s->rotate(1);
-  s->pixels[0] = colors[curColorIdx];
-  curColorIdx = (curColorIdx + 1) % numColors;
+  // s->rotate(1);
+  // s->pixels[0] = colors[curColorIdx];
+  s->pixels[0] = colorArray.curColor();
+  ++colorArray;
+  s->blendRight(2);
+  // curColorIdx = (curColorIdx + 1) % numColors;
   s->show();
-  delay(1000);
+  delay(20);
 }
 
 /* Helper functions */

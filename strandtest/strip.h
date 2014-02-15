@@ -19,7 +19,7 @@ public:
 	Strip* setColors(uint32_t colors[], double intensities[]);
 
 	Strip* rotate(int step);
-
+	Strip* blendRight(uint32_t diffusion = 1);
 	void print();
 
 	void begin() { this->strip->begin(); }
@@ -28,6 +28,8 @@ public:
 	Adafruit_WS2801* strip;
 	uint32_t* pixels;
 private:
+
+	uint32_t sanitizeStep(int step);
 
 	uint32_t length;
 
