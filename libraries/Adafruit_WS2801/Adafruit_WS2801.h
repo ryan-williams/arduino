@@ -47,6 +47,8 @@ class Adafruit_WS2801 {
   uint32_t
     getPixelColor(uint16_t n);
 
+  long unsigned int getPixelArrayAddress();
+
  private:
 
   uint16_t

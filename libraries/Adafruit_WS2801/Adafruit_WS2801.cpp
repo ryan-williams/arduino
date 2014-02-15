@@ -155,6 +155,11 @@ void Adafruit_WS2801::show(void) {
   delay(1); // Data is latched by holding clock pin low for 1 millisecond
 }
 
+long unsigned int Adafruit_WS2801::getPixelArrayAddress() {
+  return (long unsigned int)pixels;
+}
+
+
 // Set pixel color from separate 8-bit R, G, B components:
 void Adafruit_WS2801::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
   if(n < numLEDs) { // Arrays are 0-indexed, thus NOT '<='
