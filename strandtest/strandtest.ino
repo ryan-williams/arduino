@@ -60,34 +60,7 @@ Example sketch for driving Adafruit WS2801 pixels!
 //Adafruit_WS2801 strip = Adafruit_WS2801(25, dataPin, clockPin, WS2801_GRB);
 //Adafruit_WS2801 strip = Adafruit_WS2801(25, WS2801_GRB);
 
-// void off() {
-//  for (int i = 0; i < strip.numPixels(); i++) {
-//   strip.setPixelColor(i, 0);  
-//  } 
-//  strip.show();
-// }
-
-// void pulse(byte r, byte g, byte b, int period, int frameLength) {
-//   int numSteps = period / frameLength;
-//   int i = 0;
-//   bool increasing = true;
-//   while (true) {
-//     uint32_t c = C(r * i / numSteps, g * i / numSteps, b * i / numSteps);
-//     oneColor(strip, c);
-//     delay(frameLength);
-//     if (i >= numSteps) { increasing = false; }
-//     if (i <= 0) { increasing = true; }
-//     if (increasing) {
-//       i++;
-//     } else {
-//       i--;
-//     }
-//   }
-// }
-
 #include <MemoryFree.h>
-
-
 
 Strip *s = NULL;
 
@@ -152,7 +125,7 @@ void setup() {
 
   s = new Strip();
 
-  s->setColor(C(0, 0, 0));
+  s->setColor(C(50, 50, 50));
   s->show(true);
 
 }
@@ -175,12 +148,12 @@ void loop() {
 
   // s->rotate(1);
   // s->pixels[0] = colors[curColorIdx];
-  s->pixels[0] = colorArray.curColor();
-  ++colorArray;
-  s->blendRight(2);
+  s->pixels[0] = randomPerturb(s->pixels[0], 2, 100);
+  // ++colorArray;
+  s->blendRight(1);
   // curColorIdx = (curColorIdx + 1) % numColors;
   s->show();
-  delay(20);
+  delay(10);
 }
 
 /* Helper functions */

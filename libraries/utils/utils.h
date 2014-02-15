@@ -17,6 +17,8 @@ uint32_t B(uint32_t c);
 // Create a 24 bit color value from R,G,B
 uint32_t C(byte r, byte g, byte b);
 
+uint32_t randomPerturb(uint32_t c, uint32_t range, int max);
+
 uint32_t avg(uint32_t base, uint32_t next, uint32_t w1 = 1, uint32_t w2 = 1);
 
 uint32_t CI(byte r, byte g, byte b, double i);

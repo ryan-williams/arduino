@@ -39,6 +39,21 @@ uint32_t C(byte r, byte g, byte b)
   return c;
 }
 
+byte randomPerturb(byte b, uint32_t range, int max) {
+  int r = (int)random(range * 2 + 1) - range;
+  if (r < 0 && -r >= b) return (byte)0;
+  if (r > 0 && (r + (int)b) >= max) return (byte)max;
+  return (byte)(b + r);
+}
+uint32_t randomPerturb(uint32_t c, uint32_t range, int max) {
+  return C(
+    randomPerturb(r(c), range, max),
+    randomPerturb(g(c), range, max),
+    randomPerturb(b(c), range, max)
+  );
+}
+
+
 uint32_t avg(uint32_t base, uint32_t next, uint32_t w1, uint32_t w2) {
   return C(
       (byte)((w1*R(base) + w2*R(next)) / (w1 + w2)),
