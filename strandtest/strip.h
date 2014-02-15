@@ -18,7 +18,7 @@ public:
 	Strip* setColor(uint32_t color, double intensities[]);
 	Strip* setColors(uint32_t colors[], double intensities[]);
 
-	Strip* rotate(uint32_t step);
+	Strip* rotate(int step);
 
 	void print();
 

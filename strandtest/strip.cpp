@@ -70,12 +70,15 @@ Strip* Strip::setColors(uint32_t colors[], double intensities[]) {
 	return this;
 }
 
-Strip* Strip::rotate(uint32_t step) {
+Strip* Strip::rotate(int step) {
+	if (step == 0) return this;
+	while (step < 0) { step += length; }
+	step %= length;
 	uint32_t startIdx = 0, numSet = 0;
 	while (numSet < length && startIdx < step) {
 		uint32_t curIdx = startIdx, tmp = pixels[curIdx];
 		while (true) {
-			uint32_t nextIdx = (curIdx + step) % length;
+			uint32_t nextIdx = (curIdx + length - step) % length;
 			if (nextIdx == startIdx) {
 				pixels[curIdx] = tmp;
 				numSet++;
