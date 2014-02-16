@@ -130,6 +130,15 @@ void setup() {
 
 }
 
+int maxV = 5;
+int maxBrightness = 100;
+int rv = 0;
+int gv = 0;
+int bv = 0;
+
+int rvv = -1;
+int gvv = 0;
+int bvv = 1;
 
 void loop() {
   // int i, j;
@@ -148,12 +157,46 @@ void loop() {
 
   // s->rotate(1);
   // s->pixels[0] = colors[curColorIdx];
-  s->pixels[0] = randomPerturb(s->pixels[0], 2, 100);
+
+  rv = clamp(rv + rvv, -maxV, maxV);
+  gv = clamp(gv + gvv, -maxV, maxV);
+  bv = clamp(bv + bvv, -maxV, maxV);
+
+  rvv = random(0,3) - 1;
+  gvv = random(0,3) - 1;
+  bvv = random(0,3) - 1;
+
+  uint32_t c = s->pixels[0];
+  int cr = clamp((int)(R(c) + rv), 0, maxBrightness);
+  int cg = clamp((int)(G(c) + rv), 0, maxBrightness);
+  int cb = clamp((int)(B(c) + rv), 0, maxBrightness);
+
+  if (cr == 0 || cr == maxBrightness) rv = 0;
+  if (cg == 0 || cg == maxBrightness) gv = 0;
+  if (cb == 0 || cb == maxBrightness) bv = 0;
+
+  s->pixels[0] = 
+    C(
+      (byte)clamp((int)(R(c) + rv), 0, maxBrightness),
+      (byte)clamp((int)(G(c) + gv), 0, maxBrightness),
+      (byte)clamp((int)(B(c) + bv), 0, maxBrightness)
+    );
+
+  P("(")
+    P(R(c))P(",")
+    P(G(c))P(",")
+    P(B(c))
+  P(") (")
+    P(rv)P(",")P(gv)P(",")P(bv)
+  PL(")")
+
+   //randomPerturb(s->pixels[0], 10, 100);
   // ++colorArray;
-  s->blendRight(1);
+  s->blendRight(2)->show();
+  // s->rotate(1)->show();
   // curColorIdx = (curColorIdx + 1) % numColors;
-  s->show();
-  delay(10);
+  // s->show();
+  delay(20);
 }
 
 /* Helper functions */

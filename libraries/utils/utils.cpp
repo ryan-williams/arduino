@@ -74,3 +74,8 @@ uint32_t CI(uint32_t c, double i) {
 	return CI(r(c), g(c), b(c), i);
 };
 
+int clamp(int n, int min, int max) {
+  if (n > max) return max;
+  if (n < min) return min;
+  return n;
+}

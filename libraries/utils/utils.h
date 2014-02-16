@@ -24,4 +24,6 @@ uint32_t avg(uint32_t base, uint32_t next, uint32_t w1 = 1, uint32_t w2 = 1);
 uint32_t CI(byte r, byte g, byte b, double i);
 uint32_t CI(uint32_t c, double i);
 
+int clamp(int n, int min, int max);
+
 #endif
