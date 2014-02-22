@@ -16,7 +16,7 @@ Strip::Strip() {
 
 	// Set the first variable to the NUMBER of pixels. 25 = 25 pixels in a row
     P("Ada before: "); PL(strip->getPixelArrayAddress());
-	strip = new Adafruit_WS2801(50, dataPin, clockPin);
+	strip = new Adafruit_WS2801(75, dataPin, clockPin);
     P("Ada after: "); PL(strip->getPixelArrayAddress());
 
 	length = strip->numPixels();

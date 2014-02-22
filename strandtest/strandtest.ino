@@ -130,6 +130,21 @@ void setup() {
 
 }
 
+void rainbowWheel() {
+  int i, j;
+  for (j=0; j < 256 * 5; j++) {     // 5 cycles of all 25 colors in the wheel
+    for (i=0; i < s->strip->numPixels(); i++) {
+      // tricky math! we use each pixel as a fraction of the full 96-color wheel
+      // (thats the i / strip.numPixels() part)
+      // Then add in j which makes the colors go around per pixel
+      // the % 96 is to make the wheel cycle around
+      s->strip->setPixelColor(i, Wheel( ((i * 256 / s->strip->numPixels()) + j) % 256) );
+    }  
+    s->strip->show();   // write all the pixels out
+    delay(50);
+  }
+}
+
 int maxV = 5;
 int maxBrightness = 100;
 int rv = 0;
@@ -141,23 +156,6 @@ int gvv = 0;
 int bvv = 1;
 
 void loop() {
-  // int i, j;
-  
-  // for (j=0; j < 256 * 5; j++) {     // 5 cycles of all 25 colors in the wheel
-  //   for (i=0; i < s->strip->numPixels(); i++) {
-  //     // tricky math! we use each pixel as a fraction of the full 96-color wheel
-  //     // (thats the i / strip.numPixels() part)
-  //     // Then add in j which makes the colors go around per pixel
-  //     // the % 96 is to make the wheel cycle around
-  //     s->strip->setPixelColor(i, Wheel( ((i * 256 / s->strip->numPixels()) + j) % 256) );
-  //   }  
-  //   s->strip->show();   // write all the pixels out
-  //   delay(50);
-  // }
-
-  // s->rotate(1);
-  // s->pixels[0] = colors[curColorIdx];
-
   rv = clamp(rv + rvv, -maxV, maxV);
   gv = clamp(gv + gvv, -maxV, maxV);
   bv = clamp(bv + bvv, -maxV, maxV);
@@ -186,15 +184,16 @@ void loop() {
 
    //randomPerturb(s->pixels[0], 10, 100);
   // ++colorArray;
-  s->blendRight(2)->show();
-  // s->rotate(1)->show();
+  // s->blendRight(1)->show();
 
   // for (int i = 30; i <50; ++i) {
   //   PC(s->pixels[i])P(" ")
   // }NL
+
+  s->rotate(1, false)->show();
   // curColorIdx = (curColorIdx + 1) % numColors;
   // s->show();
-  delay(20);
+  delay(40);
 }
 
 /* Helper functions */
