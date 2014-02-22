@@ -75,14 +75,23 @@ uint32_t Strip::sanitizeStep(int step) {
 	return (step % length);
 }
 
-Strip* Strip::rotate(int unsanitizedStep) {
+Strip* Strip::rotate(int unsanitizedStep, bool wrapAround) {
 	uint32_t step = sanitizeStep(unsanitizedStep);
 	if (step == 0) return this;
-	uint32_t startIdx = 0, numSet = 0;
-	while (numSet < length && startIdx < step) {
+	int startIdx = length - 1, numSet = 0, numOuterLoops = 0;
+	while (numSet < length && numOuterLoops < step) {
 		uint32_t curIdx = startIdx, tmp = pixels[curIdx];
 		while (true) {
-			uint32_t nextIdx = (curIdx + length - step) % length;
+			// uint32_t nextIdx = (curIdx + length - step) % length;
+			int rawNextIdx = ((int)curIdx) - ((int)step);
+			if (rawNextIdx < 0) {
+				if (!wrapAround) break;
+				rawNextIdx += length;
+			}
+			if (rawNextIdx >= length) {
+				if (!wrapAround) break;
+			}
+			uint32_t nextIdx = ((uint32_t)rawNextIdx) % length;
 			if (nextIdx == startIdx) {
 				pixels[curIdx] = tmp;
 				numSet++;
@@ -92,7 +101,8 @@ Strip* Strip::rotate(int unsanitizedStep) {
 			numSet++;
 			curIdx = nextIdx;
 		}
-		startIdx++;
+		--startIdx;
+		++numOuterLoops;
 	}
 	return this;
 }
