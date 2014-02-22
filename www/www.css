@@ -10,3 +10,7 @@
   float: left;
   background-color: #ACC;
 }
+
+#svg {
+  position: relative;
+}
