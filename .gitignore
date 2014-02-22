@@ -1,3 +1,5 @@
 libraries/Adafruit_WS2801/examples
 .DS_Store
 libraries/Test
+.idea
+*.iml
