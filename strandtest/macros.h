@@ -2,7 +2,7 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
-#define DEBUG 0
+#define DEBUG 1
 
 #if DEBUG
 
@@ -11,6 +11,8 @@
 #define NL Serial.println("");
 #define PP(x) P((long unsigned int)x);
 #define PPL(x) PL((long unsigned int)x);
+#define PT(a,b,c) P("(")P(a)P(",")P(b)P(",")P(c)P(")")
+#define PC(c) PT(R(c),G(c),B(c))
 
 #else
 
@@ -19,6 +21,8 @@
 #define NL 0;
 #define PP(x) 0;
 #define PPL(x) 0;
+#define PT(a,b,c) 0;
+#define PC(c) 0;
 
 #endif
 

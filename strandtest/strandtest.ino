@@ -182,18 +182,16 @@ void loop() {
       (byte)clamp((int)(B(c) + bv), 0, maxBrightness)
     );
 
-  P("(")
-    P(R(c))P(",")
-    P(G(c))P(",")
-    P(B(c))
-  P(") (")
-    P(rv)P(",")P(gv)P(",")P(bv)
-  PL(")")
+  PC(c)P(" ")PT(rv,gv,bv)
 
    //randomPerturb(s->pixels[0], 10, 100);
   // ++colorArray;
   s->blendRight(2)->show();
   // s->rotate(1)->show();
+
+  // for (int i = 30; i <50; ++i) {
+  //   PC(s->pixels[i])P(" ")
+  // }NL
   // curColorIdx = (curColorIdx + 1) % numColors;
   // s->show();
   delay(20);
