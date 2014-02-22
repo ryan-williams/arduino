@@ -97,10 +97,10 @@ Strip* Strip::rotate(int unsanitizedStep) {
 	return this;
 }
 
-Strip* Strip::blendRight(uint32_t diffusion) {
+Strip* Strip::blendRight(int diffusion) {
 	int curIdx = 1;
 	for (; curIdx < length; ++curIdx) {
-		pixels[curIdx] = avg(pixels[curIdx], pixels[curIdx - 1], diffusion);
+		pixels[curIdx] = avg(pixels[curIdx], pixels[curIdx - 1], (uint32_t)diffusion);
 	}
 	return this;
 }

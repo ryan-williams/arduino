@@ -19,7 +19,7 @@ public:
 	Strip* setColors(uint32_t colors[], double intensities[]);
 
 	Strip* rotate(int step);
-	Strip* blendRight(uint32_t diffusion = 1);
+	Strip* blendRight(int diffusion = 1);
 	void print();
 
 	void begin() { this->strip->begin(); }
