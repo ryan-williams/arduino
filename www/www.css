@@ -1,0 +1,12 @@
+
+#colorboxen {
+  padding-left: 100px;
+  padding-top: 100px;
+}
+
+.colorbox {
+  width: 10px;
+  height: 100px;
+  float: left;
+  background-color: #ACC;
+}

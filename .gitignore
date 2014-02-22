@@ -3,3 +3,5 @@ libraries/Adafruit_WS2801/examples
 libraries/Test
 .idea
 *.iml
+www/.meteor
+
