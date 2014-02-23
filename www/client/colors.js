@@ -28,6 +28,24 @@ function genArray(initialVal, generator, num) {
   return elems;
 }
 
+function spiralWalk(x, y, stepMagnitude, num) {
+  var t = Math.PI / 2;
+  var tvv = 0.0007;
+  var initialTV = -.07;
+  return genArray(
+      { x: x, y: y },
+      function(prevElem) {
+        initialTV -= tvv;
+        t += initialTV;
+        return {
+          x: prevElem.x + stepMagnitude * Math.cos(t),
+          y: prevElem.y + stepMagnitude * Math.sin(t)
+        }
+      },
+      num
+  );
+}
+
 function planarRandomWalk(x, y, stepMagnitude, num) {
   var t = Math.PI / 4;
   var maxDeltaT = .45;
@@ -53,7 +71,7 @@ $(function() {
 
   Math.seedrandom(3);
 
-  var circleCoords = planarRandomWalk(350, 100, 2*R + 5, numBoxes);
+  var circleCoords = planarRandomWalk(400, 300, 2*R + 5, numBoxes);
 
   var initialColor = { r: maxAbs / 2, g: maxAbs / 2, b: maxAbs / 2 };
   var colors = genArray(
