@@ -13,7 +13,7 @@ function clamp(num, min, max) {
 
 var debug = 0;
 
-var numBoxes = 75;
+var numBoxes = 125;
 
 var R = 10;
 
