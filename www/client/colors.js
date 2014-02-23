@@ -71,7 +71,7 @@ $(function() {
 
   Math.seedrandom(3);
 
-  var circleCoords = planarRandomWalk(400, 300, 2*R + 5, numBoxes);
+  var circleCoords = spiralWalk(400, 300, 2*R + 5, numBoxes);
 
   var initialColor = { r: maxAbs / 2, g: maxAbs / 2, b: maxAbs / 2 };
   var colors = genArray(
