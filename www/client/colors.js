@@ -1,9 +1,11 @@
 
-function rgbString(r, g, b) { return "rgb(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ")"; }
+function rgbString(r, g, b) {
+  return "rgb(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ")";
+}
 
 var maxV = 10;
-var minAbs = 50;
-var maxAbs = 200;
+var minAbs = 100;
+var maxAbs = 255;
 
 function clamp(num, min, max) {
   return num > max ? max : (num < min ? min : num);
@@ -13,7 +15,7 @@ var debug = 0;
 
 var numBoxes = 75;
 
-var R = 8;
+var R = 10;
 
 var svg;
 var i;
@@ -28,7 +30,7 @@ function genArray(initialVal, generator, num) {
 
 function planarRandomWalk(x, y, stepMagnitude, num) {
   var t = Math.PI / 4;
-  var maxDeltaT = .3;
+  var maxDeltaT = .45;
   return genArray(
       { x: x, y: y },
       function(prevElem) {
@@ -112,7 +114,7 @@ $(function() {
 
   function colorLoop() {
     stepColor();
-    setTimeout(colorLoop, 10);
+    setTimeout(colorLoop, 40);
   }
   colorLoop();
 
