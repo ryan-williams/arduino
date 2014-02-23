@@ -49,6 +49,8 @@ function shift(arr) {
 
 $(function() {
 
+  Math.seedrandom(3);
+
   svg = d3.select('svg');
   for (i = 0; i < numBoxes; ++i) {
     svg.append('circle');
