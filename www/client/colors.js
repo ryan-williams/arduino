@@ -1,4 +1,5 @@
 
+var stepTimeMS = 20;
 var maxV = 10;
 var minBrightness = 100;
 var maxBrightness = 255;
@@ -18,23 +19,32 @@ var pathXScale = 4;
 var numLineStartY = 30;
 var numLineHeight = 60;
 var numLinesEndY = numLineStartY + 3*numLineHeight;
+var numLineWidth = 300;
+var serifHeight = 10;
 
 var pathsUpperLeft = { x: 10, y: numLinesEndY + 10 };
 var pathsMaxHeight = maxBrightness - minBrightness;
 
-window.runColorDisplay = function() {
+var initialColor = {
+  r: (minBrightness + maxBrightness) / 2,
+  g: (minBrightness + maxBrightness) / 2,
+  b: (minBrightness + maxBrightness) / 2
+};
 
-  Math.seedrandom(3);
+var colors;
+var r, g, b;
+var rHistory, gHistory, bHistory;
 
+var maxHistory = numBoxes;
+
+var rv, gv, bv;
+var rvv, gvv, bvv;
+
+
+function addPixelCircles() {
   var circleCoords = spiralWalk(550, 300, 2*R + 5, numBoxes);
 
-  var initialColor = {
-    r: (minBrightness + maxBrightness) / 2,
-    g: (minBrightness + maxBrightness) / 2,
-    b: (minBrightness + maxBrightness) / 2
-  };
-
-  var colors = genArray(
+  colors = genArray(
       initialColor,
       function(prev) { return initialColor; },
       numBoxes
@@ -58,65 +68,54 @@ window.runColorDisplay = function() {
       .attr('cy', function(d) {
         return Math.floor(d.coords.y);
       });
+}
 
-  var numLineWidth = 300;
-  var serifHeight = 10;
-
-  function numLine(startPoint, color, updateFn) {
-    return {
-      updateFn: updateFn,
-      color: color,
-      lines: [
-        {
-          start: { x: startPoint.x, y: startPoint.y - serifHeight },
-          end: { x: startPoint.x, y: startPoint.y + serifHeight },
-          color: color
-        },
-        {
-          start: { x: startPoint.x, y: startPoint.y },
-          end: { x: startPoint.x + numLineWidth, y: startPoint.y },
-          color: color
-        },
-        {
-          start: { x: startPoint.x + numLineWidth, y: startPoint.y - serifHeight },
-          end: { x: startPoint.x + numLineWidth, y: startPoint.y + serifHeight },
-          color: color
-        }
-      ],
-      labels: {
-        currentValue: {
-          fn: updateFn,
-          x: startPoint.x + 10,
-          y: startPoint.y - serifHeight,
-          color: '#000'
-        },
-        minValue: {
-          fn: function() { return minBrightness; },
-          x: startPoint.x - 5,
-          y: startPoint.y + serifHeight + fontSize,
-          color: color
-        },
-        maxValue: {
-          fn: function() { return maxBrightness; },
-          x: startPoint.x + numLineWidth - 5,
-          y: startPoint.y + serifHeight + fontSize,
-          color: color
-        }
+function getNumLineData(startPoint, color, updateFn) {
+  return {
+    updateFn: updateFn,
+    color: color,
+    lines: [
+      {
+        start: { x: startPoint.x, y: startPoint.y - serifHeight },
+        end: { x: startPoint.x, y: startPoint.y + serifHeight },
+        color: color
+      },
+      {
+        start: { x: startPoint.x, y: startPoint.y },
+        end: { x: startPoint.x + numLineWidth, y: startPoint.y },
+        color: color
+      },
+      {
+        start: { x: startPoint.x + numLineWidth, y: startPoint.y - serifHeight },
+        end: { x: startPoint.x + numLineWidth, y: startPoint.y + serifHeight },
+        color: color
+      }
+    ],
+    labels: {
+      currentValue: {
+        fn: updateFn,
+        x: startPoint.x + 10,
+        y: startPoint.y - serifHeight,
+        color: '#000'
+      },
+      minValue: {
+        fn: function() { return minBrightness; },
+        x: startPoint.x - 5,
+        y: startPoint.y + serifHeight + fontSize,
+        color: color
+      },
+      maxValue: {
+        fn: function() { return maxBrightness; },
+        x: startPoint.x + numLineWidth - 5,
+        y: startPoint.y + serifHeight + fontSize,
+        color: color
       }
     }
   }
+}
 
-  var numLines = [
-    numLine({ x: 20, y: numLineStartY }, '#F00', function() { return r; }),
-    numLine({ x: 20, y: numLineStartY + numLineHeight }, '#0F0', function() { return g; }),
-    numLine({ x: 20, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return b; })
-  ];
-
+function addNumLineLines() {
   svg.selectAll('g.numlines')
-      .data(numLines)
-      .enter()
-      .append('g')
-      .attr('class', 'numlines')
       .selectAll('line')
       .data(acc('lines'))
       .enter()
@@ -128,7 +127,9 @@ window.runColorDisplay = function() {
       .style('stroke-width', 2)
       .style('stroke', acc('color'))
   ;
+}
 
+function addNumLineSliderCircles() {
   svg.selectAll('g.numlines')
       .selectAll('circle')
       .data(function(d) {
@@ -144,8 +145,13 @@ window.runColorDisplay = function() {
       .attr('class', 'pointer')
       .attr('r', 5)
       .attr('fill', '#000')
+      .attr('cy', function(d) {
+        return Math.floor(d.cy);
+      })
   ;
+}
 
+function addNumLineLabels() {
   svg.selectAll('g.numlines')
       .selectAll('text')
       .data(function(d) {
@@ -158,7 +164,28 @@ window.runColorDisplay = function() {
       .attr("fill", acc('color'))
       .attr('x', acc('x'))
       .attr('y', acc('y'));
+}
 
+function addNumLines() {
+  var numLines = [
+    getNumLineData({ x: 20, y: numLineStartY }, '#F00', function() { return r; }),
+    getNumLineData({ x: 20, y: numLineStartY + numLineHeight }, '#0F0', function() { return g; }),
+    getNumLineData({ x: 20, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return b; })
+  ];
+
+  svg.selectAll('g.numlines')
+      .data(numLines)
+      .enter()
+      .append('g')
+      .attr('class', 'numlines')
+  ;
+
+  addNumLineLines();
+  addNumLineSliderCircles();
+  addNumLineLabels();
+}
+
+function appendPathGroup() {
   svg.selectAll('g.paths')
       .data([[
         {
@@ -183,6 +210,11 @@ window.runColorDisplay = function() {
       .enter()
       .append('g')
       .attr('class', 'paths')
+  ;
+}
+
+function appendPaths() {
+  svg.selectAll('g.paths')
       .selectAll('path')
       .data(identity)
       .enter()
@@ -191,7 +223,9 @@ window.runColorDisplay = function() {
       .attr('stroke-width', 2)
       .attr('fill', 'transparent')
   ;
+}
 
+function appendPathLabels() {
   svg.selectAll('g.paths')
       .selectAll('text')
       .data([
@@ -212,85 +246,108 @@ window.runColorDisplay = function() {
       .attr('y', acc('y'))
       .text(acc('label'))
   ;
+}
 
+function addPaths() {
+  appendPathGroup();
+  appendPaths();
+  appendPathLabels();
+}
 
-  var r = maxBrightness / 2;
-  var g = maxBrightness / 2;
-  var b = maxBrightness / 2;
+function stepColor() {
 
-  var rv = 0;
-  var gv = 0;
-  var bv = 0;
+  rvv = Math.random() - 0.5;
+  gvv = Math.random() - 0.5;
+  bvv = Math.random() - 0.5;
 
-  var rvv = 0;
-  var bvv = 0;
-  var gvv = 0;
+  rv = clamp(rv + rvv, -maxV, maxV);
+  gv = clamp(gv + gvv, -maxV, maxV);
+  bv = clamp(bv + bvv, -maxV, maxV);
 
-  var rHistory = [r];
-  var gHistory = [g];
-  var bHistory = [b];
-  var maxHistory = numBoxes;
+  r = clamp(r + rv, minBrightness, maxBrightness);
+  g = clamp(g + gv, minBrightness, maxBrightness);
+  b = clamp(b + bv, minBrightness, maxBrightness);
 
-  function stepColor() {
+  if (r >= maxBrightness || r <= minBrightness) rv = 0;
+  if (g >= maxBrightness || g <= minBrightness) gv = 0;
+  if (b >= maxBrightness || b <= minBrightness) bv = 0;
 
-    rvv = Math.random() - 0.5;
-    gvv = Math.random() - 0.5;
-    bvv = Math.random() - 0.5;
+  rHistory = unshiftAndSlice(rHistory, r, maxHistory);
+  gHistory = unshiftAndSlice(gHistory, g, maxHistory);
+  bHistory = unshiftAndSlice(bHistory, b, maxHistory);
 
-    rv = clamp(rv + rvv, -maxV, maxV);
-    gv = clamp(gv + gvv, -maxV, maxV);
-    bv = clamp(bv + bvv, -maxV, maxV);
+  colors = unshiftAndSlice(colors, { r:r, g:g, b:b });
 
-    r = clamp(r + rv, minBrightness, maxBrightness);
-    g = clamp(g + gv, minBrightness, maxBrightness);
-    b = clamp(b + bv, minBrightness, maxBrightness);
+  // Update pixels' colors.
+  svg.selectAll('circle.pixel')
+      .attr('fill', function(d) { return rgbString(d.colorFn()); })
+  ;
 
-    if (r >= maxBrightness || r <= minBrightness) rv = 0;
-    if (g >= maxBrightness || g <= minBrightness) gv = 0;
-    if (b >= maxBrightness || b <= minBrightness) bv = 0;
+  // Slide number-lines' circle-indicators.
+  svg.selectAll('g.numlines')
+      .selectAll('circle')
+      .attr('cx', function(d) {
+        return interpolate(Math.floor(d.fn()), minBrightness, maxBrightness, d.minX, d.maxX);
+      })
+  ;
 
-    rHistory = rHistory.slice(0, maxHistory - 1); rHistory.unshift(r);
-    gHistory = gHistory.slice(0, maxHistory - 1); gHistory.unshift(g);
-    bHistory = bHistory.slice(0, maxHistory - 1); bHistory.unshift(b);
+  // Update number-lines' labels.
+  svg.selectAll('g.numlines')
+      .selectAll('text')
+      .text(function(d) {
+        return Math.floor(d.fn());
+      })
+  ;
 
-    shift(colors);
-    colors[0] = { r:r, g:g, b:b };
-    svg.selectAll('circle.pixel')
-        .attr('fill', function(d) { return rgbString(d.colorFn()); })
-    ;
+  // Update color-history paths.
+  svg.selectAll('g.paths')
+      .selectAll('path')
+      .attr('d', function(d) {
+        return pathData(
+            d.pointsFn().map(function(value) {
+              return interpolate(
+                  value,
+                  minBrightness,
+                  maxBrightness,
+                  // Tricky: reverse the projected min and max to make higher "value"s map to lower y-values
+                  // (a.k.a. higher on screen).
+                  pathsUpperLeft.y + pathsMaxHeight,
+                  pathsUpperLeft.y
+              );
+            }),
+            pathXScale
+        );
+      })
+  ;
+}
 
-    svg.selectAll('g.numlines')
-        .selectAll('circle')
-        .attr('cx', function(d) {
-          return d.minX + (d.maxX - d.minX) * (Math.floor(d.fn()) - minBrightness) / (maxBrightness - minBrightness);
-        })
-        .attr('cy', function(d) {
-          return Math.floor(d.cy);
-        })
-    ;
+window.runColorDisplay = function() {
 
-    svg.selectAll('g.numlines')
-        .selectAll('text')
-        .text(function(d) {
-          return Math.floor(d.fn());
-        })
-    ;
+  Math.seedrandom(3);
 
-    svg.selectAll('g.paths')
-        .selectAll('path')
-        .attr('d', function(d) {
-          return pathData(
-              d.pointsFn().map(function(value) {
-                return pathsUpperLeft.y + pathsMaxHeight - pathsMaxHeight*(value - minBrightness)/(maxBrightness - minBrightness);
-              }),
-              pathXScale
-          );
-        })
-  }
+  addPixelCircles();
+  addNumLines();
+  addPaths();
+
+  r = maxBrightness / 2;
+  g = maxBrightness / 2;
+  b = maxBrightness / 2;
+
+  rv = 0;
+  gv = 0;
+  bv = 0;
+
+  rvv = 0;
+  bvv = 0;
+  gvv = 0;
+
+  rHistory = [r];
+  gHistory = [g];
+  bHistory = [b];
 
   function colorLoop() {
     stepColor();
-    setTimeout(colorLoop, 20);
+    setTimeout(colorLoop, stepTimeMS);
   }
   colorLoop();
 

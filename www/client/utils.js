@@ -63,12 +63,19 @@ Utils = {
     );
   },
 
-  pathData: function(values, xScale) {
-    return "M" + values.map(function(value, idx) { return (xScale*idx) + " " + Math.floor(value) }).join(" L");
+  interpolate: function(num, min, max, newMin, newMax) {
+    return newMin + (newMax - newMin) * (num - min) / (max - min);
   },
 
-  shift: function(arr) {
-    for (i = arr.length - 1; i > 0; --i) arr[i] = arr[i-1];
+  unshiftAndSlice: function(arr, newElem, maxLength) {
+    maxLength = maxLength || arr.length;
+    var newArr = arr.slice(0, maxLength - 1);
+    newArr.unshift(newElem);
+    return newArr;
+  },
+
+  pathData: function(values, xScale) {
+    return "M" + values.map(function(value, idx) { return (xScale*idx) + " " + Math.floor(value) }).join(" L");
   },
 
   sliding: function(arr) {
