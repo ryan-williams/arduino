@@ -85,9 +85,6 @@ Utils = {
 
 };
 
-//$(function() {
-  for (k in Utils) {
-    console.log("setting: " + k);
-    window[k] = Utils[k];
-  }
-//});
+for (k in Utils) {
+  window[k] = Utils[k];
+}
