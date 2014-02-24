@@ -1,18 +1,7 @@
 
-function rgbString(r, g, b) {
-  if (r && r.r) {
-    return rgbString(r.r, r.g, r.b);
-  }
-  return "rgb(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ")";
-}
-
 var maxV = 10;
-var minAbs = 100;
-var maxAbs = 255;
-
-function clamp(num, min, max) {
-  return num > max ? max : (num < min ? min : num);
-}
+var minBrightness = 100;
+var maxBrightness = 255;
 
 var debug = 0;
 
@@ -20,94 +9,31 @@ var numBoxes = 125;
 
 var R = 10;
 
-var svg;
-var i;
+var svg,i;
 
-var pathsUpperLeft = { x: 10, y: 220 };
-var pathsMaxHeight = maxAbs - minAbs;
 var fontSize = 15;
 
 var pathXScale = 4;
 
-function identity(x) { return x; }
-function acc(name) {
-  return function(d) {
-    name.split('.').map(function(segment) { d = d[segment]; });
-    return d;
-  };
-}
-window.acc = acc;
+var numLineStartY = 30;
+var numLineHeight = 60;
+var numLinesEndY = numLineStartY + 3*numLineHeight;
 
-function sliding(arr) {
-  var ret = [];
-  for (i = 0; i < arr.length - 1; ++i) ret.push([arr[i], arr[i+1]]);
-  return ret;
-}
+var pathsUpperLeft = { x: 10, y: numLinesEndY + 10 };
+var pathsMaxHeight = maxBrightness - minBrightness;
 
-function genArray(initialVal, generator, num) {
-  var elems = [initialVal];
-  for (i = 1; i < num; ++i) {
-    elems.push(generator(elems[i - 1]));
-  }
-  return elems;
-}
-
-function spiralWalk(x, y, stepMagnitude, num) {
-  var t = Math.PI / 2;
-  var tvv = 0.0007;
-  var initialTV = -.07;
-  return genArray(
-      { x: x, y: y },
-      function(prevElem) {
-        initialTV -= tvv;
-        t += initialTV;
-        return {
-          x: prevElem.x + stepMagnitude * Math.cos(t),
-          y: prevElem.y + stepMagnitude * Math.sin(t)
-        }
-      },
-      num
-  );
-}
-
-function planarRandomWalk(x, y, stepMagnitude, num) {
-  var t = Math.PI / 4;
-  var maxDeltaT = .45;
-  return genArray(
-      { x: x, y: y },
-      function(prevElem) {
-        var tv = maxDeltaT * (Math.random() * 2 - 1);
-        t += tv;
-        return {
-          x: prevElem.x + stepMagnitude * Math.cos(t),
-          y: prevElem.y + stepMagnitude * Math.sin(t)
-        }
-      },
-      num
-  );
-}
-
-function pathData(values, xScale) {
-  return "M" + values.map(function(value, idx) { return (xScale*idx) + " " + Math.floor(value) }).join(" L");
-}
-
-function shift(arr) {
-  for (i = arr.length - 1; i > 0; --i) arr[i] = arr[i-1];
-}
-
-function zip(arrays) {
-  return arrays[0].map(function(_,i){
-    return arrays.map(function(array){return array[i]})
-  });
-}
-
-$(function() {
+window.runColorDisplay = function() {
 
   Math.seedrandom(3);
 
   var circleCoords = spiralWalk(550, 300, 2*R + 5, numBoxes);
 
-  var initialColor = { r: maxAbs / 2, g: maxAbs / 2, b: maxAbs / 2 };
+  var initialColor = {
+    r: (minBrightness + maxBrightness) / 2,
+    g: (minBrightness + maxBrightness) / 2,
+    b: (minBrightness + maxBrightness) / 2
+  };
+
   var colors = genArray(
       initialColor,
       function(prev) { return initialColor; },
@@ -165,13 +91,13 @@ $(function() {
           color: '#000'
         },
         minValue: {
-          fn: function() { return minAbs; },
+          fn: function() { return minBrightness; },
           x: startPoint.x - 5,
           y: startPoint.y + serifHeight + fontSize,
           color: color
         },
         maxValue: {
-          fn: function() { return maxAbs; },
+          fn: function() { return maxBrightness; },
           x: startPoint.x + numLineWidth - 5,
           y: startPoint.y + serifHeight + fontSize,
           color: color
@@ -181,9 +107,9 @@ $(function() {
   }
 
   var numLines = [
-    numLine({ x: 20, y:  50 }, '#F00', function() { return r; }),
-    numLine({ x: 20, y: 100 }, '#0F0', function() { return g; }),
-    numLine({ x: 20, y: 150 }, '#00F', function() { return b; })
+    numLine({ x: 20, y: numLineStartY }, '#F00', function() { return r; }),
+    numLine({ x: 20, y: numLineStartY + numLineHeight }, '#0F0', function() { return g; }),
+    numLine({ x: 20, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return b; })
   ];
 
   svg.selectAll('g.numlines')
@@ -270,11 +196,11 @@ $(function() {
       .selectAll('text')
       .data([
         {
-          label: maxAbs,
+          label: maxBrightness,
           y: pathsUpperLeft.y - 5
         },
         {
-          label: minAbs,
+          label: minBrightness,
           y: pathsUpperLeft.y + pathsMaxHeight + fontSize + 5
         }
       ])
@@ -288,9 +214,9 @@ $(function() {
   ;
 
 
-  var r = maxAbs / 2;
-  var g = maxAbs / 2;
-  var b = maxAbs / 2;
+  var r = maxBrightness / 2;
+  var g = maxBrightness / 2;
+  var b = maxBrightness / 2;
 
   var rv = 0;
   var gv = 0;
@@ -315,13 +241,13 @@ $(function() {
     gv = clamp(gv + gvv, -maxV, maxV);
     bv = clamp(bv + bvv, -maxV, maxV);
 
-    r = clamp(r + rv, minAbs, maxAbs);
-    g = clamp(g + gv, minAbs, maxAbs);
-    b = clamp(b + bv, minAbs, maxAbs);
+    r = clamp(r + rv, minBrightness, maxBrightness);
+    g = clamp(g + gv, minBrightness, maxBrightness);
+    b = clamp(b + bv, minBrightness, maxBrightness);
 
-    if (r >= maxAbs || r <= minAbs) rv = 0;
-    if (g >= maxAbs || g <= minAbs) gv = 0;
-    if (b >= maxAbs || b <= minAbs) bv = 0;
+    if (r >= maxBrightness || r <= minBrightness) rv = 0;
+    if (g >= maxBrightness || g <= minBrightness) gv = 0;
+    if (b >= maxBrightness || b <= minBrightness) bv = 0;
 
     rHistory = rHistory.slice(0, maxHistory - 1); rHistory.unshift(r);
     gHistory = gHistory.slice(0, maxHistory - 1); gHistory.unshift(g);
@@ -336,7 +262,7 @@ $(function() {
     svg.selectAll('g.numlines')
         .selectAll('circle')
         .attr('cx', function(d) {
-          return d.minX + (d.maxX - d.minX) * (Math.floor(d.fn()) - minAbs) / (maxAbs - minAbs);
+          return d.minX + (d.maxX - d.minX) * (Math.floor(d.fn()) - minBrightness) / (maxBrightness - minBrightness);
         })
         .attr('cy', function(d) {
           return Math.floor(d.cy);
@@ -355,7 +281,7 @@ $(function() {
         .attr('d', function(d) {
           return pathData(
               d.pointsFn().map(function(value) {
-                return pathsUpperLeft.y + pathsMaxHeight - pathsMaxHeight*(value - minAbs)/(maxAbs - minAbs);
+                return pathsUpperLeft.y + pathsMaxHeight - pathsMaxHeight*(value - minBrightness)/(maxBrightness - minBrightness);
               }),
               pathXScale
           );
@@ -368,5 +294,5 @@ $(function() {
   }
   colorLoop();
 
-});
+};
 
