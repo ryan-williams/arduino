@@ -52,21 +52,16 @@ function addPixelCircles() {
 
   svg = d3.select('#svg');
   svg.selectAll('circle.pixel')
-      .data(circleCoords.map(function(coords, i) {
-        return {
-          coords: coords,
-          colorFn: function() { return colors[i]; }
-        }
-      }))
+      .data(circleCoords)
       .enter()
       .append('circle')
       .attr('class', 'pixel')
       .attr("r", R)
       .attr('cx', function(d) {
-        return Math.floor(d.coords.x);
+        return Math.floor(d.x);
       })
       .attr('cy', function(d) {
-        return Math.floor(d.coords.y);
+        return Math.floor(d.y);
       });
 }
 
@@ -280,7 +275,7 @@ function stepColor() {
 
   // Update pixels' colors.
   svg.selectAll('circle.pixel')
-      .attr('fill', function(d) { return rgbString(d.colorFn()); })
+      .attr('fill', function(d,i) { return rgbString(colors[i]); })
   ;
 
   // Slide number-lines' circle-indicators.

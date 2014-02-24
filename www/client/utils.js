@@ -46,6 +46,12 @@ Utils = {
     );
   },
 
+  wrap: function(x) {
+    return function() {
+      return x;
+    }
+  },
+
   planarRandomWalk: function(x, y, stepMagnitude, num) {
     var t = Math.PI / 4;
     var maxDeltaT = .45;
