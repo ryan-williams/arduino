@@ -3,6 +3,7 @@ var stepTimeMS = 20;
 var maxV = 10;
 var minBrightness = 100;
 var maxBrightness = 255;
+var middleBrightness = (minBrightness + maxBrightness) / 2;
 
 var debug = 0;
 
@@ -25,30 +26,20 @@ var serifHeight = 10;
 var pathsUpperLeft = { x: 10, y: numLinesEndY + 10 };
 var pathsMaxHeight = maxBrightness - minBrightness;
 
-var initialColor = {
-  r: (minBrightness + maxBrightness) / 2,
-  g: (minBrightness + maxBrightness) / 2,
-  b: (minBrightness + maxBrightness) / 2
+var colorWalkOptions = {
+  initialValue: middleBrightness,
+  maxAcceleration: 0.5,
+  maxVelocity: maxV,
+  minPosition: minBrightness,
+  maxPosition: maxBrightness
 };
 
-var colors;
-var r, g, b;
-var rHistory, gHistory, bHistory;
-
-var maxHistory = numBoxes;
-
-var rv, gv, bv;
-var rvv, gvv, bvv;
-
+var red = new ColorWalk(colorWalkOptions);
+var blue = new ColorWalk(colorWalkOptions);
+var green = new ColorWalk(colorWalkOptions);
 
 function addPixelCircles() {
   var circleCoords = spiralWalk(550, 300, 2*R + 5, numBoxes);
-
-  colors = genArray(
-      initialColor,
-      function(prev) { return initialColor; },
-      numBoxes
-  );
 
   svg = d3.select('#svg');
   svg.selectAll('circle.pixel')
@@ -163,9 +154,9 @@ function addNumLineLabels() {
 
 function addNumLines() {
   var numLines = [
-    getNumLineData({ x: 20, y: numLineStartY }, '#F00', function() { return r; }),
-    getNumLineData({ x: 20, y: numLineStartY + numLineHeight }, '#0F0', function() { return g; }),
-    getNumLineData({ x: 20, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return b; })
+    getNumLineData({ x: 20, y: numLineStartY }, '#F00', function() { return red.history[0]; }),
+    getNumLineData({ x: 20, y: numLineStartY + numLineHeight }, '#0F0', function() { return green.history[0]; }),
+    getNumLineData({ x: 20, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return blue.history[0]; })
   ];
 
   svg.selectAll('g.numlines')
@@ -184,19 +175,19 @@ function appendPathGroup() {
   svg.selectAll('g.paths')
       .data([[
         {
-          pointsFn: function() { return rHistory; },
+          pointsFn: function() { return red.history; },
           x: pathsUpperLeft.x,
           y: pathsUpperLeft.y,
           stroke: '#F00'
         }
         ,{
-          pointsFn: function() { return gHistory; },
+          pointsFn: function() { return green.history; },
           x: pathsUpperLeft.x,
           y: pathsUpperLeft.y,
           stroke: '#0F0'
         }
         ,{
-          pointsFn: function() { return bHistory; },
+          pointsFn: function() { return blue.history; },
           x: pathsUpperLeft.x,
           y: pathsUpperLeft.y,
           stroke: '#00F'
@@ -251,31 +242,13 @@ function addPaths() {
 
 function stepColor() {
 
-  rvv = Math.random() - 0.5;
-  gvv = Math.random() - 0.5;
-  bvv = Math.random() - 0.5;
-
-  rv = clamp(rv + rvv, -maxV, maxV);
-  gv = clamp(gv + gvv, -maxV, maxV);
-  bv = clamp(bv + bvv, -maxV, maxV);
-
-  r = clamp(r + rv, minBrightness, maxBrightness);
-  g = clamp(g + gv, minBrightness, maxBrightness);
-  b = clamp(b + bv, minBrightness, maxBrightness);
-
-  if (r >= maxBrightness || r <= minBrightness) rv = 0;
-  if (g >= maxBrightness || g <= minBrightness) gv = 0;
-  if (b >= maxBrightness || b <= minBrightness) bv = 0;
-
-  rHistory = unshiftAndSlice(rHistory, r, maxHistory);
-  gHistory = unshiftAndSlice(gHistory, g, maxHistory);
-  bHistory = unshiftAndSlice(bHistory, b, maxHistory);
-
-  colors = unshiftAndSlice(colors, { r:r, g:g, b:b });
+  red.step();
+  green.step();
+  blue.step();
 
   // Update pixels' colors.
   svg.selectAll('circle.pixel')
-      .attr('fill', function(d,i) { return rgbString(colors[i]); })
+      .attr('fill', function(d,i) { return rgbString(red.history[i], green.history[i], blue.history[i]); })
   ;
 
   // Slide number-lines' circle-indicators.
@@ -323,22 +296,6 @@ window.runColorDisplay = function() {
   addPixelCircles();
   addNumLines();
   addPaths();
-
-  r = maxBrightness / 2;
-  g = maxBrightness / 2;
-  b = maxBrightness / 2;
-
-  rv = 0;
-  gv = 0;
-  bv = 0;
-
-  rvv = 0;
-  bvv = 0;
-  gvv = 0;
-
-  rHistory = [r];
-  gHistory = [g];
-  bHistory = [b];
 
   function colorLoop() {
     stepColor();

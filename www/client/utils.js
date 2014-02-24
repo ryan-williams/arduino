@@ -52,6 +52,10 @@ Utils = {
     }
   },
 
+  random: function(min, max) {
+    return interpolate(Math.random(), 0, 1, min, max);
+  },
+
   planarRandomWalk: function(x, y, stepMagnitude, num) {
     var t = Math.PI / 4;
     var maxDeltaT = .45;
