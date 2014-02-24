@@ -8,10 +8,10 @@ ColorWalk = function(options) {
   var position = options.initialValue;
   this.history = [ position ];
 
-  this.step = function() {
+  this.step = function(nextPos) {
     acceleration = random(-options.maxAcceleration, options.maxAcceleration);
     velocity = clamp(velocity + acceleration, -options.maxVelocity, options.maxVelocity);
-    position = clamp(position + velocity, options.minPosition, options.maxPosition);
+    position = clamp(nextPos || (position + velocity), options.minPosition, options.maxPosition);
 
     if (position <= options.minPosition || position >= options.maxPosition) velocity = 0;
 

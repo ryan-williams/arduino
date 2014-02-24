@@ -23,10 +23,13 @@ var numLinesEndY = numLineStartY + 3*numLineHeight;
 var numLineWidth = 300;
 var serifHeight = 10;
 
-var pixelWalkStart = { x: 600, y: 300 };
+var pixelWalkStart = { x: 600, y: 230 };
 
 var pathsUpperLeft = { x: 10, y: numLinesEndY + 10 };
 var pathsMaxHeight = maxBrightness - minBrightness;
+var pathsBottom = pathsUpperLeft.y + pathsMaxHeight + fontSize;
+
+var colorTrailTop = pathsBottom + 30;
 
 var colorWalkOptions = {
   initialValue: middleBrightness,
@@ -48,7 +51,8 @@ function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
 
 var red = new SineWalk(sineWalkOptions(250, true));
 var blue = new SineWalk(sineWalkOptions(150, true));
-var green = new SineWalk(sineWalkOptions(200, true));
+//var green = new SineWalk(sineWalkOptions(200, true));
+var green = new ColorWalk(colorWalkOptions);
 
 function addPixelCircles() {
   var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
@@ -68,10 +72,11 @@ function addPixelCircles() {
       });
 }
 
-function getNumLineData(startPoint, color, updateFn) {
+function getNumLineData(startPoint, color, updateFn, colorWalk) {
   return {
     updateFn: updateFn,
     color: color,
+    colorWalk: colorWalk,
     lines: [
       {
         start: { x: startPoint.x, y: startPoint.y - serifHeight },
@@ -98,7 +103,7 @@ function getNumLineData(startPoint, color, updateFn) {
       },
       minValue: {
         fn: function() { return minBrightness; },
-        x: startPoint.x - 5,
+        x: startPoint.x,
         y: startPoint.y + serifHeight + fontSize,
         color: color
       },
@@ -166,9 +171,9 @@ function addNumLineLabels() {
 
 function addNumLines() {
   var numLines = [
-    getNumLineData({ x: 20, y: numLineStartY }, '#F00', function() { return red.history[0]; }),
-    getNumLineData({ x: 20, y: numLineStartY + numLineHeight }, '#0F0', function() { return green.history[0]; }),
-    getNumLineData({ x: 20, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return blue.history[0]; })
+    getNumLineData({ x: 0, y: numLineStartY }, '#F00', function() { return red.history[0]; }, red),
+    getNumLineData({ x: 0, y: numLineStartY + numLineHeight }, '#0F0', function() { return green.history[0]; }, green),
+    getNumLineData({ x: 0, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return blue.history[0]; }, blue)
   ];
 
   svg.selectAll('g.numlines')
@@ -176,6 +181,23 @@ function addNumLines() {
       .enter()
       .append('g')
       .attr('class', 'numlines')
+      .on('click', function(d,i) {
+        var logicalX = interpolate(d3.event.offsetX, 0, numLineWidth, minBrightness, maxBrightness);
+        d.colorWalk.step(logicalX);
+      })
+  ;
+
+  svg.selectAll('g.numlines')
+      .selectAll('rect.clicker')
+      .data(function(d) { return [d]; })
+      .enter()
+      .append('rect')
+      .attr('class', 'clicker')
+      .attr('width', numLineWidth)
+      .attr('height', 2 * serifHeight)
+      .attr('fill', '#000')
+      .attr('fill-opacity', 0.05)
+      .attr('y', function(d) { return d.lines[0].start.y; })
   ;
 
   addNumLineLines();
@@ -299,6 +321,37 @@ function stepColor() {
         );
       })
   ;
+
+  var rectWidth = 4;
+  var rectHeight = 20;
+
+  svg.selectAll('g.trail')
+      .selectAll('rect')
+      .data(red.history)
+      .enter()
+      .append('rect')
+  ;
+  svg.selectAll('g.trail')
+      .selectAll('rect')
+      .attr('width', rectWidth)
+      .attr('height', rectHeight)
+      .attr('x', function(d,i) { return i * rectWidth; })
+      .attr('y', colorTrailTop)
+      .attr('fill', function(d, i) {
+        return rgbString(red.history[i], green.history[i], blue.history[i])
+      })
+  ;
+
+}
+
+function addColorTrail() {
+
+  svg.selectAll('g.trail')
+      .data([1])
+      .enter()
+      .append('g')
+      .attr('class', 'trail');
+
 }
 
 window.runColorDisplay = function() {
@@ -308,6 +361,7 @@ window.runColorDisplay = function() {
   addPixelCircles();
   addNumLines();
   addPaths();
+  addColorTrail();
 
   function colorLoop() {
     stepColor();

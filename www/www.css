@@ -13,4 +13,10 @@
 
 #svg {
   position: relative;
+  left: 40px;
+  top: 20px;
+}
+
+rect.clicker {
+  cursor: pointer;
 }
