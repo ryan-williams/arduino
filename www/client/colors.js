@@ -1,5 +1,8 @@
 
 function rgbString(r, g, b) {
+  if (r && r.r) {
+    return rgbString(r.r, r.g, r.b);
+  }
   return "rgb(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ")";
 }
 
@@ -25,7 +28,13 @@ var pathsMaxHeight = maxAbs - minAbs;
 var fontSize = 15;
 
 function identity(x) { return x; }
-function accessor(name) { return function(d) { return d[name]; }; };
+function acc(name) {
+  return function(d) {
+    name.split('.').map(function(segment) { d = d[segment]; });
+    return d;
+  };
+}
+window.acc = acc;
 
 function sliding(arr) {
   var ret = [];
@@ -84,6 +93,12 @@ function shift(arr) {
   for (i = arr.length - 1; i > 0; --i) arr[i] = arr[i-1];
 }
 
+function zip(arrays) {
+  return arrays[0].map(function(_,i){
+    return arrays.map(function(array){return array[i]})
+  });
+}
+
 $(function() {
 
   Math.seedrandom(3);
@@ -99,16 +114,21 @@ $(function() {
 
   svg = d3.select('#svg');
   svg.selectAll('circle.pixel')
-      .data(circleCoords)
+      .data(circleCoords.map(function(coords, i) {
+        return {
+          coords: coords,
+          colorFn: function() { return colors[i]; }
+        }
+      }))
       .enter()
       .append('circle')
       .attr('class', 'pixel')
       .attr("r", R)
-      .attr('cx', function(d,i) {
-        return Math.floor(d.x);
+      .attr('cx', function(d) {
+        return Math.floor(d.coords.x);
       })
-      .attr('cy', function(d,i) {
-        return Math.floor(d.y);
+      .attr('cy', function(d) {
+        return Math.floor(d.coords.y);
       });
 
   var numLineWidth = 300;
@@ -140,31 +160,28 @@ $(function() {
           fn: updateFn,
           x: startPoint.x + 10,
           y: startPoint.y - serifHeight,
-          color: '#000',
-          size: fontSize
+          color: '#000'
         },
         minValue: {
           fn: function() { return minAbs; },
           x: startPoint.x - 5,
           y: startPoint.y + serifHeight + fontSize,
-          color: color,
-          size: fontSize
+          color: color
         },
         maxValue: {
           fn: function() { return maxAbs; },
           x: startPoint.x + numLineWidth - 5,
           y: startPoint.y + serifHeight + fontSize,
-          color: color,
-          size: fontSize
+          color: color
         }
       }
     }
   }
 
   var numLines = [
-    numLine({ x:20, y: 50 }, '#F00', function() { return r; }),
-    numLine({ x:20, y:100 }, '#0F0', function() { return g; }),
-    numLine({ x:20, y:150 }, '#00F', function() { return b; })
+    numLine({ x: 20, y:  50 }, '#F00', function() { return r; }),
+    numLine({ x: 20, y: 100 }, '#0F0', function() { return g; }),
+    numLine({ x: 20, y: 150 }, '#00F', function() { return b; })
   ];
 
   svg.selectAll('g.numlines')
@@ -173,23 +190,16 @@ $(function() {
       .append('g')
       .attr('class', 'numlines')
       .selectAll('line')
-      .data(function(d) { return d.lines; })
+      .data(acc('lines'))
       .enter()
       .append('line')
-      .attr('x1',function(d){ return d.start.x; })
-      .attr('y1',function(d){ return d.start.y; })
-      .attr('x2',function(d){ return d.end.x; })
-      .attr('y2',function(d){ return d.end.y; })
+      .attr('x1', acc('start.x'))
+      .attr('y1', acc('start.y'))
+      .attr('x2', acc('end.x'))
+      .attr('y2', acc('end.y'))
       .style('stroke-width', 2)
-      .style('stroke', function(d) { return d.color; })
+      .style('stroke', acc('color'))
   ;
-
-  function rgb(d,i) {
-    console.log(d);
-    console.log(i);
-    console.log([[r,g,b][i]]);
-    return [[r,g,b][i]];
-  }
 
   svg.selectAll('g.numlines')
       .selectAll('circle')
@@ -216,10 +226,10 @@ $(function() {
       .enter()
       .append('text')
       .attr("font-family", "sans-serif")
-      .attr("font-size", function(d) { return d.size + "px"; })
-      .attr("fill", function(d) { return d.color; })
-      .attr('x', function(d) { return d.x; })
-      .attr('y', function(d) { return d.y; });
+      .attr("font-size", fontSize + "px")
+      .attr("fill", acc('color'))
+      .attr('x', acc('x'))
+      .attr('y', acc('y'));
 
   svg.selectAll('g.paths')
       .data([[
@@ -246,12 +256,10 @@ $(function() {
       .append('g')
       .attr('class', 'paths')
       .selectAll('path')
-      .data(function(d) {
-        return d;
-      })
+      .data(identity)
       .enter()
       .append('path')
-      .attr('stroke', function(d) { return d.stroke; })
+      .attr('stroke', acc('stroke'))
       .attr('stroke-width', 2)
       .attr('fill', 'transparent')
   ;
@@ -273,8 +281,8 @@ $(function() {
       .attr("font-family", "sans-serif")
       .attr("font-size", fontSize + "px")
       .attr("fill", '#000')
-      .attr('y', function(d) { return d.y; })
-      .text(function(d) { return d.label; })
+      .attr('y', acc('y'))
+      .text(acc('label'))
   ;
 
 
@@ -320,18 +328,17 @@ $(function() {
     shift(colors);
     colors[0] = { r:r, g:g, b:b };
     svg.selectAll('circle.pixel')
-        .attr('fill', function(d, i) {
-          return rgbString(colors[i].r, colors[i].g, colors[i].b);
-        });
+        .attr('fill', function(d) { return rgbString(d.colorFn()); })
+    ;
 
     svg.selectAll('g.numlines')
         .selectAll('circle')
-      .attr('cx', function(d) {
-        return d.minX + (d.maxX - d.minX) * (Math.floor(d.fn()) - minAbs) / (maxAbs - minAbs);
-      })
-      .attr('cy', function(d) {
-        return Math.floor(d.cy);
-      })
+        .attr('cx', function(d) {
+          return d.minX + (d.maxX - d.minX) * (Math.floor(d.fn()) - minAbs) / (maxAbs - minAbs);
+        })
+        .attr('cy', function(d) {
+          return Math.floor(d.cy);
+        })
     ;
 
     svg.selectAll('g.numlines')
