@@ -1,7 +1,7 @@
 
 var stepTimeMS = 20;
 var maxV = 10;
-var minBrightness = 100;
+var minBrightness = 0;
 var maxBrightness = 255;
 var middleBrightness = (minBrightness + maxBrightness) / 2;
 
@@ -23,6 +23,8 @@ var numLinesEndY = numLineStartY + 3*numLineHeight;
 var numLineWidth = 300;
 var serifHeight = 10;
 
+var pixelWalkStart = { x: 600, y: 300 };
+
 var pathsUpperLeft = { x: 10, y: numLinesEndY + 10 };
 var pathsMaxHeight = maxBrightness - minBrightness;
 
@@ -34,12 +36,22 @@ var colorWalkOptions = {
   maxPosition: maxBrightness
 };
 
-var red = new ColorWalk(colorWalkOptions);
-var blue = new ColorWalk(colorWalkOptions);
-var green = new ColorWalk(colorWalkOptions);
+function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
+  return {
+    period: period,
+    initialRandomness: initialRandomness,
+    incrementalRandomness: incrementalRandomness,
+    minPosition: minBrightness,
+    maxPosition: maxBrightness
+  };
+}
+
+var red = new SineWalk(sineWalkOptions(250, true));
+var blue = new SineWalk(sineWalkOptions(150, true));
+var green = new SineWalk(sineWalkOptions(200, true));
 
 function addPixelCircles() {
-  var circleCoords = spiralWalk(550, 300, 2*R + 5, numBoxes);
+  var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
 
   svg = d3.select('#svg');
   svg.selectAll('circle.pixel')
