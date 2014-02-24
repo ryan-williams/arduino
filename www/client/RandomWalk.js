@@ -1,7 +1,7 @@
 
 var maxHistoryLength = 125;
 
-ColorWalk = function(options) {
+RandomWalk = function(options) {
 
   var acceleration = 0;
   var velocity = 0;

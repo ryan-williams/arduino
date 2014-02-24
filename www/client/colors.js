@@ -52,7 +52,7 @@ function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
 var red = new SineWalk(sineWalkOptions(250, true));
 var blue = new SineWalk(sineWalkOptions(150, true));
 //var green = new SineWalk(sineWalkOptions(200, true));
-var green = new ColorWalk(colorWalkOptions);
+var green = new RandomWalk(colorWalkOptions);
 
 function addPixelCircles() {
   var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
