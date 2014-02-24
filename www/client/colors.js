@@ -27,6 +27,8 @@ var pathsUpperLeft = { x: 10, y: 220 };
 var pathsMaxHeight = maxAbs - minAbs;
 var fontSize = 15;
 
+var pathXScale = 4;
+
 function identity(x) { return x; }
 function acc(name) {
   return function(d) {
@@ -301,7 +303,7 @@ $(function() {
   var rHistory = [r];
   var gHistory = [g];
   var bHistory = [b];
-  var maxHistory = 100;
+  var maxHistory = numBoxes;
 
   function stepColor() {
 
@@ -355,7 +357,7 @@ $(function() {
               d.pointsFn().map(function(value) {
                 return pathsUpperLeft.y + pathsMaxHeight - pathsMaxHeight*(value - minAbs)/(maxAbs - minAbs);
               }),
-              5
+              pathXScale
           );
         })
   }
