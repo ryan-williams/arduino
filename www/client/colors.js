@@ -20,6 +20,19 @@ var R = 10;
 var svg;
 var i;
 
+var pathsUpperLeft = { x: 10, y: 220 };
+var pathsMaxHeight = maxAbs - minAbs;
+var fontSize = 15;
+
+function identity(x) { return x; }
+function accessor(name) { return function(d) { return d[name]; }; };
+
+function sliding(arr) {
+  var ret = [];
+  for (i = 0; i < arr.length - 1; ++i) ret.push([arr[i], arr[i+1]]);
+  return ret;
+}
+
 function genArray(initialVal, generator, num) {
   var elems = [initialVal];
   for (i = 1; i < num; ++i) {
@@ -63,6 +76,10 @@ function planarRandomWalk(x, y, stepMagnitude, num) {
   );
 }
 
+function pathData(values, xScale) {
+  return "M" + values.map(function(value, idx) { return (xScale*idx) + " " + Math.floor(value) }).join(" L");
+}
+
 function shift(arr) {
   for (i = arr.length - 1; i > 0; --i) arr[i] = arr[i-1];
 }
@@ -71,7 +88,7 @@ $(function() {
 
   Math.seedrandom(3);
 
-  var circleCoords = spiralWalk(400, 300, 2*R + 5, numBoxes);
+  var circleCoords = spiralWalk(550, 300, 2*R + 5, numBoxes);
 
   var initialColor = { r: maxAbs / 2, g: maxAbs / 2, b: maxAbs / 2 };
   var colors = genArray(
@@ -100,6 +117,7 @@ $(function() {
   function numLine(startPoint, color, updateFn) {
     return {
       updateFn: updateFn,
+      color: color,
       lines: [
         {
           start: { x: startPoint.x, y: startPoint.y - serifHeight },
@@ -116,14 +134,37 @@ $(function() {
           end: { x: startPoint.x + numLineWidth, y: startPoint.y + serifHeight },
           color: color
         }
-      ]
+      ],
+      labels: {
+        currentValue: {
+          fn: updateFn,
+          x: startPoint.x + 10,
+          y: startPoint.y - serifHeight,
+          color: '#000',
+          size: fontSize
+        },
+        minValue: {
+          fn: function() { return minAbs; },
+          x: startPoint.x - 5,
+          y: startPoint.y + serifHeight + fontSize,
+          color: color,
+          size: fontSize
+        },
+        maxValue: {
+          fn: function() { return maxAbs; },
+          x: startPoint.x + numLineWidth - 5,
+          y: startPoint.y + serifHeight + fontSize,
+          color: color,
+          size: fontSize
+        }
+      }
     }
   }
 
   var numLines = [
-    numLine({x:20,y: 50}, '#F00', function() { return r; }),
-    numLine({x:20,y:100}, '#0F0', function() { return g; }),
-    numLine({x:20,y:150}, '#00F', function() { return b; })
+    numLine({ x:20, y: 50 }, '#F00', function() { return r; }),
+    numLine({ x:20, y:100 }, '#0F0', function() { return g; }),
+    numLine({ x:20, y:150 }, '#00F', function() { return b; })
   ];
 
   svg.selectAll('g.numlines')
@@ -135,10 +176,10 @@ $(function() {
       .data(function(d) { return d.lines; })
       .enter()
       .append('line')
-      .attr('x1',function(d){return d.start.x;})
-      .attr('y1',function(d){return d.start.y;})
-      .attr('x2',function(d){return d.end.x;})
-      .attr('y2',function(d){return d.end.y;})
+      .attr('x1',function(d){ return d.start.x; })
+      .attr('y1',function(d){ return d.start.y; })
+      .attr('x2',function(d){ return d.end.x; })
+      .attr('y2',function(d){ return d.end.y; })
       .style('stroke-width', 2)
       .style('stroke', function(d) { return d.color; })
   ;
@@ -167,6 +208,76 @@ $(function() {
       .attr('fill', '#000')
   ;
 
+  svg.selectAll('g.numlines')
+      .selectAll('text')
+      .data(function(d) {
+        return [ d.labels.currentValue, d.labels.minValue, d.labels.maxValue ]
+      })
+      .enter()
+      .append('text')
+      .attr("font-family", "sans-serif")
+      .attr("font-size", function(d) { return d.size + "px"; })
+      .attr("fill", function(d) { return d.color; })
+      .attr('x', function(d) { return d.x; })
+      .attr('y', function(d) { return d.y; });
+
+  svg.selectAll('g.paths')
+      .data([[
+        {
+          pointsFn: function() { return rHistory; },
+          x: pathsUpperLeft.x,
+          y: pathsUpperLeft.y,
+          stroke: '#F00'
+        }
+        ,{
+          pointsFn: function() { return gHistory; },
+          x: pathsUpperLeft.x,
+          y: pathsUpperLeft.y,
+          stroke: '#0F0'
+        }
+        ,{
+          pointsFn: function() { return bHistory; },
+          x: pathsUpperLeft.x,
+          y: pathsUpperLeft.y,
+          stroke: '#00F'
+        }
+      ]])
+      .enter()
+      .append('g')
+      .attr('class', 'paths')
+      .selectAll('path')
+      .data(function(d) {
+        return d;
+      })
+      .enter()
+      .append('path')
+      .attr('stroke', function(d) { return d.stroke; })
+      .attr('stroke-width', 2)
+      .attr('fill', 'transparent')
+  ;
+
+  svg.selectAll('g.paths')
+      .selectAll('text')
+      .data([
+        {
+          label: maxAbs,
+          y: pathsUpperLeft.y - 5
+        },
+        {
+          label: minAbs,
+          y: pathsUpperLeft.y + pathsMaxHeight + fontSize + 5
+        }
+      ])
+      .enter()
+      .append('text')
+      .attr("font-family", "sans-serif")
+      .attr("font-size", fontSize + "px")
+      .attr("fill", '#000')
+      .attr('y', function(d) { return d.y; })
+      .text(function(d) { return d.label; })
+  ;
+
+
   var r = maxAbs / 2;
   var g = maxAbs / 2;
   var b = maxAbs / 2;
@@ -178,6 +289,11 @@ $(function() {
   var rvv = 0;
   var bvv = 0;
   var gvv = 0;
+
+  var rHistory = [r];
+  var gHistory = [g];
+  var bHistory = [b];
+  var maxHistory = 100;
 
   function stepColor() {
 
@@ -197,6 +313,10 @@ $(function() {
     if (g >= maxAbs || g <= minAbs) gv = 0;
     if (b >= maxAbs || b <= minAbs) bv = 0;
 
+    rHistory = rHistory.slice(0, maxHistory - 1); rHistory.unshift(r);
+    gHistory = gHistory.slice(0, maxHistory - 1); gHistory.unshift(g);
+    bHistory = bHistory.slice(0, maxHistory - 1); bHistory.unshift(b);
+
     shift(colors);
     colors[0] = { r:r, g:g, b:b };
     svg.selectAll('circle.pixel')
@@ -214,11 +334,28 @@ $(function() {
       })
     ;
 
+    svg.selectAll('g.numlines')
+        .selectAll('text')
+        .text(function(d) {
+          return Math.floor(d.fn());
+        })
+    ;
+
+    svg.selectAll('g.paths')
+        .selectAll('path')
+        .attr('d', function(d) {
+          return pathData(
+              d.pointsFn().map(function(value) {
+                return pathsUpperLeft.y + pathsMaxHeight - pathsMaxHeight*(value - minAbs)/(maxAbs - minAbs);
+              }),
+              5
+          );
+        })
   }
 
   function colorLoop() {
     stepColor();
-    setTimeout(colorLoop, 40);
+    setTimeout(colorLoop, 20);
   }
   colorLoop();
 
