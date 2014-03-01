@@ -84,22 +84,25 @@ function addPixelCircles() {
 }
 
 function getNumLineData(colorWalk) {
+  var leftPad = 5;
+  var rightPad = 5;
   return {
     colorWalk: colorWalk,
     elems: function(width) {
+      var rightEdge = width - rightPad;
       return {
         lines: [
           {
-            start: { x: 0, y: numLineStartY - serifHeight },
-            end: { x: 0, y: numLineStartY + serifHeight }
+            start: { x: leftPad, y: numLineStartY - serifHeight },
+            end: { x: leftPad, y: numLineStartY + serifHeight }
           },
           {
-            start: { x: 0, y: numLineStartY },
-            end: { x: width, y: numLineStartY }
+            start: { x: leftPad, y: numLineStartY },
+            end: { x: rightEdge, y: numLineStartY }
           },
           {
-            start: { x: width, y: numLineStartY - serifHeight },
-            end: { x: width, y: numLineStartY + serifHeight }
+            start: { x: rightEdge, y: numLineStartY - serifHeight },
+            end: { x: rightEdge, y: numLineStartY + serifHeight }
           }
         ],
         labels: {
@@ -110,12 +113,12 @@ function getNumLineData(colorWalk) {
           },
           minValue: {
             fn: function() { return minBrightness; },
-            x: 0,
+            x: leftPad,
             y: numLineStartY + serifHeight + fontSize
           },
           maxValue: {
             fn: function() { return maxBrightness; },
-            x: width - 5,
+            x: rightEdge - 25,
             y: numLineStartY + serifHeight + fontSize
           }
         }
