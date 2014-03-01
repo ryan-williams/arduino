@@ -23,13 +23,14 @@ var numLinesEndY = numLineStartY + 3*numLineHeight;
 var numLineWidth = 300;
 var serifHeight = 10;
 
-var pixelWalkStart = { x: 600, y: 230 };
+var pixelWalkStart = { x: 50, y: 250 };
 
-var pathsUpperLeft = { x: 10, y: numLinesEndY + 10 };
+var pathsUpperLeft = { x: 0, y: fontSize };
+var pathsLabelLeft = 5;
 var pathsMaxHeight = maxBrightness - minBrightness;
 var pathsBottom = pathsUpperLeft.y + pathsMaxHeight + fontSize;
 
-var colorTrailTop = pathsBottom + 30;
+var colorTrailTop = 0;//pathsBottom + 30;
 
 var colorWalkOptions = {
   initialValue: middleBrightness,
@@ -57,7 +58,7 @@ var green = new RandomWalk(colorWalkOptions);
 function addPixelCircles() {
   var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
 
-  d('#svg')
+  d('#pixels')
       .selectAll('circle.pixel')
       .data(circleCoords)
       .enter()
@@ -118,7 +119,7 @@ function getNumLineData(startPoint, color, updateFn, colorWalk) {
 }
 
 function addNumLineLines() {
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .selectAll('line')
       .data(acc('lines'))
@@ -134,7 +135,7 @@ function addNumLineLines() {
 }
 
 function addNumLineSliderCircles() {
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .selectAll('circle')
       .data(function(d) {
@@ -157,7 +158,7 @@ function addNumLineSliderCircles() {
 }
 
 function addNumLineLabels() {
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .selectAll('text')
       .data(function(d) {
@@ -179,7 +180,7 @@ function addNumLines() {
     getNumLineData({ x: 0, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return blue.history[0]; }, blue)
   ];
 
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .data(numLines)
       .enter()
@@ -191,7 +192,7 @@ function addNumLines() {
       })
   ;
 
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .selectAll('rect.clicker')
       .data(function(d) { return [d]; })
@@ -211,7 +212,7 @@ function addNumLines() {
 }
 
 function appendPathGroup() {
-  d('#svg')
+  d('#paths')
       .selectAll('g.paths')
       .data([[
         {
@@ -240,7 +241,7 @@ function appendPathGroup() {
 }
 
 function appendPaths() {
-  d('#svg')
+  d('#paths')
       .selectAll('g.paths')
       .selectAll('path')
       .data(identity)
@@ -253,7 +254,7 @@ function appendPaths() {
 }
 
 function appendPathLabels() {
-  d('#svg')
+  d('#paths')
       .selectAll('g.paths')
       .selectAll('text')
       .data([
@@ -271,6 +272,7 @@ function appendPathLabels() {
       .attr("font-family", "sans-serif")
       .attr("font-size", fontSize + "px")
       .attr("fill", '#000')
+      .attr('x', pathsLabelLeft)
       .attr('y', acc('y'))
       .text(acc('label'))
   ;
@@ -289,13 +291,13 @@ function stepColor() {
   blue.step();
 
   // Update pixels' colors.
-  d('#svg')
+  d('#pixels')
       .selectAll('circle.pixel')
       .attr('fill', function(d,i) { return rgbString(red.history[i], green.history[i], blue.history[i]); })
   ;
 
   // Slide number-lines' circle-indicators.
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .selectAll('circle')
       .attr('cx', function(d) {
@@ -304,7 +306,7 @@ function stepColor() {
   ;
 
   // Update number-lines' labels.
-  d('#svg')
+  d('#sliders')
       .selectAll('g.numlines')
       .selectAll('text')
       .text(function(d) {
@@ -313,7 +315,7 @@ function stepColor() {
   ;
 
   // Update color-history paths.
-  d('#svg')
+  d('#paths')
       .selectAll('g.paths')
       .selectAll('path')
       .attr('d', function(d) {
@@ -337,14 +339,14 @@ function stepColor() {
   var rectWidth = 4;
   var rectHeight = 20;
 
-  d('#svg')
+  d('#trail')
       .selectAll('g.trail')
       .selectAll('rect')
       .data(red.history)
       .enter()
       .append('rect')
   ;
-  d('#svg')
+  d('#trail')
       .selectAll('g.trail')
       .selectAll('rect')
       .attr('width', rectWidth)
@@ -360,7 +362,7 @@ function stepColor() {
 
 function addColorTrail() {
 
-  d('#svg')
+  d('#trail')
       .selectAll('g.trail')
       .data([1])
       .enter()

@@ -1,20 +1,31 @@
 
-#colorboxen {
-  padding-left: 100px;
-  padding-top: 100px;
-}
-
-.colorbox {
-  width: 10px;
-  height: 100px;
+.svg-div {
   float: left;
-  background-color: #ACC;
+  clear: left;
+  width: 100%;
+  margin: 10px;
 }
 
-#svg {
-  position: relative;
-  left: 40px;
-  top: 20px;
+div.svg-div svg {
+  width: 100%;
+}
+
+svg#sliders {
+  height: 200px;
+}
+
+
+svg#paths {
+  height: 300px;
+  border: 1px solid black;
+}
+
+svg#trail {
+  height: 50px;
+}
+
+svg#pixels {
+  height: 600px;
 }
 
 rect.clicker {
