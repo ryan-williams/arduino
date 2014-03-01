@@ -7,12 +7,13 @@ SineWalk = function(options) {
   }
 
   this.setPosition = function(pos) {
+    this.position = pos;
     var forcedSinValue = interpolate(pos, options.minPosition, options.maxPosition, -1, 1);
     nextStep = interpolate(Math.asin(forcedSinValue), 0, 2* Math.PI, 0, options.period);
   };
 
   this.step = function() {
-    nextPos = interpolate(
+    this.position = interpolate(
         Math.sin(2 * Math.PI * (nextStep / options.period)),
         -1, 1,
         options.minPosition, options.maxPosition
@@ -23,7 +24,7 @@ SineWalk = function(options) {
     } else {
       nextStep = (nextStep + 1) % options.period;
     }
-    return nextPos;
+    return this.position;
   };
 
 };

@@ -3,6 +3,13 @@
   float: left;
   clear: left;
   width: 100%;
+}
+
+#paths-div {
+  margin: 10px;
+}
+
+#trail-div {
   margin: 10px;
 }
 
@@ -11,7 +18,7 @@ div.svg-div svg {
 }
 
 .slider-div {
-  max-height: 40px;
+  max-height: 60px;
 }
 
 div.slider-div input.pause {

@@ -1,10 +1,10 @@
 
 ConstantWalk = function(options) {
-  var position = options.value;
+  this.position = options.value;
   this.setPosition = function(pos) {
-    position = pos;
+    this.position = pos;
   };
   this.step = function() {
-    return position;
+    return this.position;
   };
 };

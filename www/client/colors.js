@@ -45,10 +45,25 @@ function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
   };
 }
 
-var red = new ColorWalks({ sineWalk: sineWalkOptions(250, true) });
-var blue = new ColorWalks({ sineWalk: sineWalkOptions(150, true) });
-//var green = new SineWalk(sineWalkOptions(200, true));
-var green = new ColorWalks({ randomWalk: randomWalkOptions });
+function colorWalkParams(sineFreq, color) {
+  if (sineFreq && sineFreq.length && sineFreq.length == 2) {
+    color = sineFreq[1];
+    sineFreq = sineFreq[0];
+  }
+  return {
+    sineWalk: sineWalkOptions(sineFreq, true),
+    randomWalk: randomWalkOptions,
+    constantWalk: { value: 100 },
+    color: color
+  }
+}
+
+var colors =
+    [[250, '#F00'], [200, '#0F0'], [150, '#00F']]
+        .map(colorWalkParams)
+        .map(function(params) {
+          return new ColorWalks(params);
+        });
 
 function addPixelCircles() {
   var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
@@ -68,46 +83,38 @@ function addPixelCircles() {
       });
 }
 
-function getNumLineData(startPoint, color, updateFn, colorWalk) {
+function getNumLineData(colorWalk) {
   return {
-    updateFn: updateFn,
-    color: color,
     colorWalk: colorWalk,
     lines: [
       {
-        start: { x: startPoint.x, y: startPoint.y - serifHeight },
-        end: { x: startPoint.x, y: startPoint.y + serifHeight },
-        color: color
+        start: { x: 0, y: numLineStartY - serifHeight },
+        end: { x: 0, y: numLineStartY + serifHeight }
       },
       {
-        start: { x: startPoint.x, y: startPoint.y },
-        end: { x: startPoint.x + numLineWidth, y: startPoint.y },
-        color: color
+        start: { x: 0, y: numLineStartY },
+        end: { x: numLineWidth, y: numLineStartY }
       },
       {
-        start: { x: startPoint.x + numLineWidth, y: startPoint.y - serifHeight },
-        end: { x: startPoint.x + numLineWidth, y: startPoint.y + serifHeight },
-        color: color
+        start: { x: numLineWidth, y: numLineStartY - serifHeight },
+        end: { x: numLineWidth, y: numLineStartY + serifHeight }
       }
     ],
     labels: {
       currentValue: {
-        fn: updateFn,
-        x: startPoint.x + 10,
-        y: startPoint.y - serifHeight,
-        color: '#000'
+        fn: function() { return colorWalk.position; },
+        x: 10,
+        y: numLineStartY - serifHeight
       },
       minValue: {
         fn: function() { return minBrightness; },
-        x: startPoint.x,
-        y: startPoint.y + serifHeight + fontSize,
-        color: color
+        x: 0,
+        y: numLineStartY + serifHeight + fontSize
       },
       maxValue: {
         fn: function() { return maxBrightness; },
-        x: startPoint.x + numLineWidth - 5,
-        y: startPoint.y + serifHeight + fontSize,
-        color: color
+        x: numLineWidth - 5,
+        y: numLineStartY + serifHeight + fontSize
       }
     }
   }
@@ -117,7 +124,7 @@ function addNumLineLines() {
   d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('line')
-      .data(acc('lines'))
+      .data(function(d) { return d.lines.addEach('color', d.colorWalk.color); })
       .enter()
       .append('line')
       .attr('x1', acc('start.x'))
@@ -135,7 +142,7 @@ function addNumLineSliderCircles() {
       .selectAll('circle')
       .data(function(d) {
         return [{
-          fn: d.updateFn,
+          fn: function() { return d.colorWalk.position; },
           cy: d.lines[1].start.y,
           minX: d.lines[1].start.x,
           maxX: d.lines[1].end.x
@@ -157,7 +164,11 @@ function addNumLineLabels() {
       .selectAll('g.numlines')
       .selectAll('text')
       .data(function(d) {
-        return [ d.labels.currentValue, d.labels.minValue, d.labels.maxValue ]
+        return [
+          d.labels.currentValue,
+          add(d.labels.minValue, 'color', d.colorWalk.color),
+          add(d.labels.maxValue, 'color', d.colorWalk.color)
+        ]
       })
       .enter()
       .append('text')
@@ -169,11 +180,7 @@ function addNumLineLabels() {
 }
 
 function addNumLines() {
-  var numLines = [
-    getNumLineData({ x: 0, y: numLineStartY }, '#F00', function() { return red.history[0]; }, red),
-    getNumLineData({ x: 0, y: numLineStartY }, '#0F0', function() { return green.history[0]; }, green),
-    getNumLineData({ x: 0, y: numLineStartY }, '#00F', function() { return blue.history[0]; }, blue)
-  ];
+  var numLines = colors.map(getNumLineData);
 
   var sliderDivs =
           d('.sliders')
@@ -186,27 +193,28 @@ function addNumLines() {
 
   var svgDivs = dAppend(sliderDivs, 'div.span3');
   var svgs = dAppend(svgDivs, 'svg.slider');
+
   var buttonDivs = dAppend(sliderDivs, 'div.span1');
   var buttons =
       dAppend(buttonDivs, 'input.pause', { type: 'button' })
           .text('Pause')
           .on('click', function(d,i) {
-            d.data.colorWalk.pause();
+            d.colorWalk.incWalkType();
           })
       ;
 
-  var numlines = svgs.selectAll('g.numlines');
-
-  numlines
-      .data(function(d, i) { return [ numLines[i] ]; })
-      .enter()
-      .append('g')
-      .attr('class', 'numlines')
-      .on('click', function(d,i) {
-        var logicalX = interpolate(d3.event.offsetX, 0, numLineWidth, minBrightness, maxBrightness);
-        d.colorWalk.step(logicalX);
-      })
-  ;
+  var numlines =
+          svgs.selectAll('g.numlines')
+              .data(function(d, i) { return [ numLines[i] ]; })
+              .enter()
+              .append('g')
+              .attr('class', 'numlines')
+              .on('click', function(d,i) {
+                var logicalX = interpolate(d3.event.offsetX, 0, numLineWidth, minBrightness, maxBrightness);
+                console.log(logicalX);
+                d.colorWalk.setPosition(logicalX);
+              })
+      ;
 
   var clickerRects =
       dAppend(
@@ -217,7 +225,8 @@ function addNumLines() {
             height: 2*serifHeight,
             fill: '#000',
             'fill-opacity': 0.05,
-            y: function(d) { return d.lines[0].start.y; }
+            y: numLineStartY - serifHeight,
+            x: 0
           }
       );
 
@@ -226,51 +235,19 @@ function addNumLines() {
   addNumLineLabels();
 }
 
-function appendPathGroup() {
-  d('#paths')
-      .selectAll('g.paths')
-      .data([[
-        {
-          pointsFn: function() { return red.history; },
-          x: pathsUpperLeft.x,
-          y: pathsUpperLeft.y,
-          stroke: '#F00'
-        }
-        ,{
-          pointsFn: function() { return green.history; },
-          x: pathsUpperLeft.x,
-          y: pathsUpperLeft.y,
-          stroke: '#0F0'
-        }
-        ,{
-          pointsFn: function() { return blue.history; },
-          x: pathsUpperLeft.x,
-          y: pathsUpperLeft.y,
-          stroke: '#00F'
-        }
-      ]])
-      .enter()
-      .append('g')
-      .attr('class', 'paths')
-  ;
-}
-
-function appendPaths() {
-  d('#paths')
-      .selectAll('g.paths')
+function addPaths() {
+  var pathsGroup = d('#paths').append('g').attr('class', 'paths');
+  pathsGroup
       .selectAll('path')
-      .data(identity)
+      .data(colors.map(function(color) { return function() { return color; }; }))
       .enter()
       .append('path')
-      .attr('stroke', acc('stroke'))
+      .attr('stroke', function(d) { return d().color; })
       .attr('stroke-width', 2)
       .attr('fill', 'transparent')
   ;
-}
 
-function appendPathLabels() {
-  d('#paths')
-      .selectAll('g.paths')
+  pathsGroup
       .selectAll('text')
       .data([
         {
@@ -293,22 +270,16 @@ function appendPathLabels() {
   ;
 }
 
-function addPaths() {
-  appendPathGroup();
-  appendPaths();
-  appendPathLabels();
-}
-
 function stepColor() {
 
-  red.step();
-  green.step();
-  blue.step();
+  colors.forEach(function(color) { color.step(); });
 
   // Update pixels' colors.
   d('#pixels')
       .selectAll('circle.pixel')
-      .attr('fill', function(d,i) { return rgbString(red.history[i], green.history[i], blue.history[i]); })
+      .attr('fill', function(d,i) {
+        return rgbString(colors.map(function(color) { return color.history[i]; }))
+      })
   ;
 
   // Slide number-lines' circle-indicators.
@@ -335,7 +306,7 @@ function stepColor() {
       .selectAll('path')
       .attr('d', function(d) {
         return pathData(
-            d.pointsFn().map(function(value) {
+            d().history.map(function(value) {
               return interpolate(
                   value,
                   minBrightness,
@@ -357,7 +328,7 @@ function stepColor() {
   d('#trail')
       .selectAll('g.trail')
       .selectAll('rect')
-      .data(red.history)
+      .data(colors[0].history)
       .enter()
       .append('rect')
   ;
@@ -368,7 +339,7 @@ function stepColor() {
       .attr('height', rectHeight)
       .attr('x', function(d,i) { return i * rectWidth; })
       .attr('fill', function(d, i) {
-        return rgbString(red.history[i], green.history[i], blue.history[i])
+        return rgbString(colors.map(function(color) { return color.history[i]; }));
       })
   ;
 

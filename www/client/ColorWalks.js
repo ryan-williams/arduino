@@ -5,6 +5,8 @@ ColorWalks = function(options) {
 
   var walks = [];
 
+  this.color = options.color;
+
   if (options.sineWalk) {
     walks.push(new SineWalk(options.sineWalk));
   }
@@ -18,20 +20,31 @@ ColorWalks = function(options) {
   }
 
   this.setCurWalkIdx = function(idx) {
+    var prevPosition = null;
+    if (this.curWalk) {
+      prevPosition = this.curWalk.position;
+    }
     this.curWalk = walks[idx];
     this.curWalkIdx = idx;
+
+    if (prevPosition != null) this.curWalk.setPosition(prevPosition);
   };
 
   this.setCurWalkIdx(walks.find(function(walk) { return walk.initd; }) || 0);
 
+  this.incWalkType = function() {
+    this.setCurWalkIdx((this.curWalkIdx + 1) % walks.length);
+  };
+
   this.history = [];
+  this.position = null;
 
   this.setPosition = function(pos) { this.curWalk.setPosition(pos); };
 
   this.step = function() {
-    var nextPos = this.curWalk.step();
-    this.history = unshiftAndSlice(this.history, nextPos, options.maxLength || defaultMaxLength);
-    return nextPos;
+    this.position = this.curWalk.step();
+    this.history = unshiftAndSlice(this.history, this.position, options.maxLength || defaultMaxLength);
+    return this.position;
   };
 
 };

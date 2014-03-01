@@ -9,10 +9,14 @@ Utils = {
     if (r && r.r) {
       return rgbString(r.r, r.g, r.b);
     }
+    if (r && r.length && r.length == 3) {
+      return rgbString.apply(this, r);
+    }
     return "rgb(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ")";
   },
 
   identity: function(x) { return x; },
+  arr: function(x) { return [x]; },
   acc: function(name) {
     return function(d) {
       name.split('.').map(function(segment) { d = d[segment]; });
@@ -127,7 +131,7 @@ Utils = {
     var elems =
         parentSelector
             .selectAll(selector)
-            .data(function(d) { return [d]; })
+            .data(arr)
             .enter()
             .append(elemType)
             .attr('class', classes.join(' '))
@@ -137,7 +141,9 @@ Utils = {
         .reduce(function(selection, kv) {
           return selection.attr(kv[0], kv[1]);
         }, elems);
-  }
+  },
+
+  add: function(obj, k, v) { obj[k] = v; return obj; }
 };
 
 for (k in Utils) {
@@ -152,3 +158,10 @@ Array.prototype.find = function(fn) {
   return null;
 };
 
+Array.prototype.addEach = function(k, v) {
+  this.map(function(e) {
+    e[k] = v;
+    return e;
+  });
+  return this;
+};
