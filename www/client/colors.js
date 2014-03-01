@@ -11,7 +11,7 @@ var numBoxes = 125;
 
 var R = 10;
 
-var svg,i;
+var i;
 
 var fontSize = 15;
 
@@ -57,8 +57,8 @@ var green = new RandomWalk(colorWalkOptions);
 function addPixelCircles() {
   var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
 
-  svg = d3.select('#svg');
-  svg.selectAll('circle.pixel')
+  d('#svg')
+      .selectAll('circle.pixel')
       .data(circleCoords)
       .enter()
       .append('circle')
@@ -118,7 +118,8 @@ function getNumLineData(startPoint, color, updateFn, colorWalk) {
 }
 
 function addNumLineLines() {
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .selectAll('line')
       .data(acc('lines'))
       .enter()
@@ -133,7 +134,8 @@ function addNumLineLines() {
 }
 
 function addNumLineSliderCircles() {
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .selectAll('circle')
       .data(function(d) {
         return [{
@@ -155,7 +157,8 @@ function addNumLineSliderCircles() {
 }
 
 function addNumLineLabels() {
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .selectAll('text')
       .data(function(d) {
         return [ d.labels.currentValue, d.labels.minValue, d.labels.maxValue ]
@@ -176,7 +179,8 @@ function addNumLines() {
     getNumLineData({ x: 0, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return blue.history[0]; }, blue)
   ];
 
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .data(numLines)
       .enter()
       .append('g')
@@ -187,7 +191,8 @@ function addNumLines() {
       })
   ;
 
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .selectAll('rect.clicker')
       .data(function(d) { return [d]; })
       .enter()
@@ -206,7 +211,8 @@ function addNumLines() {
 }
 
 function appendPathGroup() {
-  svg.selectAll('g.paths')
+  d('#svg')
+      .selectAll('g.paths')
       .data([[
         {
           pointsFn: function() { return red.history; },
@@ -234,7 +240,8 @@ function appendPathGroup() {
 }
 
 function appendPaths() {
-  svg.selectAll('g.paths')
+  d('#svg')
+      .selectAll('g.paths')
       .selectAll('path')
       .data(identity)
       .enter()
@@ -246,7 +253,8 @@ function appendPaths() {
 }
 
 function appendPathLabels() {
-  svg.selectAll('g.paths')
+  d('#svg')
+      .selectAll('g.paths')
       .selectAll('text')
       .data([
         {
@@ -281,12 +289,14 @@ function stepColor() {
   blue.step();
 
   // Update pixels' colors.
-  svg.selectAll('circle.pixel')
+  d('#svg')
+      .selectAll('circle.pixel')
       .attr('fill', function(d,i) { return rgbString(red.history[i], green.history[i], blue.history[i]); })
   ;
 
   // Slide number-lines' circle-indicators.
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .selectAll('circle')
       .attr('cx', function(d) {
         return interpolate(Math.floor(d.fn()), minBrightness, maxBrightness, d.minX, d.maxX);
@@ -294,7 +304,8 @@ function stepColor() {
   ;
 
   // Update number-lines' labels.
-  svg.selectAll('g.numlines')
+  d('#svg')
+      .selectAll('g.numlines')
       .selectAll('text')
       .text(function(d) {
         return Math.floor(d.fn());
@@ -302,7 +313,8 @@ function stepColor() {
   ;
 
   // Update color-history paths.
-  svg.selectAll('g.paths')
+  d('#svg')
+      .selectAll('g.paths')
       .selectAll('path')
       .attr('d', function(d) {
         return pathData(
@@ -325,13 +337,15 @@ function stepColor() {
   var rectWidth = 4;
   var rectHeight = 20;
 
-  svg.selectAll('g.trail')
+  d('#svg')
+      .selectAll('g.trail')
       .selectAll('rect')
       .data(red.history)
       .enter()
       .append('rect')
   ;
-  svg.selectAll('g.trail')
+  d('#svg')
+      .selectAll('g.trail')
       .selectAll('rect')
       .attr('width', rectWidth)
       .attr('height', rectHeight)
@@ -346,7 +360,8 @@ function stepColor() {
 
 function addColorTrail() {
 
-  svg.selectAll('g.trail')
+  d('#svg')
+      .selectAll('g.trail')
       .data([1])
       .enter()
       .append('g')

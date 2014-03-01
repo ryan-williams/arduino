@@ -98,8 +98,11 @@ Utils = {
     return arrays[0].map(function(_,i){
       return arrays.map(function(array){return array[i]})
     });
-  }
+  },
 
+  d: function(selector) {
+    return d3.select(selector);
+  }
 };
 
 for (k in Utils) {
