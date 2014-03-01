@@ -18,8 +18,6 @@ var fontSize = 15;
 var pathXScale = 4;
 
 var numLineStartY = 30;
-var numLineHeight = 60;
-var numLinesEndY = numLineStartY + 3*numLineHeight;
 var numLineWidth = 300;
 var serifHeight = 10;
 
@@ -28,9 +26,6 @@ var pixelWalkStart = { x: 50, y: 250 };
 var pathsUpperLeft = { x: 0, y: fontSize };
 var pathsLabelLeft = 5;
 var pathsMaxHeight = maxBrightness - minBrightness;
-var pathsBottom = pathsUpperLeft.y + pathsMaxHeight + fontSize;
-
-var colorTrailTop = 0;//pathsBottom + 30;
 
 var colorWalkOptions = {
   initialValue: middleBrightness,
@@ -119,7 +114,7 @@ function getNumLineData(startPoint, color, updateFn, colorWalk) {
 }
 
 function addNumLineLines() {
-  d('#sliders')
+  d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('line')
       .data(acc('lines'))
@@ -135,7 +130,7 @@ function addNumLineLines() {
 }
 
 function addNumLineSliderCircles() {
-  d('#sliders')
+  d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('circle')
       .data(function(d) {
@@ -158,7 +153,7 @@ function addNumLineSliderCircles() {
 }
 
 function addNumLineLabels() {
-  d('#sliders')
+  d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('text')
       .data(function(d) {
@@ -176,13 +171,58 @@ function addNumLineLabels() {
 function addNumLines() {
   var numLines = [
     getNumLineData({ x: 0, y: numLineStartY }, '#F00', function() { return red.history[0]; }, red),
-    getNumLineData({ x: 0, y: numLineStartY + numLineHeight }, '#0F0', function() { return green.history[0]; }, green),
-    getNumLineData({ x: 0, y: numLineStartY + 2*numLineHeight }, '#00F', function() { return blue.history[0]; }, blue)
+    getNumLineData({ x: 0, y: numLineStartY }, '#0F0', function() { return green.history[0]; }, green),
+    getNumLineData({ x: 0, y: numLineStartY }, '#00F', function() { return blue.history[0]; }, blue)
   ];
 
-  d('#sliders')
-      .selectAll('g.numlines')
+  d('.sliders')
+      .selectAll('div.slider-div.svg-div')
       .data(numLines)
+      .enter()
+      .append('div')
+      .attr('class', 'slider-div svg-div')
+  ;
+
+  d3.selectAll('.sliders div.slider-div.svg-div')
+      .selectAll('div.span3')
+      .data(function(d) { return [d]; })
+      .enter()
+      .append('div')
+      .attr('class', 'span3')
+  ;
+
+  d3.selectAll('.sliders div.slider-div.svg-div div.span3')
+      .selectAll('svg')
+      .data(function(d) { return [d]; })
+      .enter()
+      .append('svg')
+      .attr('class', 'slider')
+  ;
+
+  d3.selectAll('.sliders div.slider-div.svg-div')
+      .selectAll('div.span1')
+      .data(function(d) { return [d]; })
+      .enter()
+      .append('div')
+      .attr('class', 'span1')
+  ;
+
+  d3.selectAll('.sliders div.slider-div.svg-div div.span1')
+      .selectAll('input')
+      .data(function(d, i) { return [{ data: d, idx: i }]; })
+      .enter()
+      .append('input')
+      .attr('class', 'pause')
+      .attr('type', 'button')
+      .text('Pause')
+      .on('click', function(d,i) {
+        d.data.colorWalk.pause();
+      })
+  ;
+
+  d3.selectAll('.slider')
+      .selectAll('g.numlines')
+      .data(function(d, i) { return [ numLines[i] ]; })
       .enter()
       .append('g')
       .attr('class', 'numlines')
@@ -192,10 +232,10 @@ function addNumLines() {
       })
   ;
 
-  d('#sliders')
+  d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('rect.clicker')
-      .data(function(d) { return [d]; })
+      .data(function(d) { return [ d ]; })
       .enter()
       .append('rect')
       .attr('class', 'clicker')
@@ -297,7 +337,7 @@ function stepColor() {
   ;
 
   // Slide number-lines' circle-indicators.
-  d('#sliders')
+  d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('circle')
       .attr('cx', function(d) {
@@ -306,7 +346,7 @@ function stepColor() {
   ;
 
   // Update number-lines' labels.
-  d('#sliders')
+  d3.selectAll('.slider')
       .selectAll('g.numlines')
       .selectAll('text')
       .text(function(d) {
@@ -352,7 +392,6 @@ function stepColor() {
       .attr('width', rectWidth)
       .attr('height', rectHeight)
       .attr('x', function(d,i) { return i * rectWidth; })
-      .attr('y', colorTrailTop)
       .attr('fill', function(d, i) {
         return rgbString(red.history[i], green.history[i], blue.history[i])
       })

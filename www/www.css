@@ -10,10 +10,17 @@ div.svg-div svg {
   width: 100%;
 }
 
-svg#sliders {
-  height: 200px;
+.slider-div {
+  max-height: 40px;
 }
 
+div.slider-div input.pause {
+  padding-top: 15px;
+  position: relative;
+  top: 13px;
+  width: 28px;
+  height: 28px;
+}
 
 svg#paths {
   height: 300px;
