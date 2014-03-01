@@ -27,7 +27,7 @@ var pathsUpperLeft = { x: 0, y: fontSize };
 var pathsLabelLeft = 5;
 var pathsMaxHeight = maxBrightness - minBrightness;
 
-var colorWalkOptions = {
+var randomWalkOptions = {
   initialValue: middleBrightness,
   maxAcceleration: 0.5,
   maxVelocity: maxV,
@@ -45,10 +45,10 @@ function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
   };
 }
 
-var red = new SineWalk(sineWalkOptions(250, true));
-var blue = new SineWalk(sineWalkOptions(150, true));
+var red = new ColorWalks({ sineWalk: sineWalkOptions(250, true) });
+var blue = new ColorWalks({ sineWalk: sineWalkOptions(150, true) });
 //var green = new SineWalk(sineWalkOptions(200, true));
-var green = new RandomWalk(colorWalkOptions);
+var green = new ColorWalks({ randomWalk: randomWalkOptions });
 
 function addPixelCircles() {
   var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
@@ -175,53 +175,29 @@ function addNumLines() {
     getNumLineData({ x: 0, y: numLineStartY }, '#00F', function() { return blue.history[0]; }, blue)
   ];
 
-  d('.sliders')
-      .selectAll('div.slider-div.svg-div')
-      .data(numLines)
-      .enter()
-      .append('div')
-      .attr('class', 'slider-div svg-div')
-  ;
+  var sliderDivs =
+          d('.sliders')
+              .selectAll('div.slider-div.svg-div')
+              .data(numLines)
+              .enter()
+              .append('div')
+              .attr('class', 'slider-div svg-div')
+      ;
 
-  d3.selectAll('.sliders div.slider-div.svg-div')
-      .selectAll('div.span3')
-      .data(function(d) { return [d]; })
-      .enter()
-      .append('div')
-      .attr('class', 'span3')
-  ;
+  var svgDivs = dAppend(sliderDivs, 'div.span3');
+  var svgs = dAppend(svgDivs, 'svg.slider');
+  var buttonDivs = dAppend(sliderDivs, 'div.span1');
+  var buttons =
+      dAppend(buttonDivs, 'input.pause', { type: 'button' })
+          .text('Pause')
+          .on('click', function(d,i) {
+            d.data.colorWalk.pause();
+          })
+      ;
 
-  d3.selectAll('.sliders div.slider-div.svg-div div.span3')
-      .selectAll('svg')
-      .data(function(d) { return [d]; })
-      .enter()
-      .append('svg')
-      .attr('class', 'slider')
-  ;
+  var numlines = svgs.selectAll('g.numlines');
 
-  d3.selectAll('.sliders div.slider-div.svg-div')
-      .selectAll('div.span1')
-      .data(function(d) { return [d]; })
-      .enter()
-      .append('div')
-      .attr('class', 'span1')
-  ;
-
-  d3.selectAll('.sliders div.slider-div.svg-div div.span1')
-      .selectAll('input')
-      .data(function(d, i) { return [{ data: d, idx: i }]; })
-      .enter()
-      .append('input')
-      .attr('class', 'pause')
-      .attr('type', 'button')
-      .text('Pause')
-      .on('click', function(d,i) {
-        d.data.colorWalk.pause();
-      })
-  ;
-
-  d3.selectAll('.slider')
-      .selectAll('g.numlines')
+  numlines
       .data(function(d, i) { return [ numLines[i] ]; })
       .enter()
       .append('g')
@@ -232,19 +208,18 @@ function addNumLines() {
       })
   ;
 
-  d3.selectAll('.slider')
-      .selectAll('g.numlines')
-      .selectAll('rect.clicker')
-      .data(function(d) { return [ d ]; })
-      .enter()
-      .append('rect')
-      .attr('class', 'clicker')
-      .attr('width', numLineWidth)
-      .attr('height', 2 * serifHeight)
-      .attr('fill', '#000')
-      .attr('fill-opacity', 0.05)
-      .attr('y', function(d) { return d.lines[0].start.y; })
-  ;
+  var clickerRects =
+      dAppend(
+          numlines,
+          'rect.clicker',
+          {
+            width: numLineWidth,
+            height: 2*serifHeight,
+            fill: '#000',
+            'fill-opacity': 0.05,
+            y: function(d) { return d.lines[0].start.y; }
+          }
+      );
 
   addNumLineLines();
   addNumLineSliderCircles();

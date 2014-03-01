@@ -102,9 +102,53 @@ Utils = {
 
   d: function(selector) {
     return d3.select(selector);
+  },
+
+  keys: function(obj) {
+    var arr = [];
+    for (k in obj) {
+      if (obj.hasOwnProperty(k)) arr.push(k);
+    }
+    return arr;
+  },
+
+  enm: function(obj) {
+    var arr = [];
+    for (k in obj) {
+      if (obj.hasOwnProperty(k)) arr.push([k, obj[k]]);
+    }
+    return arr;
+  },
+
+  dAppend: function(parentSelector, selector, attrMap) {
+    var segments = selector.split('.');
+    var elemType = segments[0];
+    var classes = segments.slice(1);
+    var elems =
+        parentSelector
+            .selectAll(selector)
+            .data(function(d) { return [d]; })
+            .enter()
+            .append(elemType)
+            .attr('class', classes.join(' '))
+        ;
+
+    return enm(attrMap)
+        .reduce(function(selection, kv) {
+          return selection.attr(kv[0], kv[1]);
+        }, elems);
   }
 };
 
 for (k in Utils) {
   window[k] = Utils[k];
 }
+
+Array.prototype.find = function(fn) {
+  for (var i = 0; i < this.length; ++i) {
+    if (fn(this[i]))
+      return this[i];
+  }
+  return null;
+};
+
