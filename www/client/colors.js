@@ -109,6 +109,17 @@ window.runColorDisplay = function() {
         handleStartOrPause();
         stepColor();
       });
+
+  d3.select('body')
+      .on('keydown', function(d) {
+        var keyId = d3.event.keyIdentifier;
+        var keyCode = d3.event.keyCode;
+        if (keyId == 'Right') {
+          stepColor();
+        }
+        if (keyCode == 32) {
+          togglePaused();
+        }
       });
 
   handleStartOrPause();
