@@ -6,12 +6,28 @@ Pixels = function(options) {
   var numBoxes = 125;
   var R = 10;
 
-  this.addPixelCircles = function() {
-    var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
+  function spiralWalk(x, y, stepMagnitude, num) {
+    var t = Math.PI / 2;
+    var tvv = 0.0007;
+    var initialTV = -.07;
+    return genArray(
+        { x: x, y: y },
+        function(prevElem) {
+          initialTV -= tvv;
+          t += initialTV;
+          return {
+            x: prevElem.x + stepMagnitude * Math.cos(t),
+            y: prevElem.y + stepMagnitude * Math.sin(t)
+          }
+        },
+        num
+    );
+  }
 
+  this.setCoords = function(coords) {
     d('#pixels')
         .selectAll('circle.pixel')
-        .data(circleCoords)
+        .data(coords)
         .enter()
         .append('circle')
         .attr('class', 'pixel')
@@ -21,8 +37,12 @@ Pixels = function(options) {
         })
         .attr('cy', function(d) {
           return Math.floor(d.y);
-        });
+        })
+    ;
+  };
 
+  this.addPixelCircles = function() {
+    this.setCoords(spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes));
     return this;
   };
 

@@ -32,24 +32,6 @@ Utils = {
     return elems;
   },
 
-  spiralWalk: function(x, y, stepMagnitude, num) {
-    var t = Math.PI / 2;
-    var tvv = 0.0007;
-    var initialTV = -.07;
-    return this.genArray(
-        { x: x, y: y },
-        function(prevElem) {
-          initialTV -= tvv;
-          t += initialTV;
-          return {
-            x: prevElem.x + stepMagnitude * Math.cos(t),
-            y: prevElem.y + stepMagnitude * Math.sin(t)
-          }
-        },
-        num
-    );
-  },
-
   wrap: function(x) {
     return function() {
       return x;
