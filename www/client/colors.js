@@ -50,6 +50,11 @@ function colorWalkParams(sineFreq, color) {
   return {
     sineWalk: sineWalkOptions(sineFreq, true),
     randomWalk: randomWalkOptions,
+    randomSineWalk: {
+      halfPeriod: 50,
+      minPosition: minBrightness,
+      maxPosition: maxBrightness
+    },
     constantWalk: { value: 100 },
     color: color
   }
@@ -218,6 +223,7 @@ function addNumLines() {
   var buttonDivs = sliderDivs.append('div');
 
   var buttonTypes = [
+    [ 'random-sine', 'rsin' ],
     [ 'sine', 'sine' ],
     [ 'random', 'rand' ],
     [ 'constant', 'const' ]

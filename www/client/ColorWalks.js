@@ -9,6 +9,10 @@ ColorWalks = function(options) {
 
   this.color = options.color;
 
+  if (options.randomSineWalk) {
+    walks.push(new RandomSineWalk(options.randomSineWalk));
+  }
+
   if (options.sineWalk) {
     walks.push(new SineWalk(options.sineWalk));
   }
