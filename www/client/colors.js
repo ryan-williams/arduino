@@ -18,7 +18,6 @@ var fontSize = 15;
 var pathXScale = 4;
 
 var numLineStartY = 30;
-var numLineWidth = 300;
 var serifHeight = 10;
 
 var pixelWalkStart = { x: 50, y: 250 };
@@ -91,6 +90,9 @@ function getNumLineData(colorWalk) {
     elems: function(width) {
       var rightEdge = width - rightPad;
       return {
+        left: leftPad,
+        right: rightEdge,
+        width: rightEdge - leftPad,
         lines: [
           {
             start: { x: leftPad, y: numLineStartY - serifHeight },
@@ -227,7 +229,7 @@ function addNumLines() {
   var numlines =
           dAppend(svgs, 'g.numlines')
               .on('click', function(d) {
-                var logicalX = interpolate(d3.event.offsetX, 0, numLineWidth, minBrightness, maxBrightness);
+                var logicalX = interpolate(d3.event.offsetX, d.left, d.right, minBrightness, maxBrightness);
                 d.colorWalk.setPosition(logicalX);
               })
       ;
@@ -237,12 +239,12 @@ function addNumLines() {
           numlines,
           'rect.clicker',
           {
-            width: numLineWidth,
+            width: acc('width'),
             height: 2*serifHeight,
             fill: '#000',
             'fill-opacity': 0.05,
             y: numLineStartY - serifHeight,
-            x: 0
+            x: acc('left')
           }
       );
 
