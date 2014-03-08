@@ -24,7 +24,7 @@ div.svg-div svg {
 div.slider-div input.pause {
   padding-top: 15px;
   position: relative;
-  top: 13px;
+  top: 16px;
   width: 28px;
   height: 28px;
 }
@@ -44,4 +44,9 @@ svg#pixels {
 
 rect.clicker {
   cursor: pointer;
+}
+
+#pause-button {
+  position: fixed;
+  top: 20px;
 }

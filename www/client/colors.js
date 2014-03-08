@@ -382,6 +382,9 @@ function addColorTrail() {
       .attr('class', 'trail');
 }
 
+var paused = true;
+var timeout = null;
+
 window.runColorDisplay = function() {
 
   Math.seedrandom(3);
@@ -393,9 +396,26 @@ window.runColorDisplay = function() {
 
   function colorLoop() {
     stepColor();
-    setTimeout(colorLoop, stepTimeMS);
+    timeout = setTimeout(colorLoop, stepTimeMS);
   }
-  colorLoop();
+
+  function handleStartOrPause() {
+    if (paused) {
+      $('#pause-button').attr('value', 'Resume');
+      clearTimeout(timeout);
+    } else {
+      $('#pause-button').attr('value', 'Pause');
+      colorLoop();
+    }
+  }
+
+  d3.selectAll('#pause-button')
+      .on('click', function(d) {
+        paused = !paused;
+        handleStartOrPause();
+      });
+
+  handleStartOrPause();
 
 };
 
