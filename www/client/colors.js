@@ -17,10 +17,6 @@ var fontSize = 15;
 
 var pixelWalkStart = { x: 50, y: 250 };
 
-var pathsUpperLeft = { x: 0, y: fontSize };
-var pathsLabelLeft = 5;
-var pathsMaxHeight = maxBrightness - minBrightness;
-
 var randomWalkOptions = {
   initialValue: middleBrightness,
   maxAcceleration: 0.5,
@@ -82,47 +78,6 @@ function addPixelCircles() {
       });
 }
 
-function addPaths() {
-  var width = parseInt($('#paths').css('width'));
-  var pathsGroup = d('#paths').append('g').attr('class', 'paths');
-  pathsGroup
-      .selectAll('path')
-      .data(colors.map(function(color) {
-        return {
-          colorFn: function() { return color; },
-          width: width
-        };
-      }))
-      .enter()
-      .append('path')
-      .attr('stroke', function(d) { return d.colorFn().color; })
-      .attr('stroke-width', 2)
-      .attr('fill', 'transparent')
-  ;
-
-  pathsGroup
-      .selectAll('text')
-      .data([
-        {
-          label: maxBrightness,
-          y: pathsUpperLeft.y - 5
-        },
-        {
-          label: minBrightness,
-          y: pathsUpperLeft.y + pathsMaxHeight + fontSize + 5
-        }
-      ])
-      .enter()
-      .append('text')
-      .attr("font-family", "sans-serif")
-      .attr("font-size", fontSize + "px")
-      .attr("fill", '#000')
-      .attr('x', pathsLabelLeft)
-      .attr('y', acc('y'))
-      .text(acc('label'))
-  ;
-}
-
 function stepColor() {
 
   colors.forEach(function(color) { color.step(); });
@@ -138,31 +93,7 @@ function stepColor() {
   ;
 
   sliders.update();
-
-  // Update color-history paths.
-  var pathsWidth = parseInt($('#paths').css('width'));
-  d('#paths')
-      .selectAll('g.paths')
-      .selectAll('path')
-      .attr('d', function(d) {
-        var color = d.colorFn();
-        var xScale = pathsWidth / color.maxLength;
-        return pathData(
-            color.history.map(function(value) {
-              return interpolate(
-                  value,
-                  minBrightness,
-                  maxBrightness,
-                  // Tricky: reverse the projected min and max to make higher "value"s map to lower y-values
-                  // (a.k.a. higher on screen).
-                  pathsUpperLeft.y + pathsMaxHeight,
-                  pathsUpperLeft.y
-              );
-            }),
-            xScale
-        );
-      })
-  ;
+  paths.update();
 
   var trail = $('#trail');
   var trailWidth = parseInt(trail.css('width'));
@@ -203,6 +134,7 @@ var paused = true;
 var timeout = null;
 
 var sliders = null;
+var paths = null;
 window.runColorDisplay = function() {
 
   Math.seedrandom(3);
@@ -217,7 +149,13 @@ window.runColorDisplay = function() {
   });
   sliders.addNumLines();
 
-  addPaths();
+  paths = new Paths({
+    colors: colors,
+    fontSize: fontSize,
+    minBrightness: minBrightness,
+    maxBrightness: maxBrightness
+  });
+  paths.addPaths();
   addColorTrail();
 
   function colorLoop() {
