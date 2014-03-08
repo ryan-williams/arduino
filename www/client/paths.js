@@ -46,6 +46,8 @@ Paths = function(options) {
         .attr('y', acc('y'))
         .text(acc('label'))
     ;
+
+    return this;
   };
 
   this.update = function() {

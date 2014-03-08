@@ -92,8 +92,7 @@ function stepColor() {
       })
   ;
 
-  sliders.update();
-  paths.update();
+  widgets.map(function(widget) { widget.update(); });
 
   var trail = $('#trail');
   var trailWidth = parseInt(trail.css('width'));
@@ -133,29 +132,24 @@ function addColorTrail() {
 var paused = true;
 var timeout = null;
 
-var sliders = null;
-var paths = null;
+var widgets = [];
+
 window.runColorDisplay = function() {
 
   Math.seedrandom(3);
 
+  var standardOpts = {
+    colors: colors,
+    fontSize: fontSize,
+    minBrightness: minBrightness,
+    maxBrightness: maxBrightness
+  };
+
   addPixelCircles();
 
-  sliders = new Sliders({
-    colors: colors,
-    fontSize: fontSize,
-    minBrightness: minBrightness,
-    maxBrightness: maxBrightness
-  });
-  sliders.addNumLines();
+  widgets.push(new Sliders(standardOpts).addNumLines());
+  widgets.push(new Paths(standardOpts).addPaths());
 
-  paths = new Paths({
-    colors: colors,
-    fontSize: fontSize,
-    minBrightness: minBrightness,
-    maxBrightness: maxBrightness
-  });
-  paths.addPaths();
   addColorTrail();
 
   function colorLoop() {

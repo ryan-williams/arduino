@@ -200,6 +200,8 @@ Sliders = function(options) {
     addNumLineLines();
     addNumLineSliderCircles();
     addNumLineLabels();
+
+    return this;
   };
 
 
