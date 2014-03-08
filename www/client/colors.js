@@ -95,10 +95,20 @@ window.runColorDisplay = function() {
     }
   }
 
+  function togglePaused() {
+    paused = !paused;
+    handleStartOrPause();
+  }
+
   d3.selectAll('#pause-button')
+      .on('click', togglePaused);
+
+  d3.selectAll('#step-button')
       .on('click', function(d) {
-        paused = !paused;
+        paused = true;
         handleStartOrPause();
+        stepColor();
+      });
       });
 
   handleStartOrPause();

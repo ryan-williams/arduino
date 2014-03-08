@@ -48,7 +48,7 @@ rect.clicker {
   cursor: pointer;
 }
 
-#pause-button {
+#buttons {
   position: fixed;
   top: 20px;
 }
