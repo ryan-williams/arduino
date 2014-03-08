@@ -94,39 +94,6 @@ function stepColor() {
 
   widgets.map(function(widget) { widget.update(); });
 
-  var trail = $('#trail');
-  var trailWidth = parseInt(trail.css('width'));
-  var rectHeight = parseInt(trail.css('height'));
-
-  d('#trail')
-      .selectAll('g.trail')
-      .selectAll('rect')
-      .data(colors[0].history.map(function(histElem, elemIdx) {
-        return {
-          colorValues: colors.map(function(color) { return color.history[elemIdx]; }),
-          width: Math.ceil(trailWidth / colors[0].maxLength)
-        };
-      }))
-      .enter()
-      .append('rect')
-  ;
-  d('#trail')
-      .selectAll('g.trail')
-      .selectAll('rect')
-      .attr('width', acc('width'))
-      .attr('height', rectHeight)
-      .attr('x', function(d,i) { return Math.floor(i * d.width); })
-      .attr('fill', function(d, i) {
-        return rgbString(d.colorValues);
-      })
-  ;
-
-}
-
-function addColorTrail() {
-  d('#trail')
-      .append('g')
-      .attr('class', 'trail');
 }
 
 var paused = true;
@@ -149,8 +116,7 @@ window.runColorDisplay = function() {
 
   widgets.push(new Sliders(standardOpts).addNumLines());
   widgets.push(new Paths(standardOpts).addPaths());
-
-  addColorTrail();
+  widgets.push(new Trail(standardOpts).addColorTrail());
 
   function colorLoop() {
     stepColor();
