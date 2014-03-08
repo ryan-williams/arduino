@@ -25,13 +25,15 @@ ColorWalks = function(options) {
 
   this.setCurWalk = function(walk) {
     var prevPosition = null;
+    var prevVelocity = null;
     if (this.curWalk) {
       prevPosition = this.curWalk.position;
+      prevVelocity = this.curWalk.velocity;
     }
     this.curWalk = walk;
     this.curWalkIdx = walk.idx;
 
-    if (prevPosition != null) this.curWalk.setPosition(prevPosition);
+    if (prevPosition != null) this.curWalk.setPosition(prevPosition, prevVelocity);
   };
 
   this.setCurWalkIdx = function(idx) {
@@ -59,7 +61,7 @@ ColorWalks = function(options) {
   this.history = [];
   this.position = null;
 
-  this.setPosition = function(pos) { this.curWalk.setPosition(pos); };
+  this.setPosition = function(pos) { this.curWalk.setPosition(pos, this.curWalk.velocity); };
 
   this.step = function() {
     this.position = this.curWalk.step();
