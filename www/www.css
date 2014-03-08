@@ -22,11 +22,13 @@ div.svg-div svg {
 }
 
 div.slider-div input.pause {
-  padding-top: 15px;
+  padding-top: 3px;
   position: relative;
   top: 16px;
-  width: 28px;
+  margin-left: 5px;
   height: 28px;
+  font-family: monospace;
+  font-size: 12px;
 }
 
 svg#paths {

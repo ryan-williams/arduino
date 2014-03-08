@@ -1,6 +1,8 @@
 
 RandomWalk = function(options) {
 
+  this.name = "random";
+
   var acceleration = 0;
   var velocity = 0;
   this.position = options.initialValue;

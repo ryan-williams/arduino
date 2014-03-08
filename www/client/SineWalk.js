@@ -1,6 +1,8 @@
 
 SineWalk = function(options) {
 
+  this.name = "sine";
+
   var nextStep = 0;
   if (options.initialRandomness) {
     nextStep = Math.random() * options.period;

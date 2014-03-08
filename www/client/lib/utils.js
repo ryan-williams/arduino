@@ -130,9 +130,6 @@ Utils = {
     var classes = segments.slice(1);
     var elems =
         parentSelector
-            .selectAll(selector)
-            .data(arr)
-            .enter()
             .append(elemType)
             .attr('class', classes.join(' '))
         ;

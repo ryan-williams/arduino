@@ -21,6 +21,19 @@ ColorWalks = function(options) {
     walks.push(new ConstantWalk(options.constantWalk));
   }
 
+  walks.map(function(walk, idx) { walk.idx = idx; });
+
+  this.setCurWalk = function(walk) {
+    var prevPosition = null;
+    if (this.curWalk) {
+      prevPosition = this.curWalk.position;
+    }
+    this.curWalk = walk;
+    this.curWalkIdx = walk.idx;
+
+    if (prevPosition != null) this.curWalk.setPosition(prevPosition);
+  };
+
   this.setCurWalkIdx = function(idx) {
     var prevPosition = null;
     if (this.curWalk) {
@@ -32,10 +45,15 @@ ColorWalks = function(options) {
     if (prevPosition != null) this.curWalk.setPosition(prevPosition);
   };
 
-  this.setCurWalkIdx(walks.find(function(walk) { return walk.initd; }) || 0);
+  this.setCurWalk(walks.find(function(walk) { return walk.initd; }) || walks[0]);
 
   this.incWalkType = function() {
     this.setCurWalkIdx((this.curWalkIdx + 1) % walks.length);
+  };
+
+  this.setWalkType = function(walkName) {
+    console.log("setting: " + walkName);
+    this.setCurWalk(walks.find(function(walk) { return walk.name == walkName; }) || this.curWalk);
   };
 
   this.history = [];

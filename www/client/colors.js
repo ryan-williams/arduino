@@ -200,7 +200,7 @@ function addNumLines() {
               .attr('class', 'slider-div svg-div')
       ;
 
-  var svgDivs = dAppend(sliderDivs, 'div.span3');
+  var svgDivs = sliderDivs.append('div').attr('class', 'span3');
 
   var width = parseInt(svgDivs.style('width'));
 
@@ -215,12 +215,33 @@ function addNumLines() {
               .attr('class', 'slider')
       ;
 
-  var buttonDivs = dAppend(sliderDivs, 'div.span1');
+  var buttonDivs = sliderDivs.append('div');
+
+  var buttonTypes = [
+    [ 'sine', 'sine' ],
+    [ 'random', 'rand' ],
+    [ 'constant', 'const' ]
+  ];
+
   var buttons =
-      dAppend(buttonDivs, 'input.pause', { type: 'button' })
-          .text('Pause')
+      buttonDivs
+          .selectAll('input.pause')
+          .data(function(d) {
+            return buttonTypes.map(function(mode) {
+              return {
+                colorWalk: d.colorWalk,
+                mode: mode[0],
+                label: mode[1]
+              };
+            });
+          })
+          .enter()
+          .append('input')
+          .attr('class', 'pause')
+          .attr('type', 'button')
+          .attr('value', acc('label'))
           .on('click', function(d,i) {
-            d.colorWalk.incWalkType();
+            d.colorWalk.setWalkType(d.mode);
           })
       ;
 
