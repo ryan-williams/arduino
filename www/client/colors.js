@@ -5,17 +5,9 @@ var minBrightness = 0;
 var maxBrightness = 255;
 var middleBrightness = (minBrightness + maxBrightness) / 2;
 
-var debug = 0;
-
-var numBoxes = 125;
-
-var R = 10;
-
 var i;
 
 var fontSize = 15;
-
-var pixelWalkStart = { x: 50, y: 250 };
 
 var randomWalkOptions = {
   initialValue: middleBrightness,
@@ -60,38 +52,9 @@ var colors =
           return new ColorWalks(params);
         });
 
-function addPixelCircles() {
-  var circleCoords = spiralWalk(pixelWalkStart.x, pixelWalkStart.y, 2*R + 5, numBoxes);
-
-  d('#pixels')
-      .selectAll('circle.pixel')
-      .data(circleCoords)
-      .enter()
-      .append('circle')
-      .attr('class', 'pixel')
-      .attr("r", R)
-      .attr('cx', function(d) {
-        return Math.floor(d.x);
-      })
-      .attr('cy', function(d) {
-        return Math.floor(d.y);
-      });
-}
-
 function stepColor() {
 
   colors.forEach(function(color) { color.step(); });
-
-  // Update pixels' colors.
-  d('#pixels')
-      .selectAll('circle.pixel')
-      .attr('fill', function(d,i) {
-        return rgbString(colors.map(function(color) {
-          return color.history[i];
-        }))
-      })
-  ;
-
   widgets.map(function(widget) { widget.update(); });
 
 }
@@ -112,11 +75,10 @@ window.runColorDisplay = function() {
     maxBrightness: maxBrightness
   };
 
-  addPixelCircles();
-
   widgets.push(new Sliders(standardOpts).addNumLines());
   widgets.push(new Paths(standardOpts).addPaths());
   widgets.push(new Trail(standardOpts).addColorTrail());
+  widgets.push(new Pixels(standardOpts).addPixelCircles());
 
   function colorLoop() {
     stepColor();
