@@ -5,6 +5,8 @@ ColorWalks = function(options) {
 
   var walks = [];
 
+  this.maxLength = options.maxLength || defaultMaxLength;
+
   this.color = options.color;
 
   if (options.sineWalk) {
@@ -43,7 +45,7 @@ ColorWalks = function(options) {
 
   this.step = function() {
     this.position = this.curWalk.step();
-    this.history = unshiftAndSlice(this.history, this.position, options.maxLength || defaultMaxLength);
+    this.history = unshiftAndSlice(this.history, this.position, this.maxLength);
     return this.position;
   };
 

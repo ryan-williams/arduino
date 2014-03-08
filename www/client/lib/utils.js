@@ -89,7 +89,7 @@ Utils = {
   },
 
   pathData: function(values, xScale) {
-    return "M" + values.map(function(value, idx) { return (xScale*idx) + " " + Math.floor(value) }).join(" L");
+    return "M" + values.map(function(value, idx) { return Math.floor(xScale*idx) + " " + Math.floor(value) }).join(" L");
   },
 
   sliding: function(arr) {

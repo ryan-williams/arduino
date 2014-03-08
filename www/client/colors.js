@@ -15,8 +15,6 @@ var i;
 
 var fontSize = 15;
 
-var pathXScale = 4;
-
 var numLineStartY = 30;
 var serifHeight = 10;
 
@@ -254,13 +252,19 @@ function addNumLines() {
 }
 
 function addPaths() {
+  var width = parseInt($('#paths').css('width'));
   var pathsGroup = d('#paths').append('g').attr('class', 'paths');
   pathsGroup
       .selectAll('path')
-      .data(colors.map(function(color) { return function() { return color; }; }))
+      .data(colors.map(function(color) {
+        return {
+          colorFn: function() { return color; },
+          width: width
+        };
+      }))
       .enter()
       .append('path')
-      .attr('stroke', function(d) { return d().color; })
+      .attr('stroke', function(d) { return d.colorFn().color; })
       .attr('stroke-width', 2)
       .attr('fill', 'transparent')
   ;
@@ -319,12 +323,15 @@ function stepColor() {
   ;
 
   // Update color-history paths.
+  var pathsWidth = parseInt($('#paths').css('width'));
   d('#paths')
       .selectAll('g.paths')
       .selectAll('path')
       .attr('d', function(d) {
+        var color = d.colorFn();
+        var xScale = pathsWidth / color.maxLength;
         return pathData(
-            d().history.map(function(value) {
+            color.history.map(function(value) {
               return interpolate(
                   value,
                   minBrightness,
@@ -335,43 +342,44 @@ function stepColor() {
                   pathsUpperLeft.y
               );
             }),
-            pathXScale
+            xScale
         );
       })
   ;
 
-  var rectWidth = 4;
-  var rectHeight = 20;
+  var trail = $('#trail');
+  var trailWidth = parseInt(trail.css('width'));
+  var rectHeight = parseInt(trail.css('height'));
 
   d('#trail')
       .selectAll('g.trail')
       .selectAll('rect')
-      .data(colors[0].history)
+      .data(colors[0].history.map(function(histElem, elemIdx) {
+        return {
+          colorValues: colors.map(function(color) { return color.history[elemIdx]; }),
+          width: Math.ceil(trailWidth / colors[0].maxLength)
+        };
+      }))
       .enter()
       .append('rect')
   ;
   d('#trail')
       .selectAll('g.trail')
       .selectAll('rect')
-      .attr('width', rectWidth)
+      .attr('width', acc('width'))
       .attr('height', rectHeight)
-      .attr('x', function(d,i) { return i * rectWidth; })
+      .attr('x', function(d,i) { return Math.floor(i * d.width); })
       .attr('fill', function(d, i) {
-        return rgbString(colors.map(function(color) { return color.history[i]; }));
+        return rgbString(d.colorValues);
       })
   ;
 
 }
 
 function addColorTrail() {
-
   d('#trail')
-      .selectAll('g.trail')
-      .data([1])
-      .enter()
       .append('g')
       .attr('class', 'trail');
-
 }
 
 window.runColorDisplay = function() {
