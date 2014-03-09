@@ -116,6 +116,8 @@ window.runColorDisplay = function() {
         var keyCode = d3.event.keyCode;
         if (keyId == 'Right') {
           stepColor();
+          paused = true;
+          handleStartOrPause();
         }
         if (keyCode == 32) {
           togglePaused();
