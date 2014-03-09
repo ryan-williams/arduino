@@ -1,10 +1,4 @@
 
-.svg-div {
-  float: left;
-  clear: left;
-  width: 100%;
-}
-
 #paths-div {
   margin: 10px;
 }
@@ -52,3 +46,8 @@ rect.clicker {
   position: fixed;
   top: 20px;
 }
+
+.slider-button-div {
+  padding-top: 3px;
+}
+

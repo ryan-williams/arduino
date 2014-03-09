@@ -1,6 +1,8 @@
 
 var numLineStartY = 30;
 var serifHeight = 10;
+var leftPad = 10;
+var rightPad = 6;
 
 Sliders = function(options) {
   var colors = options.colors;
@@ -10,8 +12,6 @@ Sliders = function(options) {
   var maxBrightness = options.maxBrightness;
 
   function getNumLineData(colorWalk) {
-    var leftPad = 5;
-    var rightPad = 5;
     return {
       colorWalk: colorWalk,
       elems: function(width) {
@@ -81,6 +81,7 @@ Sliders = function(options) {
         .data(function(d) {
           return [{
             fn: function() { return d.colorWalk.position; },
+            cx: d.lines[1].start.x,
             cy: d.lines[1].start.y,
             minX: d.lines[1].start.x,
             maxX: d.lines[1].end.x
@@ -91,6 +92,7 @@ Sliders = function(options) {
         .attr('class', 'pointer')
         .attr('r', 5)
         .attr('fill', '#000')
+        .attr('cx', acc('cx'))
         .attr('cy', function(d) {
           return Math.floor(d.cy);
         })
@@ -126,7 +128,7 @@ Sliders = function(options) {
                 .data(numLines)
                 .enter()
                 .append('div')
-                .attr('class', 'slider-div svg-div')
+                .attr('class', 'slider-div svg-div row')
         ;
 
     var svgDivs = sliderDivs.append('div').attr('class', 'span3');
@@ -144,7 +146,7 @@ Sliders = function(options) {
                 .attr('class', 'slider')
         ;
 
-    var buttonDivs = sliderDivs.append('div');
+    var buttonDivs = sliderDivs.append('div').attr('class', 'slider-button-div');
 
     var buttonTypes = [
       [ 'random-sine', 'rsin' ],
