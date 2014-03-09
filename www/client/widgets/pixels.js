@@ -88,6 +88,8 @@ Pixels = function(options) {
       xSlush = (screenWidth - projectedScreenWidth) / 2;
     }
 
+    var scaleFactor = min(projectedScreenWidth / pointsWidth, projectedScreenHeight / pointsHeight);
+
     d('#pixels')
         .selectAll('circle.pixel')
         .data(coords.map(function(coord) {
@@ -104,6 +106,7 @@ Pixels = function(options) {
         .attr('cy', function(d) {
           return Math.floor(d.y);
         })
+        .attr('r', R*scaleFactor)
     ;
   }
 
@@ -246,11 +249,50 @@ Pixels = function(options) {
     setCoords(coords);
   }
 
+  function setSineCoords() {
+    var numReps = 5;
+    var period = numBoxes / numReps;
+    var coords =
+        genArray({x:0,y:0}, function(prev, idx) {
+          var vy = 5*Math.cos(idx * 2 * Math.PI / period);
+          var vx = 1;
+          var v = Math.sqrt(vx*vx + vy*vy);
+          return {
+            x: prev.x + 3*R*vx/v,//prev.x + 3*R*Math.cos(idx * 2 * Math.PI / period),//idx * 3*R,
+            y: prev.y + 3*R*vy/v//3*R*Math.cos(idx * 2 * Math.PI / period)//20*R*Math.sin(idx * 2 * Math.PI / period)
+          };
+        }, numBoxes);
+    setCoords(coords);
+  }
+
+  function setSnakeCoords() {
+    var circleInterval = 3*R;
+    var maxPerLine = width() / circleInterval;
+    var coords = [];
+    var curPos = {x:0,y:0};
+    var curStep = circleInterval;
+    for (var numLeft = numBoxes; numLeft > 0; numLeft -= maxPerLine) {
+      coords = coords.concat(genLineCoords(curPos, curStep, 0, min(maxPerLine, numLeft)));
+      curPos = {
+        x: (maxPerLine - 1) * circleInterval + R - curPos.x,
+        y: curPos.y + circleInterval
+      };
+      curStep = -curStep;
+    }
+    setCoords(coords);
+  }
+
+  function addButtonClickHandler(id, fn) {
+    d3.select('#' + id + '-button').on('click', fn);
+  }
+
   this.addPixelCircles = function() {
-    d3.select('#spiral-button').on('click', setSpiralCoords);
-    d3.select('#line-button').on('click', setLineCoords);
-    d3.select('#spiral-grid-button').on('click', setSprialGridCoords);
-    d3.select('#hilbert-button').on('click', setHilbertCoords);
+    addButtonClickHandler('spiral', setSpiralCoords);
+    addButtonClickHandler('line', setLineCoords);
+    addButtonClickHandler('spiral-grid', setSprialGridCoords);
+    addButtonClickHandler('hilbert', setHilbertCoords);
+    addButtonClickHandler('sine', setSineCoords);
+    addButtonClickHandler('snake', setSnakeCoords);
 
     addPixels();
     setSpiralCoords();
