@@ -26,24 +26,6 @@ Pixels = function(options) {
     );
   }
 
-  function spiralWalk(start, stepMagnitude, num) {
-    var t = Math.PI / 2;
-    var tvv = 0.0007;
-    var initialTV = -.07;
-    return genArray(
-        start,
-        function(prevElem) {
-          initialTV -= tvv;
-          t += initialTV;
-          return {
-            x: prevElem.x + stepMagnitude * Math.cos(t),
-            y: prevElem.y + stepMagnitude * Math.sin(t)
-          }
-        },
-        num
-    );
-  }
-
   function addPixels() {
 
     elem.height($(window).height() - elem.offset().top - 20);
@@ -133,13 +115,28 @@ Pixels = function(options) {
   }
 
   function setSpiralCoords() {
-    setCoords(
-        spiralWalk(
-            { x: 50, y: midY() - 50 },
-            2*R + 5,
-            numBoxes
-        )
-    );
+    setBetterSpiralCoords();
+  }
+
+  function setBetterSpiralCoords() {
+    var initialRadius = 2*R;
+    var distance = 3*R;
+    var coords =
+        genArray({x: initialRadius, y: 0}, function(prev, idx) {
+          var prevR = Math.sqrt(prev.x*prev.x + prev.y*prev.y);
+          var deltaT = distance / prevR;
+          var prevT = Math.atan(prev.y / prev.x);
+          if (prev.x < 0) prevT += Math.PI;
+          var nextT = prevT + deltaT;
+          var newR = prevR + distance * deltaT / 2 / Math.PI;
+          var nextX = newR * Math.cos(nextT);
+          var nextY = newR * Math.sin(nextT);
+          return {
+            x: nextX,
+            y: nextY
+          };
+        }, numBoxes);
+    setCoords(coords);
   }
 
   function genLineCoords(startPoint, xStep, yStep, num) {
