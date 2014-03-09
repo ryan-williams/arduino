@@ -1,11 +1,9 @@
 
-var defaultMaxLength = 125;
-
 ColorWalks = function(options) {
 
   var walks = [];
 
-  this.maxLength = options.maxLength || defaultMaxLength;
+  this.maxLength = options.maxLength;
 
   this.color = options.color;
 

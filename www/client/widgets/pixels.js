@@ -4,7 +4,7 @@ Pixels = function(options) {
   var colors = options.colors;
   var pixelWalkStart = { x: 50, y: 250 };
   var canvasMid = { x: 250, y: 250 };
-  var numBoxes = 125;
+  var numBoxes = options.maxLength;
   var R = 10;
 
   var elem = $('#pixels');

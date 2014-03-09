@@ -1,4 +1,5 @@
 
+var defaultMaxLength = 256;
 var stepTimeMS = 20;
 var maxV = 10;
 var minBrightness = 0;
@@ -41,7 +42,8 @@ function colorWalkParams(sineFreq, color) {
       maxPosition: maxBrightness
     },
     constantWalk: { value: 100 },
-    color: color
+    color: color,
+    maxLength: defaultMaxLength
   }
 }
 
@@ -59,7 +61,7 @@ function stepColor() {
 
 }
 
-var paused = true;
+var paused = false;
 var timeout = null;
 
 var widgets = [];
@@ -72,7 +74,8 @@ window.runColorDisplay = function() {
     colors: colors,
     fontSize: fontSize,
     minBrightness: minBrightness,
-    maxBrightness: maxBrightness
+    maxBrightness: maxBrightness,
+    maxLength: defaultMaxLength
   };
 
   widgets.push(new Sliders(standardOpts).addNumLines());
