@@ -18,11 +18,21 @@
             </div>
         </div>
         <div id="pixels-div" class="span8">
-            <div id="buttons">
-                <input id="pause-button" type="button" value="Pause" />
-                <input id="step-button" type="button" value="Step" />
+            <div id="buttons" class="row">
+                <div id="page-buttons" class="span2">
+                    <input id="pause-button" type="button" value="Pause" />
+                    <input id="step-button" type="button" value="Step" />
+                </div>
+                <div id="pixels-buttons" class="span3">
+                    <input id="spiral-button" type="button" value="Spiral" />
+                    <input id="line-button" type="button" value="Line" />
+                    <input id="spiral-grid-button" type="button" value="Grid Spiral" />
+                    <input id="hilbert-button" type="button" value="Hilbert" />
+                </div>
             </div>
-            <svg id="pixels"></svg>
+            <div class="row">
+                <svg id="pixels"></svg>
+            </div>
         </div>
     </div>
 </template>

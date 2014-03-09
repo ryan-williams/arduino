@@ -34,20 +34,22 @@ svg#trail {
   height: 50px;
 }
 
-svg#pixels {
-  height: 600px;
-}
-
 rect.clicker {
   cursor: pointer;
 }
 
-#buttons {
-  position: fixed;
-  top: 20px;
+#pixels-div {
+  padding-top: 20px;
 }
 
 .slider-button-div {
   padding-top: 3px;
 }
 
+#page-buttons {
+  padding-bottom: 15px;
+}
+
+#pixels-buttons {
+  line-height: 2.2;
+}

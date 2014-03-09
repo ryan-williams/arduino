@@ -27,9 +27,50 @@ Utils = {
   genArray: function(initialVal, generator, num) {
     var elems = [initialVal];
     for (i = 1; i < num; ++i) {
-      elems.push(generator(elems[i - 1]));
+      elems.push(generator(elems[i - 1], i));
     }
     return elems;
+  },
+
+  mostBy: function(arr, fn, cmp) {
+    var m = null;
+    arr.map(function(x) {
+      if (m == null || cmp(fn(x), fn(m))) m = x;
+    });
+    return m;
+  },
+
+  lt: function(a,b) { return a<b; },
+  gt: function(a,b) { return a>b; },
+
+  minBy: function(arr, fn) {
+    fn = fn || identity;
+    return this.mostBy(arr, fn, lt);
+  },
+
+  maxBy: function(arr, fn) {
+    fn = fn || identity;
+    return this.mostBy(arr, fn, gt);
+  },
+
+  min: function() {
+    if (arguments[0] instanceof Array) {
+      return this.minBy(arguments[0]);
+    }
+    return this.minBy(Array.prototype.slice.call(arguments, 0));
+  },
+
+  max: function(a, b) {
+    if (a instanceof Array) {
+      return maxBy(a, lt);
+    }
+    return this.max([a,b]);
+  },
+
+  copies: function(val, num) {
+    var a = [];
+    for (var i = 0; i < num; ++i) a.push(val);
+    return a;
   },
 
   wrap: function(x) {
@@ -42,24 +83,8 @@ Utils = {
     return interpolate(Math.random(), 0, 1, min, max);
   },
 
-  planarRandomWalk: function(x, y, stepMagnitude, num) {
-    var t = Math.PI / 4;
-    var maxDeltaT = .45;
-    return genArray(
-        { x: x, y: y },
-        function(prevElem) {
-          var tv = maxDeltaT * (Math.random() * 2 - 1);
-          t += tv;
-          return {
-            x: prevElem.x + stepMagnitude * Math.cos(t),
-            y: prevElem.y + stepMagnitude * Math.sin(t)
-          }
-        },
-        num
-    );
-  },
-
   interpolate: function(num, min, max, newMin, newMax) {
+    if (min == max) return (newMin + newMax) / 2;
     return newMin + (newMax - newMin) * (num - min) / (max - min);
   },
 
