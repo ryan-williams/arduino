@@ -58,7 +58,6 @@ Pixels = function(options) {
   }
 
   function setCoords(coords) {
-    window.coords = coords;
     var minPoint = {
       x: minBy(coords, acc('x')).x,
       y: minBy(coords, acc('y')).y
@@ -193,7 +192,6 @@ Pixels = function(options) {
       dir = rotateCCW(dir);
     }
     setCoords(coords);
-    window.coords = coords;
   }
 
   function d2xy(d) {
@@ -282,6 +280,10 @@ Pixels = function(options) {
     setCoords(coords);
   }
 
+  function setRandomCoords() {
+    setCoords(planarRandomWalk(0, 0, 3*R, numBoxes));
+  }
+
   function addButtonClickHandler(id, fn) {
     d3.select('#' + id + '-button').on('click', fn);
   }
@@ -293,6 +295,7 @@ Pixels = function(options) {
     addButtonClickHandler('hilbert', setHilbertCoords);
     addButtonClickHandler('sine', setSineCoords);
     addButtonClickHandler('snake', setSnakeCoords);
+    addButtonClickHandler('random', setRandomCoords);
 
     addPixels();
     setSpiralCoords();
