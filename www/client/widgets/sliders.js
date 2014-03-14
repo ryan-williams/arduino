@@ -157,7 +157,7 @@ Sliders = function(options) {
 
     var buttons =
             buttonDivs
-                .selectAll('input.pause')
+                .selectAll('input.mode')
                 .data(function(d) {
                   return buttonTypes.map(function(mode) {
                     return {
@@ -169,7 +169,7 @@ Sliders = function(options) {
                 })
                 .enter()
                 .append('input')
-                .attr('class', 'pause')
+                .attr('class', 'mode')
                 .attr('type', 'button')
                 .attr('value', acc('label'))
                 .on('click', function(d,i) {
