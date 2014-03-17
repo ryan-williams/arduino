@@ -221,7 +221,7 @@ Sliders = function(options) {
                   var logicalX = interpolate(d3.event.offsetX, d.left, d.right, minBrightness, maxBrightness);
                   var setObj = {};
                   var idx = rgb[d.colorWalk.abbrev];
-                  setObj[idx + '.position'] = logicalX;
+                  setObj[idx + '.newPosition'] = logicalX;
                   Colors.update({_id: id}, { $set: setObj });
                 })
         ;

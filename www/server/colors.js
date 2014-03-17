@@ -1,5 +1,5 @@
 
-var stepTimeMS = 20;
+var stepTimeMS = 10;
 var maxV = 10;
 var minBrightness = 0;
 var maxBrightness = 255;
@@ -127,9 +127,14 @@ runColorDisplay = function() {
             color.maybeUpdateMode(nr[idx].mode);
           }
 
-          if (nr[idx].position != color.curWalk.position) {
-            console.log("found new pos " + nr[idx].position + " cur: " + color.curWalk.position);
-            color.setPosition(nr[idx].position);
+          if (nr[idx].newPosition) {
+            console.log("found new pos " + nr[idx].newPosition + " cur: " + color.curWalk.position);
+            color.setPosition(nr[idx].newPosition);
+            var unsetObj = {};
+            unsetObj[idx + '.newPosition'] = 1;
+            var setObj = {};
+            setObj[idx + '.position'] = nr[idx].newPosition;
+            Colors.update( {_id:id}, { $unset: unsetObj, $set: setObj });
           }
         }
 
