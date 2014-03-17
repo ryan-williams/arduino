@@ -23,6 +23,8 @@ Meteor.startup(function () {
     maxLength: defaultMaxLength
   };
 
+  var firstTime = false;
+
   Deps.autorun(function() {
     var c = getColorRecord();
     if (c) {
@@ -31,6 +33,13 @@ Meteor.startup(function () {
       new Sliders(standardOpts).addNumLines().update();
       new Paths(standardOpts).addPaths().update();
       new Trail(standardOpts).addColorTrail().update();
+      var pixels = new Pixels(standardOpts).addPixelCircles().update();
+      if (!firstTime) {
+        firstTime = true;
+        pixels.setSpiralCoords();
+
+      }
+
     }
   });
 

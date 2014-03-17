@@ -114,7 +114,7 @@ Pixels = function(options) {
     };
   }
 
-  function setSpiralCoords() {
+  this.setSpiralCoords = function() {
     setBetterSpiralCoords();
   }
 
@@ -286,7 +286,7 @@ Pixels = function(options) {
   }
 
   this.addPixelCircles = function() {
-    addButtonClickHandler('spiral', setSpiralCoords);
+    addButtonClickHandler('spiral', this.setSpiralCoords.bind(this));
     addButtonClickHandler('line', setLineCoords);
     addButtonClickHandler('spiral-grid', setSprialGridCoords);
     addButtonClickHandler('hilbert', setHilbertCoords);
@@ -295,7 +295,6 @@ Pixels = function(options) {
     addButtonClickHandler('random', setRandomCoords);
 
     addPixels();
-    setSpiralCoords();
 
     return this;
   };
@@ -306,11 +305,11 @@ Pixels = function(options) {
         .selectAll('circle.pixel')
         .attr('fill', function(d,i) {
           return rgbString(colors.map(function(color) {
-            return color.history[i];
+            return color.values[i];
           }))
         })
     ;
-
+    return this;
   };
 
 };
