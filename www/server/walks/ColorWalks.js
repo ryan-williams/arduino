@@ -4,7 +4,7 @@ ColorWalks = function(options) {
   var walks = [];
 
   this.maxLength = options.maxLength;
-
+  this.abbrev = options.abbrev;
   this.color = options.color;
 
   if (options.randomSineWalk) {
@@ -23,7 +23,11 @@ ColorWalks = function(options) {
     walks.push(new ConstantWalk(options.constantWalk));
   }
 
-  walks.map(function(walk, idx) { walk.idx = idx; });
+  var walksMap = {};
+  walks.forEach(function(walk, idx) {
+    walk.idx = idx;
+    walksMap[walk.name] = walk;
+  });
 
   this.setCurWalk = function(walk) {
     var prevPosition = null;
@@ -49,25 +53,41 @@ ColorWalks = function(options) {
     if (prevPosition != null) this.curWalk.setPosition(prevPosition);
   };
 
-  this.setCurWalk(walks.find(function(walk) { return walk.initd; }) || walks[0]);
+  this.setCurWalk(walks[0]);
 
   this.incWalkType = function() {
     this.setCurWalkIdx((this.curWalkIdx + 1) % walks.length);
   };
 
   this.setWalkType = function(walkName) {
-    console.log("setting: " + walkName);
-    this.setCurWalk(walks.find(function(walk) { return walk.name == walkName; }) || this.curWalk);
+//    console.log("setting: " + walkName);
+    if (!walksMap[walkName]) {
+      throw Error("Bad walk name: " + walkName);
+    }
+    this.setCurWalk(walksMap[walkName]);
+  };
+
+  this.maybeUpdateMode = function(newMode) {
+//    console.log("maybe update mode: " + newMode);
+    if (!newMode) return;
+    if (newMode != this.curWalk.name) {
+      console.log("updating mode from " + this.curWalk.name + " to " + newMode);
+      this.setWalkType(newMode);
+    }
   };
 
   this.history = [];
   this.position = null;
+  this.velocity = null;
 
-  this.setPosition = function(pos) { this.curWalk.setPosition(pos, this.curWalk.velocity); };
+  this.setPosition = function(pos) {
+    this.curWalk.setPosition(pos, this.curWalk.velocity);
+  };
 
   this.step = function() {
     this.position = this.curWalk.step();
-    this.history = unshiftAndSlice(this.history, this.position, this.maxLength);
+    this.velocity = this.curWalk.velocity;
+    this.history = Utils.unshiftAndSlice(this.history, this.position, this.maxLength);
     return this.position;
   };
 

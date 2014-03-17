@@ -80,7 +80,7 @@ Utils = {
   },
 
   random: function(min, max) {
-    return interpolate(Math.random(), 0, 1, min, max);
+    return this.interpolate(Math.random(), 0, 1, min, max);
   },
 
   interpolate: function(num, min, max, newMin, newMax) {
@@ -150,8 +150,14 @@ Utils = {
   add: function(obj, k, v) { obj[k] = v; return obj; }
 };
 
-for (k in Utils) {
-  window[k] = Utils[k];
+interpolate = Utils.interpolate;
+random = Utils.random;
+clamp = Utils.clamp;
+
+if (Meteor.isClient) {
+  for (k in Utils) {
+    window[k] = Utils[k];
+  }
 }
 
 Array.prototype.find = function(fn) {

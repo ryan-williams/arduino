@@ -39,3 +39,32 @@
         </div>
     </div>
 </template>
+
+<template name="sliders">
+    <div class="sliders">
+        {{colors}}
+        {{#each colors}}
+            {{position}}
+            <div class="slider-div svg-div row">
+                <div class="span3">
+                    <svg class="slider">
+                        <g class="numlines">
+                            <rect width="100%" class="clicker"></rect>
+                            {{#each line}}
+                            <line x1="{{startX}}" y1="{{startY}}" x2="{{endX}}" y2="{{endY}}"></line>
+                            {{/each}}
+                            <circle class="pointer" r="5" fill="#000" ></circle>
+                            <text>{{value}}</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="slider-button-div">
+                    {{#each button}}
+                    <input class="mode" type="button" value="{{label}}" />
+                    {{/each}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</template>
+

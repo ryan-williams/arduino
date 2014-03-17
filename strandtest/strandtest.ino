@@ -193,7 +193,7 @@ void loop() {
   s->rotate(1, false)->show();
   // curColorIdx = (curColorIdx + 1) % numColors;
   // s->show();
-  delay(40);
+  // delay(40);
 }
 
 /* Helper functions */

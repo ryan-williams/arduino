@@ -14,10 +14,10 @@ RandomSineWalk = function(options) {
   this.step = function() {
     if (nextStep == 0) {
       this.curFromBound = this.position;
-      this.curToBound = random(options.minPosition, options.maxPosition);
+      this.curToBound = Utils.random(options.minPosition, options.maxPosition);
     }
     var prevPosition = this.position;
-    this.position = interpolate(
+    this.position = Utils.interpolate(
         -Math.cos(Math.PI * (nextStep / options.halfPeriod)),
         -1, 1,
         this.curFromBound, this.curToBound
