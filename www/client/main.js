@@ -30,6 +30,7 @@ Meteor.startup(function () {
       standardOpts.colors = colors;
       new Sliders(standardOpts).addNumLines().update();
       new Paths(standardOpts).addPaths().update();
+      new Trail(standardOpts).addColorTrail().update();
     }
   });
 

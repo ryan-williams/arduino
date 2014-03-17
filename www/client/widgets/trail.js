@@ -5,6 +5,9 @@ Trail = function(options) {
 
   this.addColorTrail = function() {
     d('#trail')
+        .selectAll('g.trail')
+        .data([1])
+        .enter()
         .append('g')
         .attr('class', 'trail');
 
@@ -19,9 +22,9 @@ Trail = function(options) {
     d('#trail')
         .selectAll('g.trail')
         .selectAll('rect')
-        .data(colors[0].history.map(function(histElem, elemIdx) {
+        .data(colors[0].values.map(function(histElem, elemIdx) {
           return {
-            colorValues: colors.map(function(color) { return color.history[elemIdx]; }),
+            colorValues: colors.map(function(color) { return color.values[elemIdx]; }),
             width: Math.ceil(trailWidth / colors[0].maxLength)
           };
         }))
