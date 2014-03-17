@@ -18,4 +18,3 @@ togglePaused = function() {
   console.log("togglePaused from " + paused + " to " + !paused);
   Paused.update({_id:id}, {$set: {paused: !paused}});
 };
-

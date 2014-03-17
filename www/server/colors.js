@@ -1,10 +1,10 @@
 
-var defaultMaxLength = 256;
 var stepTimeMS = 20;
 var maxV = 10;
 var minBrightness = 0;
 var maxBrightness = 255;
 var middleBrightness = (minBrightness + maxBrightness) / 2;
+defaultMaxLength = 256;
 
 var i;
 
@@ -65,7 +65,14 @@ function stepColor() {
 
   var setObj = {};
   [0,1,2].forEach(function(idx) {
-    [['values', 'history'], 'position', 'velocity', 'color', 'abbrev'].forEach(function(key) {
+    [
+      ['values', 'history'],
+      'position',
+      'velocity',
+      'color',
+      'abbrev',
+      'maxLength'
+    ].forEach(function(key) {
       if (typeof key == 'string') key = [key, key];
       setObj[idx + '.' + key[0]] = colors[idx][key[1]]
     });

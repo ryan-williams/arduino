@@ -9,7 +9,10 @@ Paths = function(options) {
 
   this.addPaths = function() {
     var width = parseInt($('#paths').css('width'));
-    var pathsGroup = d('#paths').append('g').attr('class', 'paths');
+
+    d3.selectAll('#paths').selectAll('g.paths').data([1]).enter().append('g').attr('class', 'paths');
+    var pathsGroup = d3.selectAll('#paths').selectAll('g.paths');
+
     pathsGroup
         .selectAll('path')
         .data(colors.map(function(color) {
@@ -20,10 +23,15 @@ Paths = function(options) {
         }))
         .enter()
         .append('path')
-        .attr('stroke', function(d) { return d.colorFn().color; })
-        .attr('stroke-width', 2)
-        .attr('fill', 'transparent')
     ;
+
+    var paths =
+        pathsGroup
+            .selectAll('path')
+            .attr('stroke', function(d) { return d.colorFn().color; })
+            .attr('stroke-width', 2)
+            .attr('fill', 'transparent')
+        ;
 
     pathsGroup
         .selectAll('text')
@@ -38,7 +46,10 @@ Paths = function(options) {
           }
         ])
         .enter()
-        .append('text')
+        .append('text');
+
+    pathsGroup
+        .selectAll('text')
         .attr("font-family", "sans-serif")
         .attr("font-size", options.fontSize + "px")
         .attr("fill", '#000')
@@ -60,7 +71,7 @@ Paths = function(options) {
           var color = d.colorFn();
           var xScale = pathsWidth / color.maxLength;
           return pathData(
-              color.history.map(function(value) {
+              color.values.map(function(value) {
                 return interpolate(
                     value,
                     options.minBrightness,

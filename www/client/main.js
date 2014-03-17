@@ -23,15 +23,13 @@ Meteor.startup(function () {
     maxLength: defaultMaxLength
   };
 
-  var sliders = null;
-
   Deps.autorun(function() {
     var c = getColorRecord();
     if (c) {
       var colors = [c[0], c[1], c[2]];
       standardOpts.colors = colors;
-      sliders = new Sliders(standardOpts).addNumLines();
-      sliders.update(colors);
+      new Sliders(standardOpts).addNumLines().update();
+      new Paths(standardOpts).addPaths().update();
     }
   });
 
