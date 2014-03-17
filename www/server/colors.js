@@ -1,5 +1,5 @@
 
-var stepTimeMS = 10;
+var stepTimeMS = 40;
 var maxV = 10;
 var minBrightness = 0;
 var maxBrightness = 255;
@@ -61,8 +61,6 @@ function stepColor() {
 
   colors.forEach(function(color) { color.step(); });
 
-//   console.log("new reds: " + colors[0].history.map(function(h) { return Math.round(h, 2); }).join(','));
-
   var setObj = {};
   [0,1,2].forEach(function(idx) {
     [
@@ -88,6 +86,7 @@ function handleStartOrPause(newRecord) {
   var paused = !!newRecord.paused;
   if (paused || step) {
     Meteor.clearInterval(interval);
+    interval = null;
   } else {
     interval = Meteor.setInterval(stepColor, stepTimeMS);
   }
@@ -110,10 +109,6 @@ runColorDisplay = function() {
     maxLength: defaultMaxLength
   };
 
-//  widgets.push(new Paths(standardOpts).addPaths());
-//  widgets.push(new Trail(standardOpts).addColorTrail());
-//  widgets.push(new Pixels(standardOpts).addPixelCircles());
-
   Paused.find({_id: id}).observe({
     added: handleStartOrPause,
     changed: handleStartOrPause
@@ -121,6 +116,14 @@ runColorDisplay = function() {
 
   Colors.find({_id: id}).observe({
     changed: function(nr) {
+      if (!!nr.speed && nr.speed != stepTimeMS) {
+        console.log("setting new speed: " + nr.speed);
+        stepTimeMS = nr.speed;
+        if (interval != null) {
+          Meteor.clearInterval(interval);
+          interval = Meteor.setInterval(stepColor, stepTimeMS);
+        }
+      }
       colors.forEach(function(color, idx) {
         if (nr[idx]) {
           if (nr[idx].mode) {

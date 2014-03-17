@@ -1,12 +1,7 @@
 
-var widgets = [];
-
 var defaultMaxLength = 256;
-var stepTimeMS = 2000;
-var maxV = 10;
 var minBrightness = 0;
 var maxBrightness = 255;
-var middleBrightness = (minBrightness + maxBrightness) / 2;
 
 var i;
 
@@ -37,9 +32,9 @@ Meteor.startup(function () {
       if (!firstTime) {
         firstTime = true;
         pixels.setSpiralCoords();
-
       }
-
+      var speed = c.speed;
+      $('.cur-speed-label').html(speed);
     }
   });
 
@@ -63,5 +58,23 @@ Meteor.startup(function () {
           d3.event.preventDefault();
         }
       });
+
+  d3.select('.speed-slider-div input')
+      .on('click', function(d) {
+        var input = $('.speed-slider-div input')[0];
+        var newValue = parseInt(input.value);
+        var minValue = parseInt(input.min);
+        var maxValue = parseInt(input.max);
+        var newSpeed =
+            Math.floor(
+                Math.exp(
+                    interpolate(newValue, minValue, maxValue, Math.log(minValue), Math.log(maxValue))
+                )
+            );
+        console.log("sending down new speed: " + newSpeed);
+        Colors.update({_id: id}, { $set: { speed: newSpeed }});
+        $('.cur-speed-label').html(newSpeed);
+      })
+  ;
 
 });
