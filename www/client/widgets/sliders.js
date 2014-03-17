@@ -7,14 +7,12 @@ var rightPad = 6;
 var rgb = {r:0,g:1,b:2};
 
 Sliders = function(options) {
-  var colors = options.colors;
-  this.colors = colors;
+  this.colors = options.colors;
   var fontSize = options.fontSize;
   var minBrightness = options.minBrightness;
   var maxBrightness = options.maxBrightness;
 
   function getNumLineData(colorWalk) {
-//    console.log("getNumLineData: " + colorWalk.color);
     return {
       colorWalk: colorWalk,
       elems: function(width) {
@@ -77,7 +75,7 @@ Sliders = function(options) {
         .style('stroke-width', 2)
         .style('stroke', acc('color'))
     ;
-  }
+  };
 
   this.addNumLineSliderCircles = function() {
 
@@ -105,7 +103,7 @@ Sliders = function(options) {
           return Math.floor(d.cy);
         })
     ;
-  }
+  };
 
   function addNumLineLabels() {
     d3.selectAll('.slider')
@@ -139,8 +137,8 @@ Sliders = function(options) {
     ;
 
     var sliderDivs =
-        d('.sliders')
-            .selectAll('div.slider-div.svg-div')
+            d('.sliders')
+                .selectAll('div.slider-div.svg-div')
         ;
 
     sliderDivs
@@ -152,8 +150,8 @@ Sliders = function(options) {
     ;
 
     var svgDivs =
-        sliderDivs
-            .selectAll('div.span3')
+            sliderDivs
+                .selectAll('div.span3')
         ;
 
     var width = parseInt(svgDivs.style('width'));
@@ -212,10 +210,8 @@ Sliders = function(options) {
           var setObj = {};
           setObj[key] = d.mode;
           Colors.update({_id: id}, { $set: setObj });
-//          d.colorWalk.setWalkType(d.mode);
         })
     ;
-
 
     this.svgs.selectAll('g.numlines').data(arr).enter().append('g').attr('class', 'numlines');
 
@@ -227,7 +223,6 @@ Sliders = function(options) {
                   var idx = rgb[d.colorWalk.abbrev];
                   setObj[idx + '.position'] = logicalX;
                   Colors.update({_id: id}, { $set: setObj });
-                  //d.colorWalk.setPosition(logicalX);
                 })
         ;
 
@@ -244,20 +239,6 @@ Sliders = function(options) {
         .attr('y', numLineStartY - serifHeight)
         .attr('x', acc('left'))
     ;
-
-//    var clickerRects =
-//        dAppend(
-//            numlines,
-//            'rect.clicker',
-//            {
-//              width: acc('width'),
-//              height: 2*serifHeight,
-//              fill: '#000',
-//              'fill-opacity': 0.05,
-//              y: numLineStartY - serifHeight,
-//              x: acc('left')
-//            }
-//        );
 
     this.addNumLineLines();
     this.addNumLineSliderCircles();
