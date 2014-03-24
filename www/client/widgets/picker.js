@@ -1,5 +1,5 @@
 
-debug = true;
+debug = false;
 
 log = function(s) {
   if (debug) console.log(s);
@@ -29,18 +29,17 @@ Point = function(x, y, z) {
     return new Point(this.x + n.x, this.y + n.y, this.z + n.z);
   };
 
-  this.rotate = function(regs, n, dimRot) {
-    log("rotate " + this.pp() + " by " + regs.pp() + " (" + regs.n + "). n: " + n + " dimRot: " + dimRot);
+  this.rotate = function(regs, n) {
     if (regs.n == 0) {
-      return this;
-    } else if (regs.n == 1 || regs.n == 3) {
       return new Point(this.z, this.x, this.y);
+    } else if (regs.n == 1 || regs.n == 3) {
+      return new Point(this.y, this.z, this.x);
     } else if (regs.n == 2 || regs.n == 6) {
-      return new Point(n-this.y, this.z, n-this.x);
+      return new Point(n-this.x, n-this.y, this.z);
     } else if (regs.n == 5 || regs.n == 7) {
-      return new Point(n-this.z, n-this.x, this.y);
+      return new Point(this.x, n-this.z, n-this.y);
     } else {  // regs.n == 4
-      return new Point(this.x, n-this.y, n-this.z);
+      return new Point(n-this.z, this.x, n-this.y);
     }
   };
 
@@ -74,28 +73,28 @@ d2xyz = function() {
     args = args[0];
   }
   var points = args.map(function(d) {
-    log("** " + d);
     var p = new Point();
     var s = 1;
-    var dimensionsRot = 0;
+    var iter = 0;
     while (d > 0) {
       var xBit = d & 1;
       var yBit = (d/2) & 1;
       var zBit = (d/4) & 1;
 
       var regs = new Point(xBit ^ yBit, yBit ^ zBit, zBit);
-      log("s: " + s + " p: " + p.pp() + " (" + p.n + ") regs: " + regs.pp() + " dimRot: " + dimensionsRot);
-      var rotatedRegs = regs.rotateLeft(dimensionsRot);
-      var rotatedP = p.rotate(regs, s-1, dimensionsRot);
-      var multRotatedRegs = rotatedRegs.mult(s);
-      log("rotP: " + rotatedP.pp() + " rotatedRegs: " + rotatedRegs.pp() + " mult: " + multRotatedRegs.pp());
-      p = rotatedP.add(rotatedRegs.mult(s));
+      p = p.rotate(regs, s-1).add(regs.mult(s));
 
       d = Math.floor(d/8);
       s *= 2;
-      dimensionsRot = (dimensionsRot + 1) % 3;
+      iter++;
     }
-    return p;
+    if (iter % 3 == 0) {
+      return new Point(p.z, p.x, p.y);
+    } else if (iter % 3 == 1) {
+      return p;
+    } else {
+      return new Point(p.y, p.z, p.x);
+    }
   });
 
   if (points.length == 1) return points[0];
@@ -206,7 +205,7 @@ checkDupes = function(pointsMap) {
     var val = pointsMap[key];
     var num = val.length;
     if (num > 1) {
-      console.log("Found " + num + " points at " + key + ": " + val);
+      log("Found " + num + " points at " + key + ": " + val);
       numDupes += (num - 1);
     }
   }
@@ -217,7 +216,7 @@ testD2XYZ = function(n) {
   for (i in d2xyzTestMap) {
     var p = d2xyz(i).pp();
     if ('' + d2xyzTestMap[i] != p) {
-      console.log(i + ": expected " + d2xyzTestMap[i] + " actual: " + p);
+      log(i + ": expected " + d2xyzTestMap[i] + " actual: " + p);
     }
   }
 
@@ -231,7 +230,7 @@ testD2XYZ = function(n) {
       var p = d2xyz(i);
       var key = p.pp();
       if (key in foundPoints) {
-        console.log("key " + key + " already found at " + foundPoints[key] + ", now again at " + i);
+        log("key " + key + " already found at " + foundPoints[key] + ", now again at " + i);
         numCollisions++;
       }
       foundPoints[key] = i;
@@ -243,7 +242,7 @@ testD2XYZ = function(n) {
         for (var z = 0; z < axisN; z++) {
           var key = [x,y,z].join(',');
           if (!(key in foundPoints)) {
-            console.log("missing: " + key);
+            log("missing: " + key);
             numMissing++;
           }
         }
@@ -258,11 +257,11 @@ checkDiscontinuities = function(low, high) {
   var num = 0;
   for (var i = low; i < high - 1; ++i) {
     if (d2xyz(i).manhattanDistance(d2xyz(i+1)) != 1) {
-      console.log("Discontinuity from " + i + " (" + d2xyz(i).pp() + ") to " + (i+1) + " (" + d2xyz(i+1).pp() + ")");
+      log("Discontinuity from " + i + " (" + d2xyz(i).pp() + ") to " + (i+1) + " (" + d2xyz(i+1).pp() + ")");
       num++;
     }
   }
-  console.log("Found " + num + " discontinuities");
+  log("Found " + num + " discontinuities");
   return num;
 };
 
@@ -277,7 +276,7 @@ checkRange = function(low, high, lowerLeft, upperRight, shouldDebug) {
       for (var z = lowerLeft[2]; z < upperRight[2]; ++z) {
         var key = [x,y,z].join(',');
         if (!(key in pointsMap)) {
-          console.log("Missing " + key);
+          log("Missing " + key);
           numMissing++;
         }
       }
@@ -292,11 +291,11 @@ checkRange = function(low, high, lowerLeft, upperRight, shouldDebug) {
     if (x < lowerLeft[0] || x >= upperRight[0] ||
         y < lowerLeft[1] || y >= upperRight[1] ||
         z < lowerLeft[2] || z >= upperRight[2]) {
-      console.log("Point out of range: " + key + " (" + pointsMap[key] + ")");
+      log("Point out of range: " + key + " (" + pointsMap[key] + ")");
       numOutOfRange++;
     }
   }
-  console.log("Found " + numDupes + " dupes, " + numMissing + " missing, and " + numOutOfRange + " out of range");
+  console.log("Found " + numDupes + " dupes, " + numMissing + " missing, " + numOutOfRange + " out of range, and " + numDiscs + " discontinuities.");
 };
 
 testRanges = function() {
@@ -304,4 +303,12 @@ testRanges = function() {
   checkRange(64, 128, [0,4,0], [4,8,4]);
   checkRange(128, 192, [0,4,4], [4,8,8]);
   checkRange(192, 256, [0,0,4], [4,4,8]);
-}
+
+  checkRange(0, 512, [0,0,0], [8,8,8]);
+
+  checkRange(0, 4096, [0,0,0], [16,16,16]);
+
+  checkRange(0, 32768, [0,0,0], [32,32,32]);
+
+  checkRange(0, 262144, [0,0,0], [64,64,64]);
+};
