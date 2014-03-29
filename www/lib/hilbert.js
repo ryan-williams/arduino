@@ -37,7 +37,7 @@ Point = function(x, y, z) {
     } else if (regs.n == 2 || regs.n == 6) {
       return new Point(n-this.x, n-this.y, this.z);
     } else if (regs.n == 5 || regs.n == 7) {
-      return new Point(this.x, n-this.z, n-this.y);
+      return new Point(this.y, n-this.z, n-this.x);
     } else {  // regs.n == 4
       return new Point(n-this.z, this.x, n-this.y);
     }
