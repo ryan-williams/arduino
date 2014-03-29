@@ -48,15 +48,15 @@ Point = function(x, y, z) {
 
   this.unrotate = function(regs, n) {
     if (regs.n == 0) {
-      return new Point(this.z, this.x, this.y);
-    } else if (regs.n == 1 || regs.n == 3) {
       return new Point(this.y, this.z, this.x);
+    } else if (regs.n == 1 || regs.n == 3) {
+      return new Point(this.z, this.x, this.y);
     } else if (regs.n == 2 || regs.n == 6) {
-      return new Point(n-this.z, n-this.x, this.y);
+      return new Point(n-this.x, n-this.y, this.z);
     } else if (regs.n == 5 || regs.n == 7) {
-      return new Point(n-this.y, this.z, n-this.x);
+      return new Point(n-this.z, this.x, n-this.y);
     } else {  // regs.n == 4
-      return new Point(this.x, n-this.y, n-this.z);
+      return new Point(this.y, n-this.z, n-this.x);
     }
   };
 
@@ -139,13 +139,13 @@ xyz2d = function(x, y, z) {
   }
 
   var d = 0;
+  if (level == 1) {
+    p = p.rotateRight(1);
+  } else if (level == 2) {
+    p = p.rotateLeft(1);
+  }
   while (s > 0) {
     var regs = new Point(p.x&s && 1, p.y&s && 1, p.z&s && 1);
-    if (level == 1) {
-      regs = regs.rotateRight(1);
-    } else if (level == 2) {
-      regs = regs.rotateLeft(1);
-    }
 
     log("p: " + p.pp() + " s: " + s + " regs: " + regs.pp() + "(" + regs.n + ") level: " + level + " v: " + horseshoe2d[regs.n]);
     d *= 8;
@@ -352,4 +352,15 @@ testRanges = function() {
   checkRange(0, 32768, [0,0,0], [32,32,32]);
 
   checkRange(0, 262144, [0,0,0], [64,64,64]);
+};
+
+testInversion = function(low, high) {
+  high = high || low+1;
+  for (var i = low; i < high; ++i) {
+    var p = d2xyz(i);
+    var j = xyz2d(p.x, p.y, p.z);
+    if (i != j) {
+      console.log(i + " (" + p.pp() + "): actual " + j);
+    }
+  }
 };
