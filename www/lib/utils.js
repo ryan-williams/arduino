@@ -95,10 +95,6 @@ Utils = {
     return newArr;
   },
 
-  pathData: function(values, xScale) {
-    return "M" + values.map(function(value, idx) { return Math.floor(xScale*idx) + " " + Math.floor(value) }).join(" L");
-  },
-
   sliding: function(arr) {
     var ret = [];
     for (i = 0; i < arr.length - 1; ++i) ret.push([arr[i], arr[i+1]]);

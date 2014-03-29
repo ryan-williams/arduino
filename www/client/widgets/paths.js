@@ -61,6 +61,11 @@ Paths = function(options) {
     return this;
   };
 
+  function pathData(values, xScale) {
+    if (values.length == 0) return "M0 0";
+    return "M" + values.map(function(value, idx) { return Math.floor(xScale*idx) + " " + Math.floor(value) }).join(" L");
+  }
+
   this.update = function() {
     // Update color-history paths.
     var pathsWidth = parseInt($('#paths').css('width'));
