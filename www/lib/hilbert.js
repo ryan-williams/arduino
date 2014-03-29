@@ -7,6 +7,9 @@ log = function(s) {
 
 pp = function(p) {return p.pp();}
 
+d2horseshoe = [0, 1, 3, 2, 6, 7, 5, 4];
+horseshoe2d = [0, 1, 3, 2, 7, 6, 4, 5];
+
 Point = function(x, y, z) {
   if (x instanceof Array) {
     y = x[1];
@@ -40,6 +43,20 @@ Point = function(x, y, z) {
       return new Point(this.y, n-this.z, n-this.x);
     } else {  // regs.n == 4
       return new Point(n-this.z, this.x, n-this.y);
+    }
+  };
+
+  this.unrotate = function(regs, n) {
+    if (regs.n == 0) {
+      return new Point(this.z, this.x, this.y);
+    } else if (regs.n == 1 || regs.n == 3) {
+      return new Point(this.y, this.z, this.x);
+    } else if (regs.n == 2 || regs.n == 6) {
+      return new Point(n-this.z, n-this.x, this.y);
+    } else if (regs.n == 5 || regs.n == 7) {
+      return new Point(n-this.y, this.z, n-this.x);
+    } else {  // regs.n == 4
+      return new Point(this.x, n-this.y, n-this.z);
     }
   };
 
@@ -113,7 +130,34 @@ prettyD2XYZ = function() {
 };
 
 xyz2d = function(x, y, z) {
+  var p = new Point(x,y,z);
+  var s = 1;
+  var level = 0;
+  var max = Math.max(x, y, z);
+  for(; 2*s <= max; s *= 2) {
+    level = (level + 1) % 3;
+  }
 
+  var d = 0;
+  while (s > 0) {
+    var regs = new Point(p.x&s && 1, p.y&s && 1, p.z&s && 1);
+    if (level == 1) {
+      regs = regs.rotateRight(1);
+    } else if (level == 2) {
+      regs = regs.rotateLeft(1);
+    }
+
+    log("p: " + p.pp() + " s: " + s + " regs: " + regs.pp() + "(" + regs.n + ") level: " + level + " v: " + horseshoe2d[regs.n]);
+    d *= 8;
+    d += horseshoe2d[regs.n];
+
+    level = (level + 2) % 3;
+    p = new Point(p.x%s, p.y%s, p.z%s);
+    p = p.unrotate(regs, s-1);
+    s = Math.floor(s/2);
+  }
+
+  return d;
 };
 
 
