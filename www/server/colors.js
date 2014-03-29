@@ -1,4 +1,41 @@
 
+var p = Paused.findOne({_id:id});
+if (!p) {
+  console.log("Bootstrapping Paused..");
+  Paused.insert({_id:id, paused: true});
+}
+
+var c = Colors.findOne({_id:id});
+
+if (!c || !('0' in c)) {
+  console.log("bootstrapping colors...");
+  Colors.update({_id:id}, {
+    $set: {
+      0: {
+        abbrev: 'r',
+        color: '#F00',
+        values: [],
+        position: 0,
+        sineFreq: 250
+      },
+      1: {
+        abbrev: 'g',
+        color: '#0F0',
+        values: [],
+        position: 0,
+        sineFreq: 200
+      },
+      2: {
+        abbrev: 'b',
+        color: '#00F',
+        values: [],
+        position: 0,
+        sineFreq: 150
+      }
+    }
+  });
+}
+
 var stepTimeMS = 40;
 var maxV = 10;
 var minBrightness = 0;
@@ -10,14 +47,6 @@ var i;
 
 var fontSize = 15;
 
-var randomWalkOptions = {
-  initialValue: middleBrightness,
-  maxAcceleration: 0.5,
-  maxVelocity: maxV,
-  minPosition: minBrightness,
-  maxPosition: maxBrightness
-};
-
 function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
   return {
     period: period,
@@ -28,29 +57,35 @@ function sineWalkOptions(period, initialRandomness, incrementalRandomness) {
   };
 }
 
-function colorWalkParams(sineFreq, color, abbrev) {
-  if (sineFreq && sineFreq.length && sineFreq.length == 3) {
-    color = sineFreq[1];
-    abbrev = sineFreq[2];
-    sineFreq = sineFreq[0];
-  }
+function colorWalkParams(record) {
   return {
-    sineWalk: sineWalkOptions(sineFreq, true),
-    randomWalk: randomWalkOptions,
+    sineWalk: sineWalkOptions(record.sineFreq || 200, true),
+    randomWalk: {
+      initialValue: record.position,
+      maxAcceleration: 0.5,
+      maxVelocity: maxV,
+      minPosition: minBrightness,
+      maxPosition: maxBrightness
+    },
     randomSineWalk: {
+      position: record.position,
       halfPeriod: 50,
       minPosition: minBrightness,
       maxPosition: maxBrightness
     },
     constantWalk: { value: 100 },
-    color: color,
+    color: record.color,
     maxLength: defaultMaxLength,
-    abbrev: abbrev
+    abbrev: record.abbrev,
+    values: record.values,
+    position: record.position
   }
 }
 
+var colorRecord = Colors.findOne({_id:id});
+
 var colors =
-    [[250, '#F00', 'r'], [200, '#0F0', 'g'], [150, '#00F', 'b']]
+    [colorRecord[0], colorRecord[1], colorRecord[2]]
         .map(colorWalkParams)
         .map(function(params) {
           return new ColorWalks(params);
@@ -76,7 +111,7 @@ function stepColor() {
     });
   });
 
-  Colors.update({_id: id}, {$set: setObj});
+  Colors.update({ _id: id }, { $set: setObj });
 }
 
 var interval = null;
@@ -144,6 +179,5 @@ runColorDisplay = function() {
       });
     }
   });
-
 };
 

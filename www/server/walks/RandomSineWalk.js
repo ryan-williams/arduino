@@ -4,7 +4,7 @@ RandomSineWalk = function(options) {
 
   var nextStep = 0;
 
-  this.position = options.minPosition;
+  this.position = options.position;
 
   this.setPosition = function(pos, velocity) {
     this.position = pos;

@@ -76,9 +76,9 @@ ColorWalks = function(options) {
     }
   };
 
-  this.history = [];
-  this.position = null;
-  this.velocity = null;
+  this.history = options.values || [];
+  this.position = options.position || null;
+  this.velocity = options.velocity || null;
 
   this.setPosition = function(pos) {
     this.curWalk.setPosition(pos, this.curWalk.velocity);

@@ -7,7 +7,7 @@ var i;
 
 var fontSize = 15;
 
-Meteor.startup(function () {
+Template.colors.rendered = function() {
 
   Math.seedrandom(3);
 
@@ -22,7 +22,7 @@ Meteor.startup(function () {
 
   Deps.autorun(function() {
     var c = getColorRecord();
-    if (c) {
+    if (c && c[0]) {
       var colors = [c[0], c[1], c[2]];
       standardOpts.colors = colors;
       new Sliders(standardOpts).addNumLines().update();
@@ -35,6 +35,12 @@ Meteor.startup(function () {
       }
       var speed = c.speed;
       $('.cur-speed-label').html(speed);
+      var input = $('.speed-slider-div input')[0];
+      var logSpeed = Math.log(speed);
+      var logMin = Math.log(input.min);
+      var logMax = Math.log(input.max);
+      input.value = interpolate(logSpeed, logMin, logMax, parseInt(input.min), parseInt(input.max));
+
     }
   });
 
@@ -59,16 +65,17 @@ Meteor.startup(function () {
         }
       });
 
+  console.log("rendered 'colors'...");
   d3.select('.speed-slider-div input')
       .on('click', function(d) {
         var input = $('.speed-slider-div input')[0];
-        var newValue = parseInt(input.value);
         var minValue = parseInt(input.min);
         var maxValue = parseInt(input.max);
+        var rawValue = interpolate(d3.event.offsetX, 0, input.offsetWidth, minValue, maxValue);
         var newSpeed =
             Math.floor(
                 Math.exp(
-                    interpolate(newValue, minValue, maxValue, Math.log(minValue), Math.log(maxValue))
+                    interpolate(rawValue, minValue, maxValue, Math.log(minValue), Math.log(maxValue))
                 )
             );
         console.log("sending down new speed: " + newSpeed);
@@ -76,5 +83,4 @@ Meteor.startup(function () {
         $('.cur-speed-label').html(newSpeed);
       })
   ;
-
-});
+};
