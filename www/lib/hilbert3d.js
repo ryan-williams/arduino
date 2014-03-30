@@ -7,8 +7,8 @@ log = function(s) {
 
 pp = function(p) {return p.pp();}
 
-d2horseshoe = [0, 1, 3, 2, 6, 7, 5, 4];
-horseshoe2d = [0, 1, 3, 2, 7, 6, 4, 5];
+var d2horseshoe = [0, 1, 3, 2, 6, 7, 5, 4];
+var horseshoe2d = [0, 1, 3, 2, 7, 6, 4, 5];
 
 Point = function(x, y, z) {
   if (x instanceof Array) {

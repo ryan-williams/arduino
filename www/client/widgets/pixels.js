@@ -191,43 +191,6 @@ Pixels = function(options) {
     setCoords(coords);
   }
 
-  function d2xy(d) {
-    var n = 1;
-    while (n < numBoxes) n *= 4;
-    var curPos = {
-      x: 0,
-      y: 0
-    };
-    var s = 1;
-    while (s*s < n/* && d > 0*/) {
-      var rx = 1 & (d/2);
-      var ry = 1 & (rx ^ d);
-
-      // Rotate, if need be
-      if (ry == 0) {
-        if (rx == 1) {
-          curPos = {
-            x: s - 1 - curPos.x,
-            y: s - 1 - curPos.y
-          };
-        }
-        curPos = {
-          x: curPos.y,
-          y: curPos.x
-        };
-      }
-
-      curPos = {
-        x: curPos.x + s*rx,
-        y: curPos.y + s*ry
-      };
-
-      s *= 2;
-      d = Math.floor(d/4);
-    }
-    return curPos;
-  }
-
   function setHilbertCoords() {
     var mp = {
       x: midX() - 100,
