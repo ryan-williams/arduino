@@ -15,6 +15,18 @@ Utils = {
     return "rgb(" + Math.floor(r) + "," + Math.floor(g) + "," + Math.floor(b) + ")";
   },
 
+  padHex: function(x, n) {
+    var s = x.toString(16);
+    while (s.length < n) {
+      s = '0'+s;
+    }
+    return s;
+  },
+
+  rgbHexString: function(r, g, b) {
+    return '#' + padHex(r,2) + padHex(g,2) + padHex(b,2);
+  },
+
   identity: function(x) { return x; },
   arr: function(x) { return [x]; },
   acc: function(name) {
