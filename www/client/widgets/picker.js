@@ -23,43 +23,24 @@ Picker = function(options) {
   var $canvas = options.$canvas;
   var canvas = $canvas[0];
 
-  var c = canvas.getContext('2d');
+  $canvas.attr('width', options.width || options.height || 250);
+  $canvas.attr('height', options.height || options.width || 250);
 
-  var width = 64;
-  var height = 64;
+  var width = options.blocks || 512;
+  var height = options.blocks || 512;
 
   var blockWidth = canvas.width / width;
   var blockHeight = canvas.height / height;
 
-  var imageData = c.createImageData(canvas.width, canvas.height);
-
   var scalingFactor = 256*256*256/width/height;
-
-  log("scaling factor: " + scalingFactor);
-
-  for (var d = 0; d < width*height; d++) {
-    var p = d2xy(d);
-    var x = p.x;
-    var y = p.y;
-    var scaledD = d * scalingFactor;
-    var p = getInterpolatedBitNumbers(scaledD);//.mult(scalingFactor);
-    log(x+','+y+':\t'+ d +"\t"+ p.pp());
-
-    for (var px = blockWidth*x; px < blockWidth*(x+1); px++) {
-      for (var py = blockHeight*y; py < blockHeight*(y+1); py++) {
-        setPixel(imageData, px, py, p.x, p.y, p.z, 255);
-      }
-    }
-  }
-
-  c.putImageData(imageData, 0, 0);
 
   function getColorForMouseEvent(e) {
     var blockX = e.offsetX / blockWidth;
     var blockY = e.offsetY / blockHeight;
     var d = xy2d(blockX, blockY);
     var scaledD = d*scalingFactor;
-    var p = getInterpolatedBitNumbers(scaledD);
+//    var p = getInterpolatedBitNumbers(scaledD);
+    var p = d2xyz(scaledD);
     return p;
   }
 
@@ -81,10 +62,30 @@ Picker = function(options) {
     Colors.update({_id: id}, { $set: setObj });
   });
 
-};
 
-Template.picker.rendered = function() {
-  new Picker({
-    $canvas: $('#color-picker')
-  })
+  this.drawHilbertPicker = function() {
+    var c = canvas.getContext('2d');
+
+    var imageData = c.createImageData(canvas.width, canvas.height);
+
+    log("scaling factor: " + scalingFactor);
+
+    for (var d = 0; d < width*height; d++) {
+      var xy = d2xy(d);
+      var x = xy.x;
+      var y = xy.y;
+      var scaledD = d * scalingFactor;
+//    var p = getInterpolatedBitNumbers(scaledD);
+      var p = d2xyz(scaledD);
+      log(x+','+y+':\t'+ d +"\t"+ p.pp());
+
+      for (var px = Math.floor(canvas.width * x / width); px < Math.floor(canvas.width * (x+1) / width); px++) {
+        for (var py = Math.floor(canvas.height * y / height); py < Math.floor(canvas.height * (y+1) / height); py++) {
+          setPixel(imageData, px, py, p.x, p.y, p.z, 255);
+        }
+      }
+    }
+
+    c.putImageData(imageData, 0, 0);
+  };
 };

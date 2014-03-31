@@ -44,6 +44,12 @@ Template.colors.rendered = function() {
     }
   });
 
+  new Picker({
+    $canvas: $('#color-picker'),
+    width: 300,
+    height: 300
+  });
+
   d3.selectAll('#pause-button')
       .on('click', togglePaused);
 
