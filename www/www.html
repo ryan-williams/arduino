@@ -29,8 +29,13 @@
                     <input id="random-button" type="button" value="Random" />
                 </div>
             </div>
-            <div class="row">
-                <svg id="pixels"></svg>
+            <div class="row" id="lower-right">
+                <div class="span5">
+                    <svg id="pixels"></svg>
+                </div>
+                <div id="middle">
+                    {{>picker}}
+                </div>
             </div>
             <div class="speed-slider-div">
                 <input class="speed-slider" type="range" min="10" max="1000" />
@@ -39,6 +44,14 @@
                 <div class="speed-label" style="float:right">1000</div>
             </div>
         </div>
+    </div>
+</template>
+
+<template name="picker">
+    <div id="picker">
+        <canvas id="color-picker" width="256" height="256"></canvas>
+        <div id="color-preview"></div>
+        <div id="color-label"></div>
     </div>
 </template>
 
