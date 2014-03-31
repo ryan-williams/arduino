@@ -23,14 +23,18 @@ Picker = function(options) {
   var $canvas = options.$canvas;
   var canvas = $canvas[0];
 
-  $canvas.attr('width', options.width || options.height || 250);
-  $canvas.attr('height', options.height || options.width || 250);
+  var canvasWidth = options.width || options.height || 250;
+  var canvasHeight = options.height || options.width || 250;
+  $canvas.attr('width', canvasWidth);
+  $canvas.attr('height', canvasHeight);
+  $canvas.css('width', canvasWidth);
+  $canvas.css('height', canvasHeight);
 
   var width = options.blocks || 512;
   var height = options.blocks || 512;
 
-  var blockWidth = canvas.width / width;
-  var blockHeight = canvas.height / height;
+  var blockWidth = canvasWidth / width;
+  var blockHeight = canvasHeight / height;
 
   var scalingFactor = 256*256*256/width/height;
 
