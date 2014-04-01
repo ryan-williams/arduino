@@ -206,10 +206,7 @@ Sliders = function(options) {
           var idx = rgb[d.colorWalk.abbrev];
           console.log(d);
           console.log("mode " + d.mode + " c: " + d.colorWalk.abbrev + " idx: " + idx);
-          var key = idx + '.mode';
-          var setObj = {};
-          setObj[key] = d.mode;
-          Colors.update({_id: id}, { $set: setObj });
+          Colors.update({_id: id}, { $set: { mode: d.mode }});
         })
     ;
 

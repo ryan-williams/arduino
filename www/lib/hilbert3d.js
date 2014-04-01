@@ -5,7 +5,7 @@ log = function(s) {
   if (debug) console.log(s);
 };
 
-pp = function(p) {return p.pp();}
+pp = function(p) {return p.pp();};
 
 var d2horseshoe = [0, 1, 3, 2, 6, 7, 5, 4];
 var horseshoe2d = [0, 1, 3, 2, 7, 6, 4, 5];

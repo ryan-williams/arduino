@@ -68,7 +68,6 @@ ColorWalks = function(options) {
   };
 
   this.maybeUpdateMode = function(newMode) {
-//    console.log("maybe update mode: " + newMode);
     if (!newMode) return;
     if (newMode != this.curWalk.name) {
       console.log("updating mode from " + this.curWalk.name + " to " + newMode);

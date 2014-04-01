@@ -159,13 +159,25 @@ runColorDisplay = function() {
           interval = Meteor.setInterval(stepColor, stepTimeMS);
         }
       }
+
+      var wipePerColorModes = false;
+      if (nr.mode) {
+        wipePerColorModes = true;
+      }
+
       var unsetObj = {};
       var setObj = {};
       var foundNewPos = false;
       colors.forEach(function(color, idx) {
         if (nr[idx]) {
           if (nr[idx].mode) {
-            color.maybeUpdateMode(nr[idx].mode);
+            if (wipePerColorModes) {
+              nr[idx].mode = undefined;
+              unsetObj[idx + '.mode'] = 1;
+              color.maybeUpdateMode(nr.mode);
+            } else {
+              color.maybeUpdateMode(nr[idx].mode);
+            }
           }
 
           if (nr[idx].newPosition >= 0) {
