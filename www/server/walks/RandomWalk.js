@@ -23,3 +23,5 @@ RandomWalk = function(options) {
   };
 
 };
+
+ShiftingWalk.call(RandomWalk.prototype);

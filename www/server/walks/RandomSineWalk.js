@@ -30,3 +30,5 @@ RandomSineWalk = function(options) {
   };
 
 };
+
+ShiftingWalk.call(RandomSineWalk.prototype);

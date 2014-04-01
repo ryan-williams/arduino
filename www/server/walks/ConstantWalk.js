@@ -10,3 +10,5 @@ ConstantWalk = function(options) {
     return this.position;
   };
 };
+
+ShiftingWalk.call(ConstantWalk.prototype);

@@ -37,3 +37,5 @@ SineWalk = function(options) {
   };
 
 };
+
+ShiftingWalk.call(SineWalk.prototype);
