@@ -141,23 +141,10 @@ Sliders = function(options) {
                 .selectAll('div.slider-div.svg-div')
         ;
 
-    sliderDivs
-        .selectAll('div.span3')
-        .data(function(d) { return [d]; })
-        .enter()
-        .append('div')
-        .attr('class', 'span3')
-    ;
-
-    var svgDivs =
-            sliderDivs
-                .selectAll('div.span3')
-        ;
-
-    var width = parseInt(svgDivs.style('width'));
+    var width = parseInt(sliderDivs.style('width'));
 
     this.svgs =
-            svgDivs
+            sliderDivs
                 .selectAll('svg.slider')
                 .data(function(d) {
                   return [ add(d.elems(width), 'colorWalk', d.colorWalk) ];
@@ -167,47 +154,6 @@ Sliders = function(options) {
         .enter()
         .append('svg')
         .attr('class', 'slider')
-    ;
-
-    sliderDivs
-        .selectAll('div.slider-button-div')
-        .data(function(d) { return [d]; })
-        .enter()
-        .append('div')
-        .attr('class', 'slider-button-div')
-    ;
-
-    var buttonDivs = sliderDivs.selectAll('div.slider-button-div');
-
-    var buttonTypes = [
-      [ 'random-sine', 'rsin' ],
-      [ 'sine', 'sin' ],
-      [ 'random', 'rnd' ],
-      [ 'constant', 'cons' ]
-    ];
-
-    buttonDivs
-        .selectAll('input.mode')
-        .data(function(d) {
-          return buttonTypes.map(function(mode) {
-            return {
-              colorWalk: d.colorWalk,
-              mode: mode[0],
-              label: mode[1]
-            };
-          });
-        })
-        .enter()
-        .append('input')
-        .attr('class', 'mode')
-        .attr('type', 'button')
-        .attr('value', acc('label'))
-        .on('click', function(d) {
-          var idx = rgb[d.colorWalk.abbrev];
-          console.log(d);
-          console.log("mode " + d.mode + " c: " + d.colorWalk.abbrev + " idx: " + idx);
-          Colors.update({_id: id}, { $set: { mode: d.mode }});
-        })
     ;
 
     this.svgs.selectAll('g.numlines').data(arr).enter().append('g').attr('class', 'numlines');

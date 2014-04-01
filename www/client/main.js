@@ -50,6 +50,8 @@ Template.colors.rendered = function() {
     height: 300
   });
 
+  new Modes().addButtons();
+
   d3.selectAll('#pause-button')
       .on('click', togglePaused);
 
