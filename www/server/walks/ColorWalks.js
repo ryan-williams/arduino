@@ -83,7 +83,7 @@ ColorWalks = function(options) {
   };
 
   this.step = function() {
-    this.values = this.curWalk.stepValues(this.values);
+    this.values = this.curWalk.stepValues(this.values, this.maxLength);
     this.position = this.curWalk.position;
     this.velocity = this.curWalk.velocity;
     return this.position;

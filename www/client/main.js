@@ -24,6 +24,9 @@ Template.colors.rendered = function() {
     var c = getColorRecord();
     if (c && c[0]) {
       var colors = [c[0], c[1], c[2]];
+      colors.forEach(function(color) {
+        color.values = color.values || [];
+      });
       standardOpts.colors = colors;
       new Sliders(standardOpts).addNumLines().update();
       new Paths(standardOpts).addPaths().update();
