@@ -60,7 +60,6 @@ ColorWalks = function(options) {
   };
 
   this.setWalkType = function(walkName) {
-//    console.log("setting: " + walkName);
     if (!walksMap[walkName]) {
       throw Error("Bad walk name: " + walkName);
     }
@@ -75,7 +74,7 @@ ColorWalks = function(options) {
     }
   };
 
-  this.history = options.values || [];
+  this.values = options.values || [];
   this.position = options.position || null;
   this.velocity = options.velocity || null;
 
@@ -86,7 +85,7 @@ ColorWalks = function(options) {
   this.step = function() {
     this.position = this.curWalk.step();
     this.velocity = this.curWalk.velocity;
-    this.history = Utils.unshiftAndSlice(this.history, this.position, this.maxLength);
+    this.values = Utils.unshiftAndSlice(this.values, this.position, this.maxLength);
     return this.position;
   };
 

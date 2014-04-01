@@ -99,15 +99,14 @@ function stepColor() {
   var setObj = {};
   [0,1,2].forEach(function(idx) {
     [
-      ['values', 'history'],
+      'values',
       'position',
       'velocity',
       'color',
       'abbrev',
       'maxLength'
     ].forEach(function(key) {
-      if (typeof key == 'string') key = [key, key];
-      setObj[idx + '.' + key[0]] = colors[idx][key[1]]
+      setObj[idx + '.' + key] = colors[idx][key]
     });
   });
 
