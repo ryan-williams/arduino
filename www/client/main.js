@@ -20,6 +20,36 @@ Template.colors.rendered = function() {
 
   var firstTime = false;
 
+  var speedSlider = new Range({
+    $el: $('.speed-slider-div input'),
+    $label: $('.cur-speed-label'),
+    min: 10,
+    max: 1000,
+    valueSubscribeFn: function() {
+      var c = getColorRecord();
+      if (c) {
+        return c.speed;
+      }
+    },
+    v2r: function(value) {
+      var logValue = Math.log(value);
+      var logMin = Math.log(this.min);
+      var logMax = Math.log(this.max);
+      return interpolate(logValue, logMin, logMax, parseInt(this.min), parseInt(this.max));
+    },
+    r2v: function(rawValue) {
+      var newSpeed =
+          Math.floor(
+              Math.exp(
+                  interpolate(rawValue, this.min, this.max, Math.log(this.min), Math.log(this.max))
+              )
+          );
+      console.log("sending down speed: " + newSpeed);
+      Colors.update({_id: id}, { $set: { speed: newSpeed }});
+      return newSpeed;
+    }
+  });
+
   Deps.autorun(function() {
     var c = getColorRecord();
     if (c && c[0]) {
@@ -36,14 +66,6 @@ Template.colors.rendered = function() {
         firstTime = true;
         pixels.setSpiralCoords();
       }
-      var speed = c.speed;
-      $('.cur-speed-label').html(speed);
-      var input = $('.speed-slider-div input')[0];
-      var logSpeed = Math.log(speed);
-      var logMin = Math.log(input.min);
-      var logMax = Math.log(input.max);
-      input.value = interpolate(logSpeed, logMin, logMax, parseInt(input.min), parseInt(input.max));
-
     }
   });
 
@@ -77,21 +99,4 @@ Template.colors.rendered = function() {
       });
 
   console.log("rendered 'colors'...");
-  d3.select('.speed-slider-div input')
-      .on('click', function(d) {
-        var input = $('.speed-slider-div input')[0];
-        var minValue = parseInt(input.min);
-        var maxValue = parseInt(input.max);
-        var rawValue = interpolate(d3.event.offsetX, 0, input.offsetWidth, minValue, maxValue);
-        var newSpeed =
-            Math.floor(
-                Math.exp(
-                    interpolate(rawValue, minValue, maxValue, Math.log(minValue), Math.log(maxValue))
-                )
-            );
-        console.log("sending down new speed: " + newSpeed);
-        Colors.update({_id: id}, { $set: { speed: newSpeed }});
-        $('.cur-speed-label').html(newSpeed);
-      })
-  ;
 };
