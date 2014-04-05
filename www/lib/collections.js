@@ -2,6 +2,7 @@
 Colors = new Meteor.Collection("colors");
 Paused = new Meteor.Collection("paused");
 Walks = new Meteor.Collection("walks");
+BlendWeights = new Meteor.Collection("blend_weights");
 
 id = "abcd";
 getColorRecord = function() {

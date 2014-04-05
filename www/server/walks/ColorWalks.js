@@ -82,8 +82,16 @@ ColorWalks = function(options) {
     this.curWalk.setPosition(pos, this.curWalk.velocity);
   };
 
+  this.blendWeight = 0;
+  BlendWeights.find({_id:id}).observe({
+    changed: function(nr) {
+      var newValue = (nr && nr.v) || 0;
+      this.blendWeight = newValue;
+    }
+  });
+
   this.step = function() {
-    this.values = this.curWalk.stepValues(this.values, this.maxLength);
+    this.values = this.curWalk.stepValues(this.values, this.maxLength, this.blendWeight);
     this.position = this.curWalk.position;
     this.velocity = this.curWalk.velocity;
     return this.position;
