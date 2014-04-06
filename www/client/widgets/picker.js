@@ -27,6 +27,8 @@ Picker = function(options) {
 
   var $thumbnails = options.$thumbnails || $el.find('.color-thumbnails');
 
+  var colorClickFn = options.colorClickFn || identity;
+
   var blocks = options.blocks || 512;
 
   $elem.css('background-image', 'url(/img/hilbert-' + blocks + '.png)');
@@ -65,7 +67,8 @@ Picker = function(options) {
         .enter()
         .append('div')
         .attr('class', 'clicked-color color-thumbnail-container')
-        .style('margin-left', optimalPadding+'px');
+        .style('margin-left', optimalPadding+'px')
+        .on('click', colorClickFn)
     ;
 
     d$thumbnails
@@ -146,9 +149,7 @@ Picker = function(options) {
     clickedThumbnails = Utils.unshiftAndSlice(clickedThumbnails, p.rgb, maxNumClickedThumbnails);
     updateThumbnails();
 
-    if (options.colorClickFn) {
-      options.colorClickFn(p.rgb);
-    }
+    colorClickFn(p.rgb);
   });
 
 
