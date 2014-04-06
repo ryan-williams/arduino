@@ -44,6 +44,7 @@ Picker = function(options) {
   $elem.css('height', canvasHeight);
 
   this.setBlocks = function(blocks) {
+    this.blocks = blocks;
     this.width = blocks;
     this.height = blocks;
 
@@ -123,6 +124,11 @@ Picker = function(options) {
   var lastMouseBlockY = null;
 
   this.getColorForBlock = function(blockX, blockY, fromMouse) {
+    if (this.blocks == 64 || this.blocks == 4096) {
+      var t = blockX;
+      blockX = blockY;
+      blockY = t;
+    }
     var d = xy2d(blockX, blockY);
     var scaledD = d * this.scalingFactor;
     var p = d2xyz(scaledD);
