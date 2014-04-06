@@ -24,6 +24,15 @@ Utils = {
   },
 
   rgbHexString: function(r, g, b) {
+    if (r && r.r >= 0) {
+      return rgbHexString(r.r, r.g, r.b);
+    }
+    if (r && r.length && r.length == 3) {
+      return rgbHexString.apply(this, r);
+    }
+    if (g == undefined) {
+      console.log("r: %O", r);
+    }
     return '#' + padHex(r,2) + padHex(g,2) + padHex(b,2);
   },
 

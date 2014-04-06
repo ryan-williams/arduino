@@ -21,7 +21,7 @@ Template.colors.rendered = function() {
   var firstTime = false;
 
   var speedSlider = new Range({
-    $el: $('.slider-div'),
+    $el: $('.range-div'),
     min: 10,
     max: 1000,
     valueSubscribeFn: function() {
@@ -69,9 +69,17 @@ Template.colors.rendered = function() {
   });
 
   new Picker({
-    $el: $('#picker'),
+    selector: '#picker',
     width: 300,
-    height: 300
+    height: 300,
+    colorClickFn: function(rgb) {
+      var setObj = {};
+      'rgb'.split('').map(function(key, idx) {
+        setObj[idx + '.newPosition'] = rgb[key];
+      });
+      console.log(setObj);
+      Colors.update({_id: id}, { $set: setObj });
+    }
   });
 
   new Modes().addButtons();

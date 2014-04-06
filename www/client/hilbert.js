@@ -1,15 +1,14 @@
 
 Template.hilbert.rendered = function() {
-  var $picker = $('#picker');
 
-  var draw = true;
+  var draw = false;
 
   var width = 512;
   var blocks = 512;
 
   var picker =
       new Picker({
-        $el: $picker,
+        selector: '#picker',
         draw: draw,
         width: width,
         blocks: blocks

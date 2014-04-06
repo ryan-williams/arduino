@@ -20,16 +20,23 @@ getInterpolatedBitNumbers = function(d) {
 
 Picker = function(options) {
 
-  var $el = options.$el;
+  var $el = $(options.selector);
   var $elem = $el.find('div.color-picker');
   var $canvas = $el.find('canvas.color-picker');
   var $pickers = $el.find('.color-picker');
 
+  var $thumbnails = options.$thumbnails || $el.find('.color-thumbnails');
+
+  var blocks = options.blocks || 512;
+
+  $elem.css('background-image', 'url(/img/hilbert-' + blocks + '.png)');
+
   var canvas = $canvas[0];
   this.canvas = canvas;
 
-  var $colorPreview = $('#color-preview');
-  var $colorLabel = $('#color-label');
+  var $colorPreview = $thumbnails.find('.color-preview');
+  var $colorPreviewThumb = $colorPreview.find('.color-thumbnail');
+  var $colorPreviewLabel = $colorPreview.find('.color-label');
 
   var canvasWidth = options.width || options.height || 250;
   var canvasHeight = options.height || options.width || 250;
@@ -38,8 +45,58 @@ Picker = function(options) {
   $elem.css('width', canvasWidth);
   $elem.css('height', canvasHeight);
 
-  var width = options.blocks || 512;
-  var height = options.blocks || 512;
+  var width = blocks;
+  var height = blocks;
+
+  var minPadding = 5;
+  var thumbnailSize = $colorPreviewThumb.width();
+  var pickerSize = $elem.width();
+  var maxNumThumbnails = Math.floor(pickerSize / (thumbnailSize + minPadding));
+  var maxNumClickedThumbnails = maxNumThumbnails - 1;
+  var optimalPadding = (pickerSize - (thumbnailSize * maxNumThumbnails)) / maxNumClickedThumbnails;
+
+  var d$thumbnails = d3.selectAll(options.selector).selectAll('.color-thumbnails');
+  var clickedThumbnails = [];
+
+  function updateThumbnails() {
+    d$thumbnails
+        .selectAll('.clicked-color')
+        .data(clickedThumbnails)
+        .enter()
+        .append('div')
+        .attr('class', 'clicked-color color-thumbnail-container')
+        .style('margin-left', optimalPadding+'px');
+    ;
+
+    d$thumbnails
+        .selectAll('.clicked-color')
+        .selectAll('.color-thumbnail')
+        .data(arr)
+        .enter()
+        .append('div')
+        .attr('class', 'color-thumbnail')
+    ;
+
+    d$thumbnails
+        .selectAll('.clicked-color')
+        .selectAll('.color-thumbnail')
+        .style('background-color', rgbString);
+
+    d$thumbnails
+        .selectAll('.clicked-color')
+        .selectAll('.color-label')
+        .data(arr)
+        .enter()
+        .append('div')
+        .attr('class', 'color-label')
+    ;
+
+    d$thumbnails
+        .selectAll('.clicked-color')
+        .selectAll('.color-label')
+        .text(rgbHexString)
+    ;
+  }
 
   var blockWidth = canvasWidth / width;
   var blockHeight = canvasHeight / height;
@@ -57,7 +114,7 @@ Picker = function(options) {
     var p = d2xyz(scaledD);
 
     if (fromMouse && (lastMouseBlockX != blockX || lastMouseBlockY != blockY)) {
-      console.log("(%d,%d), d: %d, rgb: (%s)", blockX, blockY, d, p.pp());
+      log("(%d,%d), d: %d, rgb: (%s)", blockX, blockY, d, p.pp());
       lastMouseBlockX = blockX;
       lastMouseBlockY = blockY;
     }
@@ -75,21 +132,23 @@ Picker = function(options) {
   $pickers.on('mousemove', function(e) {
     var p = getColorForMouseEvent(e);
     if (!p) return;
-    var color = rgbString(p.x, p.y, p.z);
-    $colorPreview.css('background-color', color);
-    $colorLabel.html(rgbHexString(p.x, p.y, p.z) + " (" + p.pp() + ")");
+    var color = rgbString(p.rgb);
+    $colorPreviewThumb.css('background-color', color);
+    $colorPreviewLabel.html(rgbHexString(p.rgb) + " (" + p.pp() + ")");
   });
 
   $pickers.on('click', function(e) {
     var p = getColorForMouseEvent(e);
     if (!p) return;
-    console.log("got color: " + rgbString(p.x, p.y, p.z));
-    var setObj = {};
-    for (idx in ['r', 'g', 'b']) {
-      setObj[idx + '.newPosition'] = p[({r:'x',g:'y',b:'z'})['rgb'[idx]]];
+    var str = rgbString(p.x, p.y, p.z);
+    console.log("got color: " + str);
+
+    clickedThumbnails = Utils.unshiftAndSlice(clickedThumbnails, p.rgb, maxNumClickedThumbnails);
+    updateThumbnails();
+
+    if (options.colorClickFn) {
+      options.colorClickFn(p.rgb);
     }
-    console.log(setObj);
-    Colors.update({_id: id}, { $set: setObj });
   });
 
 

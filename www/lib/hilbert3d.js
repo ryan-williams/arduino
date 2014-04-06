@@ -27,6 +27,8 @@ Point = function(x, y, z) {
     return new Point([x,y,z].map(fn));
   };
 
+  this.rgb = { r:x, g:y, b:z };
+
   this.mult = function(n) {
     return new Point(this.x*n, this.y*n, this.z*n);
   };

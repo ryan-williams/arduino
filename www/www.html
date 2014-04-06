@@ -51,8 +51,22 @@
     <div id="picker">
         <div class="color-picker"></div>
         <canvas class="color-picker"></canvas>
-        <div id="color-preview"></div>
-        <div id="color-label"></div>
+        <div class="color-thumbnails">
+            <div class="color-preview color-thumbnail-container">
+                {{>colorThumbnail}}
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="colorThumbnail">
+    <div class="color-thumbnail"></div>
+    <div class="color-label"></div>
+</template>
+
+<template name="clickedColor">
+    <div class="clicked-color color-thumbnail-container">
+        {{>colorThumbnail}}
     </div>
 </template>
 
