@@ -23,6 +23,14 @@ Utils = {
     return s;
   },
 
+  rgbFromHex: function(hexStr) {
+    return {
+      r: parseInt(hexStr.substr(1,2), 16),
+      g: parseInt(hexStr.substr(3,2), 16),
+      b: parseInt(hexStr.substr(5,2), 16)
+    }
+  },
+
   rgbHexString: function(r, g, b) {
     if (r && r.r >= 0) {
       return rgbHexString(r.r, r.g, r.b);

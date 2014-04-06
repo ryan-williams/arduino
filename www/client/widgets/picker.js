@@ -58,9 +58,19 @@ Picker = function(options) {
   var optimalPadding = (pickerSize - (thumbnailSize * maxNumThumbnails)) / maxNumClickedThumbnails;
 
   var d$thumbnails = d3.selectAll(options.selector).selectAll('.color-thumbnails');
-  var clickedThumbnails = [];
+
+  var clickedThumbnails =
+      ($.cookie('clicked-colors') || '')
+          .split(',')
+          .filter(acc('length'))
+          .map(rgbFromHex)
+          .slice(0, maxNumClickedThumbnails)
+      ;
 
   function updateThumbnails() {
+
+    $.cookie('clicked-colors', clickedThumbnails.map(rgbHexString).join(','));
+
     d$thumbnails
         .selectAll('.clicked-color')
         .data(clickedThumbnails)
@@ -100,6 +110,8 @@ Picker = function(options) {
         .text(rgbHexString)
     ;
   }
+
+  updateThumbnails();
 
   var blockWidth = canvasWidth / width;
   var blockHeight = canvasHeight / height;
