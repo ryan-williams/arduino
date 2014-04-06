@@ -6,7 +6,7 @@ Utils = {
   },
 
   rgbString: function(r, g, b) {
-    if (r && r.r) {
+    if (r && r.r >= 0) {
       return rgbString(r.r, r.g, r.b);
     }
     if (r && r.length && r.length == 3) {
