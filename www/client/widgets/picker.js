@@ -29,10 +29,6 @@ Picker = function(options) {
 
   var colorClickFn = options.colorClickFn || identity;
 
-  var blocks = options.blocks || 512;
-
-  $elem.css('background-image', 'url(/img/hilbert-' + blocks + '.png)');
-
   var canvas = $canvas[0];
   this.canvas = canvas;
 
@@ -47,8 +43,18 @@ Picker = function(options) {
   $elem.css('width', canvasWidth);
   $elem.css('height', canvasHeight);
 
-  var width = blocks;
-  var height = blocks;
+  this.setBlocks = function(blocks) {
+    this.width = blocks;
+    this.height = blocks;
+
+    this.blockWidth = canvasWidth / this.width;
+    this.blockHeight = canvasHeight / this.height;
+
+    this.scalingFactor = 256*256*256/this.width/this.height;
+    $elem.css('background-image', 'url(/img/hilbert-' + blocks + '.png)');
+  };
+
+  this.setBlocks(options.blocks || 512);
 
   var minPadding = 5;
   var thumbnailSize = $colorPreviewThumb.width();
@@ -113,19 +119,12 @@ Picker = function(options) {
 
   updateThumbnails();
 
-  var blockWidth = canvasWidth / width;
-  var blockHeight = canvasHeight / height;
-
-  var scalingFactor = 256*256*256/width/height;
-  var scaleCubeRt = Math.round(Math.pow(scalingFactor, 1/3));
-  console.log("scaling factor: %d, cbrt: %d", scalingFactor, scaleCubeRt);
-
   var lastMouseBlockX = null;
   var lastMouseBlockY = null;
 
-  function getColorForBlock(blockX, blockY, fromMouse) {
+  this.getColorForBlock = function(blockX, blockY, fromMouse) {
     var d = xy2d(blockX, blockY);
-    var scaledD = d * scalingFactor;
+    var scaledD = d * this.scalingFactor;
     var p = d2xyz(scaledD);
 
     if (fromMouse && (lastMouseBlockX != blockX || lastMouseBlockY != blockY)) {
@@ -136,24 +135,24 @@ Picker = function(options) {
     return p;
   }
 
-  function getColorForMouseEvent(e) {
-    var blockX = Math.floor(e.offsetX / blockWidth);
-    var blockY = Math.floor(e.offsetY / blockHeight);
-    if (0 <= blockX && blockX < width && 0 <= blockY && blockY < height) {
-      return getColorForBlock(blockX, blockY, true);
+  this.getColorForMouseEvent = function(e) {
+    var blockX = Math.floor(e.offsetX / this.blockWidth);
+    var blockY = Math.floor(e.offsetY / this.blockHeight);
+    if (0 <= blockX && blockX < this.width && 0 <= blockY && blockY < this.height) {
+      return this.getColorForBlock(blockX, blockY, true);
     }
   }
 
   $pickers.on('mousemove', function(e) {
-    var p = getColorForMouseEvent(e);
+    var p = this.getColorForMouseEvent(e);
     if (!p) return;
     var color = rgbString(p.rgb);
     $colorPreviewThumb.css('background-color', color);
     $colorPreviewLabel.html(rgbHexString(p.rgb) + " (" + p.pp() + ")");
-  });
+  }.bind(this));
 
   $pickers.on('click', function(e) {
-    var p = getColorForMouseEvent(e);
+    var p = this.getColorForMouseEvent(e);
     if (!p) return;
     var str = rgbString(p.x, p.y, p.z);
     console.log("got color: " + str);
@@ -162,7 +161,7 @@ Picker = function(options) {
     updateThumbnails();
 
     colorClickFn(p.rgb);
-  });
+  }.bind(this));
 
 
   this.drawHilbertPicker = function() {
@@ -171,17 +170,17 @@ Picker = function(options) {
     var imageData = c.createImageData(canvas.width, canvas.height);
 
     console.log("drawing..");
-    for (var d = 0; d < width*height; d++) {
+    for (var d = 0; d < this.width*this.height; d++) {
       if (d % 100000 == 0) {
-        console.log("\t%d of %d..", d, width*height);
+        console.log("\t%d of %d..", d, this.width*this.height);
       }
       var xy = d2xy(d);
       var x = xy.x;
       var y = xy.y;
       var color = getColorForBlock(x, y);
 
-      for (var px = Math.floor(canvas.width * x / width); px < Math.floor(canvas.width * (x+1) / width); px++) {
-        for (var py = Math.floor(canvas.height * y / height); py < Math.floor(canvas.height * (y+1) / height); py++) {
+      for (var px = Math.floor(canvas.width * x / this.width); px < Math.floor(canvas.width * (x+1) / this.width); px++) {
+        for (var py = Math.floor(canvas.height * y / this.height); py < Math.floor(canvas.height * (y+1) / this.height); py++) {
           setPixel(imageData, px, py, color.x, color.y, color.z, 255);
         }
       }
@@ -205,4 +204,5 @@ Picker = function(options) {
   };
 
   this.updateDraw(options.draw);
+
 };

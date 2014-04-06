@@ -19,12 +19,26 @@ Template.hilbert.rendered = function() {
   var $saveButton = $('#save-button');
   var $saveLink = $('#save-link');
 
-  var $granularitySlider = $('#granularity-slider');
-  var granularitySlider = new Range({
-    $el: $granularitySlider,
-    min: 0,
-    max: 8
-  });
+  var d$radios =
+      d3.select('#granularity-radios')
+          .append('form')
+          .selectAll('input')
+          .data([8, 64, 512, 4096])
+          .enter()
+          .append('div')
+          .attr('class', 'radio-container')
+          .html(function(d) {
+            return '<input type="radio" name="granularity" value="' + d + '" /><span class="radio-label">' + d + '</span>';
+          })
+          .on('click', function(d) {
+            $(this).find('input').click()
+          })
+          .selectAll('input')
+          .data(arr)
+          .on('click', function(d) {
+            picker.setBlocks(d);
+          })
+  ;
 
   function updateButtons() {
     if (draw) {
