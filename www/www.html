@@ -15,34 +15,33 @@
             </div>
         </div>
         <div id="pixels-div" class="span8">
-            <div id="buttons" class="row">
-                <div id="page-buttons" class="span2">
-                    <input id="pause-button" type="button" value="Pause" />
-                    <input id="step-button" type="button" value="Step" />
+            <div id="buttons" class="span5">
+                <div class="row">
+                    <div style="width:40%;float:left;">
+                        <div id="page-buttons" class="row unspan">
+                            <input id="pause-button" type="button" value="Pause" />
+                            <input id="step-button" type="button" value="Step" />
+                        </div>
+                        {{>range}}
+                    </div>
+                    <div id="pixels-buttons" style="width:60%;float:left;">
+                        <input id="spiral-button" type="button" value="Spiral" />
+                        <input id="line-button" type="button" value="Line" />
+                        <input id="spiral-grid-button" type="button" value="Grid Spiral" />
+                        <input id="hilbert-button" type="button" value="Hilbert" />
+                        <input id="snake-button" type="button" value="Snake" />
+                        <input id="sine-button" type="button" value="Sine" />
+                        <input id="random-button" type="button" value="Random" />
+                    </div>
                 </div>
-                <div id="pixels-buttons" class="span3">
-                    <input id="spiral-button" type="button" value="Spiral" />
-                    <input id="line-button" type="button" value="Line" />
-                    <input id="spiral-grid-button" type="button" value="Grid Spiral" />
-                    <input id="hilbert-button" type="button" value="Hilbert" />
-                    <input id="snake-button" type="button" value="Snake" />
-                    <input id="sine-button" type="button" value="Sine" />
-                    <input id="random-button" type="button" value="Random" />
+                <div class="row" id="lower-right">
+                    <div class="span5">
+                        <svg id="pixels"></svg>
+                    </div>
                 </div>
             </div>
-            <div class="row" id="lower-right">
-                <div class="span5">
-                    <svg id="pixels"></svg>
-                </div>
-                <div id="middle">
-                    {{>picker}}
-                </div>
-            </div>
-            <div class="speed-slider-div">
-                <input class="speed-slider" type="range" min="10" max="1000" />
-                <div class="speed-label" style="float:left; clear:left;">10</div>
-                <div class="cur-speed-label" style="float:left"></div>
-                <div class="speed-label" style="float:right">1000</div>
+            <div id="middle" class="span3 unspan">
+                {{>picker}}
             </div>
         </div>
     </div>
@@ -50,7 +49,8 @@
 
 <template name="picker">
     <div id="picker">
-        <div id="color-picker"></div>
+        <div class="color-picker"></div>
+        <canvas class="color-picker"></canvas>
         <div id="color-preview"></div>
         <div id="color-label"></div>
     </div>

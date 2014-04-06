@@ -20,15 +20,23 @@ getInterpolatedBitNumbers = function(d) {
 
 Picker = function(options) {
 
-  var $canvas = options.$canvas;
+  var $el = options.$el;
+  var $elem = $el.find('div.color-picker');
+  var $canvas = $el.find('canvas.color-picker');
+  var $pickers = $el.find('.color-picker');
+
   var canvas = $canvas[0];
+  this.canvas = canvas;
+
+  var $colorPreview = $('#color-preview');
+  var $colorLabel = $('#color-label');
 
   var canvasWidth = options.width || options.height || 250;
   var canvasHeight = options.height || options.width || 250;
   $canvas.attr('width', canvasWidth);
   $canvas.attr('height', canvasHeight);
-  $canvas.css('width', canvasWidth);
-  $canvas.css('height', canvasHeight);
+  $elem.css('width', canvasWidth);
+  $elem.css('height', canvasHeight);
 
   var width = options.blocks || 512;
   var height = options.blocks || 512;
@@ -37,26 +45,44 @@ Picker = function(options) {
   var blockHeight = canvasHeight / height;
 
   var scalingFactor = 256*256*256/width/height;
+  var scaleCubeRt = Math.round(Math.pow(scalingFactor, 1/3));
+  console.log("scaling factor: %d, cbrt: %d", scalingFactor, scaleCubeRt);
 
-  function getColorForMouseEvent(e) {
-    var blockX = e.offsetX / blockWidth;
-    var blockY = e.offsetY / blockHeight;
+  var lastMouseBlockX = null;
+  var lastMouseBlockY = null;
+
+  function getColorForBlock(blockX, blockY, fromMouse) {
     var d = xy2d(blockX, blockY);
-    var scaledD = d*scalingFactor;
-//    var p = getInterpolatedBitNumbers(scaledD);
+    var scaledD = d * scalingFactor;
     var p = d2xyz(scaledD);
+
+    if (fromMouse && (lastMouseBlockX != blockX || lastMouseBlockY != blockY)) {
+      console.log("(%d,%d), d: %d, rgb: (%s)", blockX, blockY, d, p.pp());
+      lastMouseBlockX = blockX;
+      lastMouseBlockY = blockY;
+    }
     return p;
   }
 
-  $canvas.on('mousemove', function(e) {
+  function getColorForMouseEvent(e) {
+    var blockX = Math.floor(e.offsetX / blockWidth);
+    var blockY = Math.floor(e.offsetY / blockHeight);
+    if (0 <= blockX && blockX < width && 0 <= blockY && blockY < height) {
+      return getColorForBlock(blockX, blockY, true);
+    }
+  }
+
+  $pickers.on('mousemove', function(e) {
     var p = getColorForMouseEvent(e);
+    if (!p) return;
     var color = rgbString(p.x, p.y, p.z);
-    $('#color-preview').css('background-color', color);
-    $('#color-label').html(rgbHexString(p.x, p.y, p.z) + " (" + p.pp() + ")");
+    $colorPreview.css('background-color', color);
+    $colorLabel.html(rgbHexString(p.x, p.y, p.z) + " (" + p.pp() + ")");
   });
 
-  $canvas.on('click', function(e) {
+  $pickers.on('click', function(e) {
     var p = getColorForMouseEvent(e);
+    if (!p) return;
     console.log("got color: " + rgbString(p.x, p.y, p.z));
     var setObj = {};
     for (idx in ['r', 'g', 'b']) {
@@ -72,24 +98,39 @@ Picker = function(options) {
 
     var imageData = c.createImageData(canvas.width, canvas.height);
 
-    log("scaling factor: " + scalingFactor);
-
+    console.log("drawing..");
     for (var d = 0; d < width*height; d++) {
+      if (d % 100000 == 0) {
+        console.log("\t%d of %d..", d, width*height);
+      }
       var xy = d2xy(d);
       var x = xy.x;
       var y = xy.y;
-      var scaledD = d * scalingFactor;
-//    var p = getInterpolatedBitNumbers(scaledD);
-      var p = d2xyz(scaledD);
-      log(x+','+y+':\t'+ d +"\t"+ p.pp());
+      var color = getColorForBlock(x, y);
 
       for (var px = Math.floor(canvas.width * x / width); px < Math.floor(canvas.width * (x+1) / width); px++) {
         for (var py = Math.floor(canvas.height * y / height); py < Math.floor(canvas.height * (y+1) / height); py++) {
-          setPixel(imageData, px, py, p.x, p.y, p.z, 255);
+          setPixel(imageData, px, py, color.x, color.y, color.z, 255);
         }
       }
     }
-
+    console.log("done");
     c.putImageData(imageData, 0, 0);
   };
+
+  var drawnYet = false;
+
+  this.updateDraw = function(draw) {
+    if (draw) {
+      $elem.hide();
+      if (!drawnYet) {
+        this.drawHilbertPicker();
+        drawnYet = true;
+      }
+    } else {
+      $canvas.hide();
+    }
+  };
+
+  this.updateDraw(options.draw);
 };

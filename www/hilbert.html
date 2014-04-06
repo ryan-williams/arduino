@@ -11,5 +11,15 @@
     </div>
     <div id="container" class="row">
         {{>picker}}
+        <div id="controls">
+            <a id="save-link">
+                <input type="button" value="Save Image" id="save-button" />
+            </a>
+            <div id="granularity-slider">{{>range}}</div>
+            <div id="drawn-buttons">
+                <input type="button" value="Drawn" id="drawn-button" />
+                <input type="button" value="Cached" id="cached-button" />
+            </div>
+        </div>
     </div>
 </template>

@@ -1,5 +1,6 @@
 
 d2xy = function(d) {
+  d = Math.floor(d);
   var curPos = {
     x: 0,
     y: 0
@@ -46,6 +47,8 @@ d2xy = function(d) {
 var horseshoe2d = [0, 1, 3, 2];
 
 xy2d = function(x, y) {
+  x = Math.floor(x);
+  y = Math.floor(y);
   var s = 1;
   var max = Math.max(x,y);
   var level = 0;

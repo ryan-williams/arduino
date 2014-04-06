@@ -21,8 +21,7 @@ Template.colors.rendered = function() {
   var firstTime = false;
 
   var speedSlider = new Range({
-    $el: $('.speed-slider-div input'),
-    $label: $('.cur-speed-label'),
+    $el: $('.slider-div'),
     min: 10,
     max: 1000,
     valueSubscribeFn: function() {
@@ -70,7 +69,7 @@ Template.colors.rendered = function() {
   });
 
   new Picker({
-    $canvas: $('#color-picker'),
+    $el: $('#picker'),
     width: 300,
     height: 300
   });

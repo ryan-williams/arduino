@@ -23,6 +23,10 @@ Point = function(x, y, z) {
 
   this.n = 4*this.z + 2*this.y + this.x;
 
+  this.map = function(fn) {
+    return new Point([x,y,z].map(fn));
+  };
+
   this.mult = function(n) {
     return new Point(this.x*n, this.y*n, this.z*n);
   };
@@ -87,6 +91,7 @@ d2xyz = function() {
     args = args[0];
   }
   var points = args.map(function(d) {
+    d = Math.floor(d);
     var p = new Point();
     var s = 1;
     var iter = 0;
@@ -130,6 +135,9 @@ prettyD2XYZ = function() {
 };
 
 xyz2d = function(x, y, z) {
+  x = Math.floor(x);
+  y = Math.floor(y);
+  z = Math.floor(z);
   var p = new Point(x,y,z);
   var s = 1;
   var level = 0;
