@@ -50,7 +50,10 @@ Template.colors.rendered = function() {
   });
 
   var prevFrameIdx = -1;
+  var lastFrameReset = 0;
   var totalMissedFrames = 0;
+  var lastSkipTop = 0;
+  var lastSpeed = null;
   Deps.autorun(function() {
     var c = getColorRecord();
     if (c && c[0]) {
@@ -59,14 +62,16 @@ Template.colors.rendered = function() {
         var framesMissed = frameIdx - (prevFrameIdx + 1);
         if (framesMissed > 0) {
           console.log(
-              "missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
+              "%d frames later, missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
+              (frameIdx - lastSkipTop),
               framesMissed,
               prevFrameIdx,
               frameIdx,
-                  frameIdx == 0 ? "???" : totalMissedFrames / frameIdx,
+                  frameIdx == 0 ? "???" : (totalMissedFrames / (frameIdx - lastFrameReset)).toFixed(2),
               totalMissedFrames,
-              frameIdx
+              (frameIdx - lastFrameReset)
           );
+          lastSkipTop = frameIdx;
           totalMissedFrames += framesMissed;
         } else if (framesMissed < 0) {
           console.error("wtf? redid frame %d, was at %d", frameIdx, prevFrameIdx);
@@ -86,6 +91,12 @@ Template.colors.rendered = function() {
         firstTime = true;
         pixels.setSpiralCoords();
       }
+      if (c.speed != lastSpeed) {
+        console.log("resetting due to new speed " + c.speed);
+        totalMissedFrames = 0;
+        lastFrameReset = frameIdx;
+      }
+      lastSpeed = c.speed;
     }
   });
 
