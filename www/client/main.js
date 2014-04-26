@@ -7,12 +7,6 @@ var i;
 
 var fontSize = 15;
 
-var prevFrameIdx = -1;
-var lastFrameReset = 0;
-var totalMissedFrames = 0;
-var lastSkipTop = 0;
-var lastSpeed = null;
-
 var standardOpts = {
   fontSize: fontSize,
   minBrightness: minBrightness,
@@ -22,8 +16,8 @@ var standardOpts = {
 
 var firstTime = false;
 
-var totalTimer = new Timer();
-var secondTimer = new Timer();
+var fpsMonitor = new FpsMonitor();
+var frameMonitor = new FrameMonitor();
 
 var c = null;
 
@@ -31,26 +25,7 @@ function rerenderPage() {
   if (!c || !c[0]) return;
   var frameIdx = c.frameIdx;
 
-  if (prevFrameIdx != -1) {
-    var framesMissed = frameIdx - (prevFrameIdx + 1);
-    if (framesMissed > 0) {
-      console.log(
-          "%d frames later, missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
-          (frameIdx - lastSkipTop),
-          framesMissed,
-          prevFrameIdx,
-          frameIdx,
-              frameIdx == 0 ? "???" : (totalMissedFrames / (frameIdx - lastFrameReset)).toFixed(2),
-          totalMissedFrames,
-          (frameIdx - lastFrameReset)
-      );
-      lastSkipTop = frameIdx;
-      totalMissedFrames += framesMissed;
-    } else if (framesMissed < -1) {
-      console.error("wtf? redid frame %d, was at %d", frameIdx, prevFrameIdx);
-    }
-  }
-  prevFrameIdx = frameIdx;
+  frameMonitor.logFrame(frameIdx, c.speed);
 
   var colors = [c[0], c[1], c[2]];
   colors.forEach(function(color) {
@@ -65,13 +40,6 @@ function rerenderPage() {
     firstTime = true;
     pixels.setSpiralCoords();
   }
-
-  if (c.speed != lastSpeed) {
-    console.log("resetting due to new speed " + c.speed);
-    totalMissedFrames = 0;
-    lastFrameReset = frameIdx;
-  }
-  lastSpeed = c.speed;
 }
 
 function initReactiveUpdating(shouldRenderToo) {
