@@ -120,7 +120,7 @@ Template.colors.rendered = function() {
     }
   });
 
-  initReactiveUpdating();
+  initReactiveUpdating(true);
 
   new Picker({
     selector: '#picker',
