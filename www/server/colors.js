@@ -95,9 +95,25 @@ var frameIdx = 0;
 var totalTimer = new Timer();
 var secondTimer = new Timer();
 
+frames = new ReactiveArray(function() {
+  var n = colors.map(function(color) { return color.step(); });
+  return { r: n[0], g: n[1], b: n[2] }
+});
+
+Meteor.methods({
+  getFrameIdx: function() {
+    return frames.getIdx();
+  },
+
+  getFrames: function(from, to) {
+    return frames.get(from, to);
+  }
+});
+
+
 function stepColor() {
 
-  colors.forEach(function(color) { color.step(); });
+  frames.advance();
   frameIdx++;
 
   var setObj = {
