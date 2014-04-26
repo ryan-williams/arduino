@@ -92,8 +92,7 @@ var colors =
 
 var frameIdx = 0;
 
-var totalTimer = new Timer();
-var secondTimer = new Timer();
+var fpsMonitor = new FpsMonitor();
 
 frames = new ReactiveArray(function() {
   var n = colors.map(function(color) { return color.step(); });
@@ -134,12 +133,7 @@ function stepColor() {
 
   Colors.update({ _id: id }, { $set: setObj });
 
-  totalTimer.checkpoint();
-  secondTimer.checkpoint();
-  if (totalTimer.justCrossedSecondBoundary) {
-    console.log("total ms/f: %s, this second: %s", totalTimer.toString(), secondTimer.toString());
-    secondTimer.clear();
-  }
+  fpsMonitor.checkpoint(true);
 }
 
 var interval = null;
@@ -150,8 +144,7 @@ function handleStartOrPause(newRecord) {
   if (paused || step) {
     Meteor.clearInterval(interval);
     interval = null;
-    totalTimer.clear();
-    secondTimer.clear();
+    fpsMonitor.clear();
   } else {
     interval = Meteor.setInterval(stepColor, stepTimeMS);
   }
@@ -184,8 +177,7 @@ runColorDisplay = function() {
       if (!!nr.speed && nr.speed != stepTimeMS) {
         console.log("setting new speed: " + nr.speed);
         stepTimeMS = nr.speed;
-        totalTimer.clear();
-        secondTimer.clear();
+        fpsMonitor.clear();
         if (interval != null) {
           Meteor.clearInterval(interval);
           interval = Meteor.setInterval(stepColor, stepTimeMS);
