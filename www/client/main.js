@@ -22,7 +22,13 @@ var standardOpts = {
 
 var firstTime = false;
 
-function rerenderPage(c) {
+var totalTimer = new Timer();
+var secondTimer = new Timer();
+
+var c = null;
+
+function rerenderPage() {
+  if (!c || !c[0]) return;
   var frameIdx = c.frameIdx;
 
   if (prevFrameIdx != -1) {
@@ -68,6 +74,19 @@ function rerenderPage(c) {
   lastSpeed = c.speed;
 }
 
+function initReactiveUpdating(shouldRenderToo) {
+  Deps.autorun(function() {
+    c = getColorRecord();
+    if (shouldRenderToo) {
+      rerenderPage();
+    }
+  });
+}
+
+//function initPollingAnimation() {
+//  window.requestAnimationFrame();
+//}
+
 Template.colors.rendered = function() {
 
   Math.seedrandom(3);
@@ -77,7 +96,7 @@ Template.colors.rendered = function() {
     min: 10,
     max: 1000,
     valueSubscribeFn: function() {
-      var c = getColorRecord();
+      c = getColorRecord();
       if (c) {
         return c.speed;
       }
@@ -101,12 +120,7 @@ Template.colors.rendered = function() {
     }
   });
 
-  Deps.autorun(function() {
-    var c = getColorRecord();
-    if (c && c[0]) {
-      rerenderPage(c);
-    }
-  });
+  initReactiveUpdating();
 
   new Picker({
     selector: '#picker',
