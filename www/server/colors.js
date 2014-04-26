@@ -40,7 +40,6 @@ var stepTimeMS = 40;
 var maxV = 10;
 var minBrightness = 0;
 var maxBrightness = 255;
-var middleBrightness = (minBrightness + maxBrightness) / 2;
 defaultMaxLength = 256;
 
 var i;
@@ -91,12 +90,16 @@ var colors =
           return new ColorWalks(params);
         });
 
+var frameIdx = 0;
 
 function stepColor() {
 
   colors.forEach(function(color) { color.step(); });
+  frameIdx++;
 
-  var setObj = {};
+  var setObj = {
+    frameIdx: frameIdx
+  };
   [0,1,2].forEach(function(idx) {
     [
       'values',

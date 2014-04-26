@@ -49,9 +49,30 @@ Template.colors.rendered = function() {
     }
   });
 
+  var prevFrameIdx = -1;
+  var totalMissedFrames = 0;
   Deps.autorun(function() {
     var c = getColorRecord();
     if (c && c[0]) {
+      var frameIdx = c.frameIdx;
+      if (prevFrameIdx != -1) {
+        var framesMissed = frameIdx - (prevFrameIdx + 1);
+        if (framesMissed > 0) {
+          console.log(
+              "missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
+              framesMissed,
+              prevFrameIdx,
+              frameIdx,
+                  frameIdx == 0 ? "???" : totalMissedFrames / frameIdx,
+              totalMissedFrames,
+              frameIdx
+          );
+          totalMissedFrames += framesMissed;
+        } else if (framesMissed < 0) {
+          console.error("wtf? redid frame %d, was at %d", frameIdx, prevFrameIdx);
+        }
+      }
+      prevFrameIdx = frameIdx;
       var colors = [c[0], c[1], c[2]];
       colors.forEach(function(color) {
         color.values = color.values || [];
