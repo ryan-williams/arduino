@@ -21,6 +21,8 @@ var frameMonitor = new FrameMonitor();
 
 var c = null;
 
+var paused = false;
+
 function rerenderPage() {
   if (!c || !c[0]) return;
   var frameIdx = c.frameIdx;
@@ -40,6 +42,8 @@ function rerenderPage() {
     firstTime = true;
     pixels.setSpiralCoords();
   }
+
+  fpsMonitor.checkpoint(true, c.speed);
 }
 
 function initReactiveUpdating(shouldRenderToo) {
@@ -89,6 +93,13 @@ Template.colors.rendered = function() {
   });
 
   initReactiveUpdating(true);
+
+  Deps.autorun(function() {
+    if(isPaused() != paused) {
+      paused = !paused;
+      fpsMonitor.clear();
+    }
+  });
 
   new Picker({
     selector: '#picker',

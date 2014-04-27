@@ -3,12 +3,21 @@ FpsMonitor = function() {
   var totalTimer = new Timer();
   var secondTimer = new Timer();
 
-  this.checkpoint = function(shouldPrintStatus) {
+  var lastSpeed = null;
+
+  this.checkpoint = function(shouldPrintStatus, speed) {
     totalTimer.checkpoint();
     secondTimer.checkpoint();
 
+    if (speed) {
+      if (lastSpeed && speed != lastSpeed) {
+        this.clear();
+      }
+      lastSpeed = speed;
+    }
+
     if (totalTimer.justCrossedSecondBoundary) {
-      console.log(this.toString());//"total ms/f: %s, this second: %s", totalTimer.toString(), secondTimer.toString());
+      console.log(this.toString());
       secondTimer.clear();
     }
   };
@@ -16,6 +25,7 @@ FpsMonitor = function() {
   this.clear = function() {
     totalTimer.clear();
     secondTimer.clear();
+    lastSpeed = null;
   };
 
   this.toString = function() {

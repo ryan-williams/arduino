@@ -17,7 +17,7 @@ FrameMonitor = function() {
       var framesMissed = frameIdx - (prevFrameIdx + 1);
       if (framesMissed > 0) {
         console.log(
-            "%d frames later, missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
+            "\t%d frames later, missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
             (frameIdx - lastSkipTop),
             framesMissed,
             prevFrameIdx,
