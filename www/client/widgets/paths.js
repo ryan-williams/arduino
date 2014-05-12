@@ -2,7 +2,7 @@
 Paths = function(options) {
 
   var colors = options.colors;
-
+  var maxLength = options.maxLength || 256;
   var pathsUpperLeft = { x: 0, y: options.fontSize };
   var pathsLabelLeft = 5;
   var pathsMaxHeight = options.maxBrightness - options.minBrightness;
@@ -28,7 +28,7 @@ Paths = function(options) {
     var paths =
         pathsGroup
             .selectAll('path')
-            .attr('stroke', function(d) { return d.colorFn().color; })
+            .attr('stroke', function(d, idx) { return ColorMetaData[idx].color; })
             .attr('stroke-width', 2)
             .attr('fill', 'transparent')
         ;
@@ -74,7 +74,7 @@ Paths = function(options) {
         .selectAll('path')
         .attr('d', function(d) {
           var color = d.colorFn();
-          var xScale = pathsWidth / color.maxLength;
+          var xScale = pathsWidth / maxLength;
           return pathData(
               color.values.map(function(value) {
                 return interpolate(

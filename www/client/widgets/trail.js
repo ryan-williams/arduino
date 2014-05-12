@@ -2,6 +2,7 @@
 Trail = function(options) {
 
   var colors = options.colors;
+  var maxLength = options.maxLength || 256;
 
   this.addColorTrail = function() {
     d('#trail')
@@ -25,7 +26,7 @@ Trail = function(options) {
         .data(colors[0].values.map(function(histElem, elemIdx) {
           return {
             colorValues: colors.map(function(color) { return color.values[elemIdx]; }),
-            width: Math.ceil(trailWidth / colors[0].maxLength)
+            width: Math.ceil(trailWidth / maxLength)
           };
         }))
         .enter()
