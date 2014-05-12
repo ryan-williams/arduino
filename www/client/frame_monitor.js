@@ -4,7 +4,6 @@ FrameMonitor = function() {
   var lastFrameReset = 0;
   var totalMissedFrames = 0;
   var lastSkipTop = 0;
-  var lastSpeed = null;
 
   this.reset = function(frameIdx) {
     lastFrameReset = frameIdx;
@@ -12,7 +11,7 @@ FrameMonitor = function() {
     lastSkipTop = 0;
   };
 
-  this.logFrame = function(frameIdx, speed) {
+  this.logFrame = function(frameIdx) {
     if (prevFrameIdx != -1) {
       var framesMissed = frameIdx - (prevFrameIdx + 1);
       if (framesMissed > 0) {
@@ -36,12 +35,5 @@ FrameMonitor = function() {
       }
     }
     prevFrameIdx = frameIdx;
-
-    if (speed != lastSpeed) {
-      console.log("resetting FrameMonitor due to new speed " + speed);
-      this.reset(frameIdx);
-    }
-    lastSpeed = speed;
-
   }
 };

@@ -172,7 +172,7 @@ runColorDisplay = function() {
     changed: handleStartOrPause
   });
 
-  Colors.find({_id: id}).observe({
+  Speeds.find({_id:id}).observe({
     changed: function(nr) {
       if (!!nr.speed && nr.speed != stepTimeMS) {
         console.log("setting new speed: " + nr.speed);
@@ -183,7 +183,11 @@ runColorDisplay = function() {
           interval = Meteor.setInterval(stepColor, stepTimeMS);
         }
       }
+    }
+  });
 
+  Colors.find({_id: id}).observe({
+    changed: function(nr) {
       var unsetObj = {};
       var setObj = {};
       var foundNewPos = false;

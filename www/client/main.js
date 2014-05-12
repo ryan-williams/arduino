@@ -68,10 +68,7 @@ Template.colors.rendered = function() {
     min: 10,
     max: 1000,
     valueSubscribeFn: function() {
-      c = getColorRecord();
-      if (c) {
-        return c.speed;
-      }
+      return getSpeed();
     },
     v2r: function(value) {
       var logValue = Math.log(value);
@@ -87,7 +84,7 @@ Template.colors.rendered = function() {
               )
           );
       console.log("sending down speed: " + newSpeed);
-      Colors.update({_id: id}, { $set: { speed: newSpeed }});
+      Speeds.update({_id: id}, { $set: { speed: newSpeed }});
       return newSpeed;
     }
   });
@@ -97,6 +94,16 @@ Template.colors.rendered = function() {
   Deps.autorun(function() {
     if(isPaused() != paused) {
       paused = !paused;
+      fpsMonitor.clear();
+    }
+  });
+
+  Deps.autorun(function() {
+    var newSpeed = getSpeed();
+    if (newSpeed != speed) {
+      console.log("resetting FrameMonitor due to new speed " + speed);
+      speed = newSpeed;
+      frameMonitor.reset(serverFrameIdx);
       fpsMonitor.clear();
     }
   });

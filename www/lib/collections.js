@@ -4,9 +4,20 @@ Paused = new Meteor.Collection("paused");
 Walks = new Meteor.Collection("walks");
 BlendWeights = new Meteor.Collection("blend_weights");
 
+Speeds = new Meteor.Collection("speeds");
+
 id = "abcd";
 getColorRecord = function() {
   return Colors.findOne({_id: id});
+};
+
+getSpeed = function() {
+  var speedObj = Speeds.findOne({_id:id});
+  if (speedObj) return speedObj.speed;
+  else {
+    Speeds.upsert({_id:id}, { $set: { speed: 30 }});
+    return 30;
+  }
 };
 
 isPaused = function() {
