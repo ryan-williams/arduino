@@ -22,18 +22,33 @@ var frameMonitor = new FrameMonitor();
 var c = null;
 
 var paused = false;
+var speed = 30;
+
+serverFrameIdx = 0;
+serverFrames = [];
+framesBuffer = 10;
+numFramesToFetch = 20;
 
 function rerenderPage() {
   if (!c || !c[0]) return;
-  var frameIdx = c.frameIdx;
 
-  frameMonitor.logFrame(frameIdx, c.speed);
+  frameMonitor.logFrame(serverFrameIdx);
 
-  var colors = [c[0], c[1], c[2]];
-  colors.forEach(function(color) {
-    color.values = color.values || [];
-  });
-  standardOpts.colors = colors;
+  var mockedColors = serverFrames.length == 0 ? [] :
+    serverFrames[0].map(function(entry, idx) {
+      return {
+        values: serverFrames.map(function (frame) {
+          return frame[idx];
+        })
+      };
+    });
+
+//  var colors = [c[0], c[1], c[2]];
+  console.log("c: %O, serverFrames: %O, mocked: %O", c, serverFrames, mockedColors);
+//  colors.forEach(function(color) {
+//    color.values = color.values || [];
+//  });
+  standardOpts.colors = mockedColors;
   new Sliders(standardOpts).addNumLines().update();
   new Paths(standardOpts).addPaths().update();
   new Trail(standardOpts).addColorTrail().update();
@@ -43,21 +58,45 @@ function rerenderPage() {
     pixels.setSpiralCoords();
   }
 
-  fpsMonitor.checkpoint(true, c.speed);
+  fpsMonitor.checkpoint(true);
 }
 
 function initReactiveUpdating(shouldRenderToo) {
   Deps.autorun(function() {
-    c = getColorRecord();
+    //c = getColorRecord();
+    serverFrameIdx = getFrameIdx();
+
+    console.log("\t\tgot server frame %d", serverFrameIdx);
+    if (serverFrameIdx + framesBuffer > serverFrames.length) {
+      console.log(
+          "\tbuffer down to %d, fetching [%d,%d)..",
+              serverFrames.length - serverFrameIdx,
+          serverFrames.length,
+              serverFrames.length + numFramesToFetch
+      );
+      Meteor.call('getFrames', serverFrames.length, serverFrames.length + numFramesToFetch, function(err, frames) {
+        console.log("\tgot %d frames", frames.length);
+        serverFrames = serverFrames.concat(frames);
+      });
+    }
+    if (serverFrameIdx >= serverFrames.length) {
+      console.log("\ttrying to render frame %d, only have up to %d", /*"color:red", */serverFrameIdx, serverFrames.length);
+    } else {
+      c = serverFrames[serverFrameIdx];
+    }
+
     if (shouldRenderToo) {
       rerenderPage();
     }
   });
 }
 
-//function initPollingAnimation() {
-//  window.requestAnimationFrame();
-//}
+function initPollingAnimation() {
+  function stepFrame() {
+
+  }
+  window.requestAnimationFrame(stepFrame);
+}
 
 Template.colors.rendered = function() {
 

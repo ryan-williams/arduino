@@ -12,9 +12,12 @@ Sliders = function(options) {
   var minBrightness = options.minBrightness;
   var maxBrightness = options.maxBrightness;
 
-  function getNumLineData(colorWalk) {
+  function getNumLineData(colorWalk, metadata) {
+    var position = colorWalk.values[colorWalk.values.length - 1];
     return {
-      colorWalk: colorWalk,
+      //colorWalk: colorWalk,
+      position: position,
+      metadata: metadata,
       elems: function(width) {
         var rightEdge = width - rightPad;
         return {
@@ -38,7 +41,7 @@ Sliders = function(options) {
           labels: {
             currentValue: {
               fn: function() {
-                return colorWalk.position;
+                return position;//colorWalk.position;
               },
               x: 10,
               y: numLineStartY - serifHeight
@@ -64,7 +67,7 @@ Sliders = function(options) {
         .selectAll('g.numlines')
         .selectAll('line')
         .data(function(d) {
-          return d.lines.addEach('color', d.colorWalk.color);
+          return d.lines.addEach('color', d.metadata.color);
         })
         .enter()
         .append('line')
@@ -85,7 +88,7 @@ Sliders = function(options) {
         .data(function(d, i) {
           return [{
             fn: function() {
-              return d.colorWalk.position;
+              return d.position;
             },
             cx: d.lines[1].start.x,
             cy: d.lines[1].start.y,
@@ -112,8 +115,8 @@ Sliders = function(options) {
         .data(function(d) {
           return [
             d.labels.currentValue,
-            add(d.labels.minValue, 'color', d.colorWalk.color),
-            add(d.labels.maxValue, 'color', d.colorWalk.color)
+            add(d.labels.minValue, 'color', d.metadata.color),
+            add(d.labels.maxValue, 'color', d.metadata.color)
           ]
         })
         .enter()
@@ -126,7 +129,7 @@ Sliders = function(options) {
   }
 
   this.addNumLines = function() {
-    var numLines = this.colors.map(function(color) { return getNumLineData(color); });
+    var numLines = this.colors.map(function(color, idx) { return getNumLineData(color, ColorMetaData[idx]); });
 
     d('.sliders')
         .selectAll('div.slider-div.svg-div')
@@ -147,7 +150,7 @@ Sliders = function(options) {
             sliderDivs
                 .selectAll('svg.slider')
                 .data(function(d) {
-                  return [ add(d.elems(width), 'colorWalk', d.colorWalk) ];
+                  return [ add(add(d.elems(width), 'metadata', d.metadata), 'position', d.position) ];
                 })
     ;
     this.svgs
@@ -163,7 +166,7 @@ Sliders = function(options) {
                 .on('click', function(d) {
                   var logicalX = interpolate(d3.event.offsetX, d.left, d.right, minBrightness, maxBrightness);
                   var setObj = {};
-                  var idx = rgb[d.colorWalk.abbrev];
+                  var idx = rgb[d.metadata.abbrev];
                   setObj[idx + '.newPosition'] = logicalX;
                   Colors.update({_id: id}, { $set: setObj });
                 })

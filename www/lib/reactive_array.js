@@ -1,8 +1,9 @@
 
-ReactiveArray = function(generator, initialValue) {
+ReactiveArray = function(generator, generatedCallback, initialValue) {
   var arr = initialValue || [];
   var idx = new ReactiveInt();
   var curIdx = 0;
+  var curIdxDelta = idx.get() - curIdx;
 
   var maxLength = 100;
   var genBelow = 20;
@@ -24,8 +25,10 @@ ReactiveArray = function(generator, initialValue) {
   };
 
   this.get = function(from, to) {
-    from = from || 0;
-    to = Math.min(to || arr.length, arr.length);
+    from -= curIdxDelta;
+    to -= curIdxDelta;
+//    from = from || 0;
+//    to = Math.min(to || arr.length, arr.length);
     return arr.slice(from, to);
   };
 
@@ -37,9 +40,17 @@ ReactiveArray = function(generator, initialValue) {
       arr.push(generator());
     }
 
-    //console.log("gen'd %d frames, cur was %d, total down from %d to %d", i, curIdx, arr.length - i, arr.length - curIdx);
+    console.log("gen'd %d frames, cur was %d, total down from %d to %d", i, curIdx, arr.length - i, arr.length - curIdx);
     arr = arr.slice(curIdx);
     curIdx = 0;
+    curIdxDelta = idx.get();
+    if (generatedCallback) {
+      generatedCallback(arr, arr.length - i, arr.length);
+    }
+  };
+
+  while (arr.length < genBelow) {
+    this.maybeGen();
   }
 };
 

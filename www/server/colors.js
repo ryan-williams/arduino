@@ -5,6 +5,11 @@ if (!p) {
   Paused.insert({_id:id, paused: true});
 }
 
+FrameIdxs.upsert({_id: id}, { $set: { idx: 0 }});
+console.log("frame obj: %s", FrameIdxs.findOne({_id:id}).idx);
+
+Frames.upsert({_id: id}, { $set: { 0: { r: 0, g: 0, b: 0 } }});
+
 var c = Colors.findOne({_id:id});
 
 if (!c || !('0' in c)) {
@@ -94,26 +99,41 @@ var frameIdx = 0;
 
 var fpsMonitor = new FpsMonitor();
 
-frames = new ReactiveArray(function() {
-  var n = colors.map(function(color) { return color.step(); });
-  return { r: n[0], g: n[1], b: n[2] }
-});
+frames = new ReactiveArray(
+    function() {
+      var n = colors.map(function(color) { return color.step(); });
+      return n;//{ r: n[0], g: n[1], b: n[2] };
+    }
+//    ,function(arr, from, to) {
+//      var setObj = {};
+//      for (var i = from; i < to; i++) {
+//        setObj[i] = { r: arr[i][0], g: arr[i][1], b: arr[i][2] }
+//      }
+//      console.log("server saving frames [%d,%d)", from, to);
+//      Frames.update({_id: id}, { $set: { v: setObj }});
+//    }
+);
 
 Meteor.methods({
   getFrameIdx: function() {
+    console.log("method: getFrameIdx: %d", frames.getIdx());
     return frames.getIdx();
   },
 
   getFrames: function(from, to) {
+    console.log("received call to getFrames(%d,%d)", from, to);
     return frames.get(from, to);
   }
 });
 
-
 function stepColor() {
-
+//  colors.map(function(color) { return color.step(); });
   frames.advance();
+
   frameIdx++;
+  FrameIdxs.update({_id: id}, { $set: { idx: frameIdx }} );
+
+  console.log("frame obj: %s", FrameIdxs.findOne({_id:id}).idx);
 
   var setObj = {
     frameIdx: frameIdx
@@ -141,6 +161,7 @@ var interval = null;
 function handleStartOrPause(newRecord) {
   var step = !!newRecord.step;
   var paused = !!newRecord.paused;
+  console.log("handleStartOrPause: " + paused);
   if (paused || step) {
     Meteor.clearInterval(interval);
     interval = null;

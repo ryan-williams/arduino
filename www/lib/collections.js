@@ -4,6 +4,9 @@ Paused = new Meteor.Collection("paused");
 Walks = new Meteor.Collection("walks");
 BlendWeights = new Meteor.Collection("blend_weights");
 
+FrameIdxs = new Meteor.Collection("frame_idxs");
+Frames = new Meteor.Collection("frames");
+
 Speeds = new Meteor.Collection("speeds");
 
 id = "abcd";
@@ -18,6 +21,15 @@ getSpeed = function() {
     Speeds.upsert({_id:id}, { $set: { speed: 30 }});
     return 30;
   }
+};
+
+getFrameIdx = function() {
+  var frameIdxObj = FrameIdxs.findOne({_id:id});
+  if (frameIdxObj) {
+    return frameIdxObj.idx;
+  }
+  FrameIdxs.upsert({_id:id}, { $set: { idx: 0 }});
+  return 0;
 };
 
 isPaused = function() {
