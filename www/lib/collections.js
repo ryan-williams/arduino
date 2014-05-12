@@ -27,7 +27,6 @@ getFrameIdx = function() {
   if (frameIdxObj) {
     return frameIdxObj.idx;
   }
-  FrameIdxs.upsert({_id:id}, { $set: { idx: 0 }});
   return 0;
 };
 
