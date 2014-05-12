@@ -18,7 +18,6 @@ getSpeed = function() {
   var speedObj = Speeds.findOne({_id:id});
   if (speedObj) return speedObj.speed;
   else {
-    Speeds.upsert({_id:id}, { $set: { speed: 30 }});
     return 30;
   }
 };
