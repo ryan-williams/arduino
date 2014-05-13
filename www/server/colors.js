@@ -100,9 +100,14 @@ var frameIdx = 0;
 var fpsMonitor = new FpsMonitor();
 
 frames = new ReactiveArray(
-    function() {
-      var n = colors.map(function(color) { return color.step(); });
-      return n;//{ r: n[0], g: n[1], b: n[2] };
+    {
+      maxLength: 100,
+      genBelow: 20,
+      genChunk: 1,
+      generator: function() {
+        var n = colors.map(function(color) { return color.step(); });
+        return n;//{ r: n[0], g: n[1], b: n[2] };
+      }
     }
 //    ,function(arr, from, to) {
 //      var setObj = {};

@@ -1,13 +1,14 @@
 
-ReactiveArray = function(generator, generatedCallback, initialValue) {
-  var arr = initialValue || [];
+ReactiveArray = function(options) {
+  var arr = [];
   var idx = new ReactiveInt();
   var curIdx = 0;
   var curIdxDelta = idx.get() - curIdx;
 
-  var maxLength = 100;
-  var genBelow = 20;
-  var genChunk = 1;
+  var maxLength = options.maxLength || 100;
+  var genBelow = options.genBelow || 20;
+  var genChunk = options.genChunk || 1;
+  var generator = options.generator;
 
   this.getIdx = function() {
     return idx.get();
@@ -44,9 +45,6 @@ ReactiveArray = function(generator, generatedCallback, initialValue) {
     arr = arr.slice(curIdx);
     curIdx = 0;
     curIdxDelta = idx.get();
-    if (generatedCallback) {
-      generatedCallback(arr, arr.length - i, arr.length);
-    }
   };
 
   while (arr.length < genBelow) {
