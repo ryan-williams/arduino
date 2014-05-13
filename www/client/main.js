@@ -19,8 +19,6 @@ var firstTime = false;
 var fpsMonitor = new FpsMonitor();
 var frameMonitor = new FrameMonitor();
 
-var c = null;
-
 var paused = false;
 var speed = 30;
 
@@ -30,24 +28,23 @@ framesBuffer = 10;
 numFramesToFetch = 20;
 
 function rerenderPage() {
-  if (!c || !c[0]) return;
 
   frameMonitor.logFrame(serverFrameIdx);
 
-  var mockedColors = serverFrames.length == 0 ? [] :
-    serverFrames[0].map(function(entry, idx) {
+  var framesToRender = serverFrames.slice(0, serverFrameIdx);
+
+  if (!framesToRender.length) return;
+
+  var mockedColors = framesToRender.length == 0 ? [] :
+      framesToRender[0].map(function(entry, idx) {
       return {
-        values: serverFrames.map(function (frame) {
+        values: framesToRender.map(function (frame) {
           return frame[idx];
         })
       };
     });
 
-//  var colors = [c[0], c[1], c[2]];
-  console.log("c: %O, serverFrames: %O, mocked: %O", c, serverFrames, mockedColors);
-//  colors.forEach(function(color) {
-//    color.values = color.values || [];
-//  });
+//  console.log("serverFrames: %O, mocked: %O", serverFrames, mockedColors);
   standardOpts.colors = mockedColors;
   new Sliders(standardOpts).addNumLines().update();
   new Paths(standardOpts).addPaths().update();
@@ -66,7 +63,7 @@ function initReactiveUpdating(shouldRenderToo) {
     //c = getColorRecord();
     serverFrameIdx = getFrameIdx();
 
-    console.log("\t\tgot server frame %d", serverFrameIdx);
+    //console.log("\t\tgot server frame %d", serverFrameIdx);
     if (serverFrameIdx + framesBuffer > serverFrames.length) {
       console.log(
           "\tbuffer down to %d, fetching [%d,%d)..",
@@ -81,8 +78,6 @@ function initReactiveUpdating(shouldRenderToo) {
     }
     if (serverFrameIdx >= serverFrames.length) {
       console.log("\ttrying to render frame %d, only have up to %d", /*"color:red", */serverFrameIdx, serverFrames.length);
-    } else {
-      c = serverFrames[serverFrameIdx];
     }
 
     if (shouldRenderToo) {
