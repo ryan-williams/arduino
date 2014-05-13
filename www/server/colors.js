@@ -95,8 +95,6 @@ var colors =
           return new ColorWalks(params);
         });
 
-var frameIdx = 0;
-
 var fpsMonitor = new FpsMonitor();
 
 frames = new ReactiveArray(
@@ -109,54 +107,18 @@ frames = new ReactiveArray(
         return n;//{ r: n[0], g: n[1], b: n[2] };
       }
     }
-//    ,function(arr, from, to) {
-//      var setObj = {};
-//      for (var i = from; i < to; i++) {
-//        setObj[i] = { r: arr[i][0], g: arr[i][1], b: arr[i][2] }
-//      }
-//      console.log("server saving frames [%d,%d)", from, to);
-//      Frames.update({_id: id}, { $set: { v: setObj }});
-//    }
 );
 
 Meteor.methods({
-  getFrameIdx: function() {
-    console.log("method: getFrameIdx: %d", frames.getIdx());
-    return frames.getIdx();
-  },
-
   getFrames: function(from, to) {
-    console.log("received call to getFrames(%d,%d)", from, to);
     return frames.get(from, to);
   }
 });
 
 function stepColor() {
-//  colors.map(function(color) { return color.step(); });
   frames.advance();
 
-  frameIdx++;
-  FrameIdxs.update({_id: id}, { $set: { idx: frameIdx }} );
-
-  console.log("frame obj: %s", FrameIdxs.findOne({_id:id}).idx);
-
-  var setObj = {
-    frameIdx: frameIdx
-  };
-  [0,1,2].forEach(function(idx) {
-    [
-      'values',
-      'position',
-      'velocity',
-      'color',
-      'abbrev',
-      'maxLength'
-    ].forEach(function(key) {
-      setObj[idx + '.' + key] = colors[idx][key]
-    });
-  });
-
-  Colors.update({ _id: id }, { $set: setObj });
+  FrameIdxs.update({_id: id}, { $set: { idx: frames.getIdx() }} );
 
   fpsMonitor.checkpoint(true);
 }
