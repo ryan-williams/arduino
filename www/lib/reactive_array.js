@@ -10,6 +10,8 @@ ReactiveArray = function(options) {
   var genChunk = options.genChunk || 1;
   var keepHistory = options.keepHistory || 100;
   var generator = options.generator;
+  var invalidateLookAhead = options.invalidateLookAhead;
+  var onInvalidated = options.onInvalidated;
 
   this.getIdx = function() {
     return idx.get();
@@ -32,7 +34,22 @@ ReactiveArray = function(options) {
     return [[ from + curIdxDelta, to + curIdxDelta ], arr.slice(from, to)];
   };
 
+  this.invalidateLookAhead = function() {
+    console.log("invalidating lookahead, from %d back to %d", arr.length, curIdx);
+    arr = arr.slice(0, curIdx);
+    if (onInvalidated) {
+      onInvalidated(idx.get());
+    }
+  };
+
+  this.maybeInvalidateLookAhead = function() {
+    if (invalidateLookAhead && invalidateLookAhead()) {
+      this.invalidateLookAhead();
+    }
+  };
+
   this.maybeGen = function() {
+    this.maybeInvalidateLookAhead();
     if (arr.length >= curIdx + genBelow) return;
 
     var i = 0;
