@@ -31,7 +31,7 @@ function rerenderPage() {
 
   frameMonitor.logFrame(serverFrameIdx);
 
-  var framesToRender = serverFrames.slice(0, serverFrameIdx);
+  var framesToRender = serverFrames.slice(Math.max(0, serverFrameIdx - defaultMaxLength), serverFrameIdx);
 
   if (!framesToRender.length) return;
 
@@ -40,7 +40,7 @@ function rerenderPage() {
       return {
         values: framesToRender.map(function (frame) {
           return frame[idx];
-        })
+        }).reverse()
       };
     });
 
