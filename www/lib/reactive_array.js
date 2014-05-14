@@ -33,7 +33,7 @@ ReactiveArray = function(options) {
   };
 
   this.maybeGen = function() {
-    if (arr.length - curIdx >= genBelow) return;
+    if (arr.length >= curIdx + genBelow) return;
 
     var i = 0;
     for (; i < genChunk && arr.length < maxLength; ++i) {
