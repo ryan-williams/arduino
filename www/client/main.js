@@ -36,15 +36,17 @@ function rerenderPage() {
   if (!framesToRender.length) return;
 
   var mockedColors = framesToRender.length == 0 ? [] :
-      framesToRender[0].map(function(entry, idx) {
-      return {
-        values: framesToRender.map(function (frame) {
-          return frame[idx];
-        }).reverse()
-      };
-    });
+      [0,1,2].map(function(idx) {
+        var color = [];
+        framesToRender.forEach(function (frame, frameIdx) {
+          color[frameIdx] = frame[idx];
+        });
+        return {
+          values: color.reverse()
+        };
+      });
 
-//  console.log("serverFrames: %O, mocked: %O", serverFrames, mockedColors);
+  console.log("serverFrames: %O, mocked: %O", serverFrames, mockedColors);
   standardOpts.colors = mockedColors;
   new Sliders(standardOpts).addNumLines().update();
   new Paths(standardOpts).addPaths().update();
