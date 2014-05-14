@@ -200,3 +200,13 @@ Array.prototype.addEach = function(k, v) {
   });
   return this;
 };
+
+Array.prototype.exists = function(fn) {
+  for (var i = 0; i < this.length; ++i) if (fn(this[i])) return true;
+  return false;
+};
+
+Array.prototype.forall = function(fn) {
+  for (var i = 0; i < this.length; ++i) if (!fn(this[i])) return false;
+  return true;
+};
