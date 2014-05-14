@@ -104,7 +104,7 @@ frames = new ReactiveArray(
       genChunk: 1,
       generator: function() {
         var n = colors.map(function(color) { return color.step(); });
-        return n;//{ r: n[0], g: n[1], b: n[2] };
+        return n;
       }
     }
 );
@@ -128,7 +128,7 @@ var interval = null;
 function handleStartOrPause(newRecord) {
   var step = !!newRecord.step;
   var paused = !!newRecord.paused;
-  console.log("handleStartOrPause: " + paused);
+  //console.log("handleStartOrPause: " + paused);
   if (paused || step) {
     Meteor.clearInterval(interval);
     interval = null;
@@ -140,6 +140,8 @@ function handleStartOrPause(newRecord) {
   if (step) {
     stepColor();
     Paused.update({_id: id}, {$set: {step: false, paused: true}});
+  } else {
+    console.log("pause change: " + paused);
   }
 }
 

@@ -72,7 +72,7 @@ function initReactiveUpdating(shouldRenderToo) {
               serverFrames.length + numFramesToFetch
       );
       Meteor.call('getFrames', serverFrames.length, serverFrames.length + numFramesToFetch, function(err, frames) {
-        console.log("\tgot %d frames", frames.length);
+        console.log("\tgot %d frames: [%d,%d)", frames.length, serverFrames.length, serverFrames.length + numFramesToFetch);
         serverFrames = serverFrames.concat(frames);
       });
     }

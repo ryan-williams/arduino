@@ -41,7 +41,7 @@ ReactiveArray = function(options) {
       arr.push(generator());
     }
 
-    console.log("gen'd %d frames, cur was %d, total down from %d to %d", i, curIdx, arr.length - i, arr.length - curIdx);
+    //console.log("gen'd %d frames, cur was %d, total down from %d to %d", i, curIdx, arr.length - i, arr.length - curIdx);
     arr = arr.slice(curIdx);
     curIdx = 0;
     curIdxDelta = idx.get();
