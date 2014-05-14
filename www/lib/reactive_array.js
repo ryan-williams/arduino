@@ -58,10 +58,17 @@ ReactiveArray = function(options) {
     }
 
     var newFrontIdx = Math.max(0, curIdx - keepHistory);
-    //console.log("gen'd %d frames, cur was %d, total down from %d to %d", i, curIdx, arr.length - i, arr.length - curIdx);
+    console.log(
+        "gen'd %d frames. was [%d,%d) -> [%d,%d) (cur: %d -> %d). dropping %d",
+        i,
+        0, arr.length,
+        curIdxDelta, arr.length + curIdxDelta,
+        curIdx, idx.get(),
+        newFrontIdx
+    );
     arr = arr.slice(newFrontIdx);
     curIdx -= newFrontIdx;
-    curIdxDelta = idx.get() - newFrontIdx;
+    curIdxDelta += newFrontIdx;
   };
 
   while (arr.length < genBelow) {
