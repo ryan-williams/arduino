@@ -16,12 +16,15 @@ FrameMonitor = function() {
       var framesMissed = frameIdx - (prevFrameIdx + 1);
       if (framesMissed > 0) {
         console.log(
-            "\t%d frames later, missed %d frames, went from %d to %d. current ratio: %s (%d/%d)",
+            "\t%c+%d,%c-%d: %c%d -> %d. ratio: %s (%d/%d)",
+            'color:green',
             (frameIdx - lastSkipTop),
+            'color:red',
             framesMissed,
+            'color:black',
             prevFrameIdx,
             frameIdx,
-                frameIdx == 0 ? "???" : (totalMissedFrames / (frameIdx - lastFrameReset)).toFixed(2),
+            frameIdx == 0 ? "???" : (totalMissedFrames / (frameIdx - lastFrameReset)).toFixed(2),
             totalMissedFrames,
             (frameIdx - lastFrameReset)
         );
