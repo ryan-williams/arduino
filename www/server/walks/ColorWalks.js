@@ -67,11 +67,13 @@ ColorWalks = function(options) {
   };
 
   this.maybeUpdateMode = function(newMode) {
-    if (!newMode) return;
+    if (!newMode) return false;
     if (newMode != this.curWalk.name) {
       console.log("updating mode from " + this.curWalk.name + " to " + newMode);
       this.setWalkType(newMode);
+      return true;
     }
+    return false;
   };
 
   this.values = options.values || [];
