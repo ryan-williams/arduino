@@ -27,11 +27,9 @@ ReactiveArray = function(options) {
   };
 
   this.get = function(from, to) {
-    from -= curIdxDelta;
-    to -= curIdxDelta;
-//    from = from || 0;
-//    to = Math.min(to || arr.length, arr.length);
-    return arr.slice(from, to);
+    from = clamp(from - curIdxDelta, 0, arr.length);
+    to = clamp(to - curIdxDelta, 0, arr.length);
+    return [[ from + curIdxDelta, to + curIdxDelta ], arr.slice(from, to)];
   };
 
   this.maybeGen = function() {

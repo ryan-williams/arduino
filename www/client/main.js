@@ -60,20 +60,31 @@ function rerenderPage() {
 
 function initReactiveUpdating(shouldRenderToo) {
   Deps.autorun(function() {
-    //c = getColorRecord();
     serverFrameIdx = getFrameIdx();
 
     //console.log("\t\tgot server frame %d", serverFrameIdx);
     if (serverFrameIdx + framesBuffer > serverFrames.length) {
+      var fetchFrom = Math.max(serverFrames.length, serverFrameIdx);
+      var fetchTo = fetchFrom + numFramesToFetch;
       console.log(
           "\tbuffer down to %d, fetching [%d,%d)..",
               serverFrames.length - serverFrameIdx,
-          serverFrames.length,
-              serverFrames.length + numFramesToFetch
+          fetchFrom,
+          fetchTo
       );
-      Meteor.call('getFrames', serverFrames.length, serverFrames.length + numFramesToFetch, function(err, frames) {
-        console.log("\tgot %d frames: [%d,%d)", frames.length, serverFrames.length, serverFrames.length + numFramesToFetch);
-        serverFrames = serverFrames.concat(frames);
+      Meteor.call('getFrames', fetchFrom, fetchTo, function(err, res) {
+        var from = res[0][0];
+        var to = res[0][1];
+        var frames = res[1];
+        console.log(
+            "\tgot %d frames: [%d,%d) on [%d,%d)",
+            frames.length,
+            from, to,
+            fetchFrom, fetchTo
+        );
+        for (var i = from; i < to; ++i) {
+          serverFrames[i] = frames[i - from];
+        }
       });
     }
     if (serverFrameIdx >= serverFrames.length) {
