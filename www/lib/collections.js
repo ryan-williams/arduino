@@ -9,6 +9,8 @@ Frames = new Meteor.Collection("frames");
 
 Speeds = new Meteor.Collection("speeds");
 
+LastInvalidationIdxs = new Meteor.Collection("last_invalidation_idxs");
+
 id = "abcd";
 getColorRecord = function() {
   return Colors.findOne({_id: id});
@@ -26,6 +28,14 @@ getFrameIdx = function() {
   var frameIdxObj = FrameIdxs.findOne({_id:id});
   if (frameIdxObj) {
     return frameIdxObj.idx;
+  }
+  return 0;
+};
+
+getLastInvalidationIdx = function() {
+  var lastInvalidationIdxObj = LastInvalidationIdxs.findOne({_id:id});
+  if (lastInvalidationIdxObj) {
+    return lastInvalidationIdxObj.idx;
   }
   return 0;
 };

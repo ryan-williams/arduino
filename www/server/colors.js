@@ -10,6 +10,8 @@ console.log("frame obj: %s", FrameIdxs.findOne({_id:id}).idx);
 
 Frames.upsert({_id: id}, { $set: { 0: { r: 0, g: 0, b: 0 } }});
 
+LastInvalidationIdxs.upsert({_id: id}, { $set: { idx: 0 }});
+
 var c = Colors.findOne({_id:id});
 
 if (!c || !('0' in c)) {
@@ -106,6 +108,10 @@ frames = new ReactiveArray(
         var n = colors.map(function(color) { return color.step(); });
         return n;
       }
+      ,onInvalidated: function(idx) {
+        console.log("\tmongo updating last invalidated: %d", idx);
+        LastInvalidationIdxs.update({_id:id}, { $set: { idx: idx }});
+      }
     }
 );
 
@@ -179,26 +185,29 @@ runColorDisplay = function() {
   Colors.find({_id: id}).observe({
     changed: function(nr) {
       var unsetObj = {};
-      var setObj = {};
       var foundNewPos = false;
+      var invalidated = false;
       colors.forEach(function(color, idx) {
         if (nr[idx]) {
 
           if (nr.mode) {
-            color.maybeUpdateMode(nr.mode);
+            invalidated = invalidated || color.maybeUpdateMode(nr.mode);
           }
 
           if (nr[idx].newPosition >= 0) {
             foundNewPos = true;
+            invalidated = true;
             console.log(idx +": found new pos " + nr[idx].newPosition + " cur: " + color.curWalk.position);
             color.setPosition(nr[idx].newPosition);
             unsetObj[idx + '.newPosition'] = 1;
-            setObj[idx + '.position'] = nr[idx].newPosition;
           }
         }
       });
       if (foundNewPos) {
-        Colors.update({_id: id}, { $unset: unsetObj, $set: setObj });
+        Colors.update({_id: id}, { $unset: unsetObj });
+      }
+      if (invalidated) {
+        frames.invalidateLookAhead();
       }
     }
   });

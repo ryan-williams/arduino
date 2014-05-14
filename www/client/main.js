@@ -58,9 +58,17 @@ function rerenderPage() {
   fpsMonitor.checkpoint(true);
 }
 
+lastInvalidationServerFrameIdx = 0;
+
 function initReactiveUpdating(shouldRenderToo) {
   Deps.autorun(function() {
     serverFrameIdx = getFrameIdx();
+
+    if (lastInvalidationServerFrameIdx) {
+      console.log("\tinvalidating at frame %d, past %d..", serverFrameIdx, lastInvalidationServerFrameIdx);
+      serverFrames = serverFrames.slice(0, serverFrameIdx);//Math.min(serverFrameIdx, lastInvalidationServerFrameIdx));
+      lastInvalidationServerFrameIdx = 0;
+    }
 
     //console.log("\t\tgot server frame %d", serverFrameIdx);
     if (serverFrameIdx + framesBuffer > serverFrames.length) {
@@ -151,6 +159,11 @@ Template.colors.rendered = function() {
       frameMonitor.reset(serverFrameIdx);
       fpsMonitor.clear();
     }
+  });
+
+  Deps.autorun(function() {
+    console.log("%ccaught invalidation at frame %d", 'color:red', serverFrameIdx);
+    lastInvalidationServerFrameIdx = getLastInvalidationIdx();
   });
 
   new Picker({
