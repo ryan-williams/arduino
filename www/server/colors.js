@@ -99,9 +99,9 @@ var fpsMonitor = new FpsMonitor();
 
 frames = new ReactiveArray(
     {
-      maxLength: 100,
+      maxLength: 200,
       genBelow: 20,
-      genChunk: 1,
+      genChunk: 2,
       generator: function() {
         var n = colors.map(function(color) { return color.step(); });
         return n;

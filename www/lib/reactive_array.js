@@ -5,7 +5,7 @@ ReactiveArray = function(options) {
   var curIdx = 0;
   var curIdxDelta = idx.get() - curIdx;
 
-  var maxLength = options.maxLength || 100;
+  var maxLength = options.maxLength || 200;
   var genBelow = options.genBelow || 20;
   var genChunk = options.genChunk || 1;
   var keepHistory = options.keepHistory || 100;
