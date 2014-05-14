@@ -8,6 +8,7 @@ ReactiveArray = function(options) {
   var maxLength = options.maxLength || 100;
   var genBelow = options.genBelow || 20;
   var genChunk = options.genChunk || 1;
+  var keepHistory = options.keepHistory || 100;
   var generator = options.generator;
 
   this.getIdx = function() {
@@ -41,10 +42,11 @@ ReactiveArray = function(options) {
       arr.push(generator());
     }
 
+    var newFrontIdx = Math.max(0, curIdx - keepHistory);
     //console.log("gen'd %d frames, cur was %d, total down from %d to %d", i, curIdx, arr.length - i, arr.length - curIdx);
-    arr = arr.slice(curIdx);
-    curIdx = 0;
-    curIdxDelta = idx.get();
+    arr = arr.slice(newFrontIdx);
+    curIdx -= newFrontIdx;
+    curIdxDelta = idx.get() - newFrontIdx;
   };
 
   while (arr.length < genBelow) {
