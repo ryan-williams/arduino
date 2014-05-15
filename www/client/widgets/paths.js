@@ -63,7 +63,11 @@ Paths = function(options) {
 
   function pathData(values, xScale) {
     if (values.length == 0) return "M0 0";
-    return "M" + values.map(function(value, idx) { return Math.floor(xScale*idx) + " " + Math.floor(value || 0) }).join(" L");
+    var filledValues = [];
+    for (var i = 0; i < values.length; ++i) {
+      filledValues.push(Math.floor(xScale*i || 0) + " " + Math.floor(values[i] || 0));
+    }
+    return "M" + filledValues.join(" L");
   }
 
   this.update = function() {
