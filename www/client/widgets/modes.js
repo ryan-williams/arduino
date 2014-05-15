@@ -25,9 +25,15 @@ Modes = function(options) {
         .attr('class', 'mode')
         .attr('type', 'button')
         .attr('value', acc('label'))
-        .on('click', function(d) {
-          console.log("new mode " + d.mode);
-          Colors.update({_id: id}, { $set: { mode: d.mode }});
+        .on('click', function(d, i) {
+          console.log("new mode: ", d.mode);
+          var setObj = {
+            mode: d.mode,
+            0: { mode: d.mode },
+            1: { mode: d.mode },
+            2: { mode: d.mode }
+          };
+          Colors.update({_id: id}, { $set: setObj });
         })
     ;
   };

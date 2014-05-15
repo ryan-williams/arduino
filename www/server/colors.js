@@ -81,6 +81,7 @@ function colorWalkParams(record) {
     },
     constantWalk: { value: 100 },
     color: record.color,
+    mode: record.mode,
     maxLength: defaultMaxLength,
     abbrev: record.abbrev,
     values: record.values,
@@ -188,11 +189,13 @@ runColorDisplay = function() {
       var foundNewPos = false;
       var invalidated = false;
       colors.forEach(function(color, idx) {
-        if (nr[idx]) {
-
-          if (nr.mode) {
-            invalidated = invalidated || color.maybeUpdateMode(nr.mode);
+        if (nr.mode) {
+          if (color.maybeUpdateMode(nr.mode)) {
+            invalidated = true;
           }
+        }
+
+        if (nr[idx]) {
 
           if (nr[idx].newPosition >= 0) {
             foundNewPos = true;

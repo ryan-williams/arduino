@@ -53,7 +53,13 @@ ColorWalks = function(options) {
     if (prevPosition != null) this.curWalk.setPosition(prevPosition);
   };
 
-  this.setCurWalk(walks[0]);
+  if (options.mode) {
+    console.log("got initial mode: " + options.mode);
+    this.setCurWalk(walksMap[options.mode]);
+  } else {
+    console.log("defaulting to mode 0...");
+    this.setCurWalkIdx(0);
+  }
 
   this.incWalkType = function() {
     this.setCurWalkIdx((this.curWalkIdx + 1) % walks.length);
