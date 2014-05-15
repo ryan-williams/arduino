@@ -48,6 +48,7 @@ function rerenderPage() {
 
   console.log("serverFrames: %O, mocked: %O", serverFrames, mockedColors);
   standardOpts.colors = mockedColors;
+  standardOpts.frames = framesToRender;
   standardOpts.positions = framesToRender[framesToRender.length - 1];
   new Sliders(standardOpts).addNumLines().update();
   new Paths(standardOpts).addPaths().update();
