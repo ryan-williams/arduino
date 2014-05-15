@@ -5,5 +5,3 @@ libraries/Test
 *.iml
 www/.meteor
 www/packages
-www/smart.json
-www/smart.lock

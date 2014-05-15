@@ -1,0 +1,44 @@
+{
+  "meteor": {},
+  "dependencies": {
+    "basePackages": {
+      "iron-router": {},
+      "queue-async": {},
+      "npm": {},
+      "jquery-ui": {},
+      "jquery-cookie": {}
+    },
+    "packages": {
+      "iron-router": {
+        "git": "https://github.com/EventedMind/iron-router.git",
+        "tag": "v0.7.0",
+        "commit": "05f34bc48c4cad9fdaa366c1ddcabe6980232ece"
+      },
+      "queue-async": {
+        "git": "https://github.com/vsivsi/meteor-queue-async.git",
+        "tag": "v0.0.1",
+        "commit": "bdcb6ed80c4ed600131845e8c7692ef8f7569869"
+      },
+      "npm": {
+        "git": "https://github.com/arunoda/meteor-npm.git",
+        "tag": "v0.2.6",
+        "commit": "177ab6118de5bf8cffb19481343d5762ff7a2aaf"
+      },
+      "jquery-ui": {
+        "git": "https://github.com/TimHeckel/meteor-jquery-ui.git",
+        "tag": "v1.9.2",
+        "commit": "c437d45edcf1367df8d5ffa8bad2867758030bd2"
+      },
+      "jquery-cookie": {
+        "git": "https://github.com/BenjaminRH/meteor-jquery-cookie.git",
+        "tag": "v0.1.0",
+        "commit": "084bc5bf612639008efe03f3948e816df44c0f36"
+      },
+      "blaze-layout": {
+        "git": "https://github.com/EventedMind/blaze-layout.git",
+        "tag": "v0.2.2",
+        "commit": "8bc53798fe5965669ae67c72f91829fcfdceabfd"
+      }
+    }
+  }
+}

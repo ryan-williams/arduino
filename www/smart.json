@@ -1,0 +1,9 @@
+{
+  "packages": {
+    "iron-router": {},
+    "queue-async": {},
+    "npm": {},
+    "jquery-ui": {},
+    "jquery-cookie": {}
+  }
+}
