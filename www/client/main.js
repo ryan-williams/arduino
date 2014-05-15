@@ -70,14 +70,14 @@ function initReactiveUpdating(shouldRenderToo) {
 
     if (lastInvalidationServerFrameIdx) {
       console.log("\tinvalidating at frame %d, past %d..", serverFrameIdx, lastInvalidationServerFrameIdx);
-      serverFrames = serverFrames.slice(0, serverFrameIdx);//Math.min(serverFrameIdx, lastInvalidationServerFrameIdx));
+      serverFrames = serverFrames.slice(0, Math.min(serverFrameIdx, lastInvalidationServerFrameIdx));
       lastInvalidationServerFrameIdx = 0;
     }
 
     //console.log("\t\tgot server frame %d", serverFrameIdx);
     if (serverFrameIdx + framesBuffer > serverFrames.length) {
-      var fetchFrom = Math.max(serverFrames.length, serverFrameIdx);
-      var fetchTo = fetchFrom + numFramesToFetch;
+      var fetchFrom = Math.min(serverFrames.length, serverFrameIdx);
+      var fetchTo = serverFrameIdx + numFramesToFetch;
       console.log(
           "\tbuffer down to %d, fetching [%d,%d)..",
               serverFrames.length - serverFrameIdx,
