@@ -7,13 +7,12 @@ var rightPad = 6;
 var rgb = {r:0,g:1,b:2};
 
 Sliders = function(options) {
-  this.colors = options.colors;
+  this.positions = options.positions;
   var fontSize = options.fontSize;
   var minBrightness = options.minBrightness;
   var maxBrightness = options.maxBrightness;
 
-  function getNumLineData(colorWalk, metadata) {
-    var position = colorWalk.values[colorWalk.values.length - 1];
+  function getNumLineData(position, metadata) {
     return {
       //colorWalk: colorWalk,
       position: position,
@@ -129,7 +128,9 @@ Sliders = function(options) {
   }
 
   this.addNumLines = function() {
-    var numLines = this.colors.map(function(color, idx) { return getNumLineData(color, ColorMetaData[idx]); });
+    var numLines = this.positions.map(function(position, idx) {
+      return getNumLineData(position, ColorMetaData[idx]);
+    });
 
     d('.sliders')
         .selectAll('div.slider-div.svg-div')
