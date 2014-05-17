@@ -5,7 +5,7 @@ RandomWalk = function(options) {
 
   var acceleration = 0;
   this.velocity = 0;
-  this.position = options.initialValue;
+  this.position = options.position || 0;
 
   this.setPosition = function(pos, velocity) {
     this.position = pos;

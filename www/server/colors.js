@@ -67,7 +67,7 @@ function colorWalkParams(record) {
   return {
     sineWalk: sineWalkOptions(record.sineFreq || 200, true),
     randomWalk: {
-      initialValue: record.position,
+      position: record.position,
       maxAcceleration: 0.5,
       maxVelocity: maxV,
       minPosition: minBrightness,
@@ -79,7 +79,7 @@ function colorWalkParams(record) {
       minPosition: minBrightness,
       maxPosition: maxBrightness
     },
-    constantWalk: { value: 100 },
+    constantWalk: { position: record.position },
     color: record.color,
     mode: record.mode,
     maxLength: defaultMaxLength,
