@@ -95,7 +95,7 @@ ColorWalks = function(options) {
     changed: function(nr) {
       var newValue = (nr && nr.v) || 0;
       this.blendWeight = newValue;
-    }
+    }.bind(this)
   });
 
   this.step = function() {
