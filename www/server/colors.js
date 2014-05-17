@@ -90,6 +90,15 @@ function colorWalkParams(record) {
 }
 
 var colorRecord = Colors.findOne({_id:id});
+if (!colorRecord) {
+  colorRecord = 
+  Colors.insert({
+    _id: id, 
+    0: { values: [] },
+    1: { values: [] },
+    2: { values: [] }
+  });
+}
 
 var colors =
     [colorRecord[0], colorRecord[1], colorRecord[2]]
