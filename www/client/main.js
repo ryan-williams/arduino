@@ -46,7 +46,8 @@ function rerenderPage() {
         };
       });
 
-  //console.log("serverFrames: %O, mocked: %O", serverFrames, mockedColors);
+//  console.log("serverFrames: %O, mocked: %O", serverFrames, mockedColors);
+//  console.log("framesToRender: %O", framesToRender);
   standardOpts.colors = mockedColors;
   standardOpts.frames = framesToRender;
   standardOpts.positions = framesToRender[framesToRender.length - 1];
