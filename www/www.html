@@ -43,6 +43,7 @@
             </div>
             <div id="middle" class="span3 unspan">
                 {{>picker}}
+                {{>fps}}
             </div>
         </div>
     </div>
@@ -58,6 +59,11 @@
             </div>
         </div>
     </div>
+</template>
+
+<template name="fps">
+    <div id="fps-graph"></div>
+    <div id="last-timings-graph"></div>
 </template>
 
 <template name="colorThumbnail">

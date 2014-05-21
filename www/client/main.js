@@ -62,13 +62,18 @@ function rerenderPage() {
     pixels.setSpiralCoords();
   }
 
-  fpsMonitor.checkpoint(true);
+  if (!paused) {
+    fpsMonitor.checkpoint(true);
+    //Session.set('timings', fpsMonitor.timings());
+    Session.set('lastTimings', fpsMonitor.lastTimings());
+  }
 }
 
 lastInvalidationServerFrameIdx = 0;
 waitingOnFetch = false;
 
 function initReactiveUpdating(shouldRenderToo) {
+
   Deps.autorun(function() {
     serverFrameIdx = getFrameIdx();
 
@@ -127,6 +132,9 @@ function initPollingAnimation() {
 }
 
 Template.colors.rendered = function() {
+
+  Session.set('timings', []);
+  Session.set('graph_bucket_width', 5);
 
   Math.seedrandom(3);
 
@@ -192,6 +200,40 @@ Template.colors.rendered = function() {
       console.log(setObj);
       Colors.update({_id: id}, { $set: setObj });
     }
+  });
+
+  Deps.autorun(function() {
+    var timings = Session.get('timings');
+    if (!timings || !timings.length) return;
+    //console.log("graphing: %O", timings);
+    var bucketWidth = Session.get('graph_bucket_width');
+    new Dygraph(
+        document.getElementById('fps-graph'),
+        _.range(0, Math.ceil(timings.length / bucketWidth)).map(function(idx) {
+          return [ idx * bucketWidth, timings.slice(idx * bucketWidth, (idx + 1) * bucketWidth).sum() ];
+        }),
+        {
+          xlabel: 'time per frame (ms)',
+          ylabel: '# frames',
+          labels: [ 'time', '# frames' ]
+        }
+    );
+  });
+
+  Deps.autorun(function() {
+    var lastTimings = Session.get('lastTimings');
+    if (!lastTimings || !lastTimings.length) return;
+    new Dygraph(
+        document.getElementById('last-timings-graph'),
+        lastTimings.reverse().map(function(timing, idx) {
+          return [ idx, timing ];
+        }),
+        {
+          labels: [ 'ms ago', 'frame time (ms)' ],
+          rollPeriod: 10,
+          valueRange: [0, 150]
+        }
+    )
   });
 
   new Modes().addButtons();
