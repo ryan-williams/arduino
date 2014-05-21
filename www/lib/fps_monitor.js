@@ -1,6 +1,6 @@
 
-FpsMonitor = function() {
-  var totalTimer = new Timer();
+FpsMonitor = function(options) {
+  var totalTimer = new Timer(options);
   var secondTimer = new Timer();
 
   this.checkpoint = function(shouldPrintStatus) {
@@ -12,6 +12,9 @@ FpsMonitor = function() {
       secondTimer.clear();
     }
   };
+
+  this.timings = function() { return totalTimer.timings; };
+  this.lastTimings = function() { return totalTimer.lastTimings; };
 
   this.clear = function() {
     totalTimer.clear();

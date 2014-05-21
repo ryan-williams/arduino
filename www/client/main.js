@@ -16,7 +16,9 @@ var standardOpts = {
 
 var firstTime = false;
 
-var fpsMonitor = new FpsMonitor();
+fpsMonitor = new FpsMonitor({
+  keepLastNTimings: 100
+});
 var frameMonitor = new FrameMonitor();
 
 var paused = false;
