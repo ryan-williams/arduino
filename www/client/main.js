@@ -64,6 +64,7 @@ function rerenderPage() {
 }
 
 lastInvalidationServerFrameIdx = 0;
+waitingOnFetch = false;
 
 function initReactiveUpdating(shouldRenderToo) {
   Deps.autorun(function() {
@@ -85,20 +86,26 @@ function initReactiveUpdating(shouldRenderToo) {
           fetchFrom,
           fetchTo
       );
-      Meteor.call('getFrames', fetchFrom, fetchTo, function(err, res) {
-        var from = res[0][0];
-        var to = res[0][1];
-        var frames = res[1];
-        console.log(
-            "\tgot %d frames: [%d,%d) on [%d,%d)",
-            frames.length,
-            from, to,
-            fetchFrom, fetchTo
-        );
-        for (var i = from; i < to; ++i) {
-          serverFrames[i] = frames[i - from];
-        }
-      });
+      if (!waitingOnFetch) {
+        waitingOnFetch = true;
+        Meteor.call('getFrames', fetchFrom, fetchTo, function (err, res) {
+          waitingOnFetch = false;
+          var from = res[0][0];
+          var to = res[0][1];
+          var frames = res[1];
+          console.log(
+              "\tgot %d frames: [%d,%d) on [%d,%d)",
+              frames.length,
+              from, to,
+              fetchFrom, fetchTo
+          );
+          for (var i = from; i < to; ++i) {
+            serverFrames[i] = frames[i - from];
+          }
+        });
+      } else {
+        console.log("\t%calready have a fetch out", 'color:orange');
+      }
     }
     if (serverFrameIdx >= serverFrames.length) {
       console.log("\ttrying to render frame %d, only have up to %d", /*"color:red", */serverFrameIdx, serverFrames.length);
