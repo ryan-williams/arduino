@@ -12,6 +12,11 @@ Frames.upsert({_id: id}, { $set: { 0: { r: 0, g: 0, b: 0 } }});
 
 LastInvalidationIdxs.upsert({_id: id}, { $set: { idx: 0 }});
 
+if (!Speeds.findOne({_id:id})) {
+  console.log("bootstrapping Speed record");
+  Speeds.insert({ _id:id, speed: 30 })
+}
+
 var c = Colors.findOne({_id:id});
 
 if (!c || !('0' in c)) {
@@ -91,9 +96,9 @@ function colorWalkParams(record) {
 
 var colorRecord = Colors.findOne({_id:id});
 if (!colorRecord) {
-  colorRecord = 
+  colorRecord =
   Colors.insert({
-    _id: id, 
+    _id: id,
     0: { values: [] },
     1: { values: [] },
     2: { values: [] }
