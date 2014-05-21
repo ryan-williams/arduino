@@ -210,3 +210,7 @@ Array.prototype.forall = function(fn) {
   for (var i = 0; i < this.length; ++i) if (!fn(this[i])) return false;
   return true;
 };
+
+Array.prototype.sum = function() {
+  return this.reduce(function(x,y) { return x+y; });
+};
