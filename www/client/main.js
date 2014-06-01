@@ -116,9 +116,7 @@ function initReactiveUpdating(shouldRenderToo) {
     }
     if (serverFrameIdx >= serverFrames.length) {
       console.log("\ttrying to render frame %d, only have up to %d", /*"color:red", */serverFrameIdx, serverFrames.length);
-    }
-
-    if (shouldRenderToo) {
+    } else if (shouldRenderToo) {
       rerenderPage();
     }
   });
