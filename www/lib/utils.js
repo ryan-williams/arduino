@@ -185,32 +185,6 @@ if (Meteor.isClient) {
   }
 }
 
-Array.prototype.find = function(fn) {
-  for (var i = 0; i < this.length; ++i) {
-    if (fn(this[i]))
-      return this[i];
-  }
-  return null;
-};
-
-Array.prototype.addEach = function(k, v) {
-  this.map(function(e) {
-    e[k] = v;
-    return e;
-  });
-  return this;
-};
-
-Array.prototype.exists = function(fn) {
-  for (var i = 0; i < this.length; ++i) if (fn(this[i])) return true;
-  return false;
-};
-
-Array.prototype.forall = function(fn) {
-  for (var i = 0; i < this.length; ++i) if (!fn(this[i])) return false;
-  return true;
-};
-
-Array.prototype.sum = function() {
-  return this.reduce(function(x,y) { return x+y; });
-};
+if (Meteor.isServer) {
+    Npm.require('array-utils');
+}
