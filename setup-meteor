@@ -1,0 +1,20 @@
+#!/bin/sh
+
+mv www www.bak
+meteor create www
+rm -f www/*
+mv www.bak/* www/
+rm -rf www.bak
+
+cd www
+if [ ! $(which mrt) ]; then
+	echo 'Installing meteorite w/ sudo'
+	sudo -H npm install -g meteorite
+fi
+
+mrt add iron-router
+mrt add jquery-cookie
+mrt add npm
+meteor add less
+meteor add d3
+meteor add bootstrap
