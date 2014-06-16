@@ -186,5 +186,5 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-    Npm.require('array-utils');
+    Meteor.require('array-utils');
 }
