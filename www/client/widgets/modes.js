@@ -22,7 +22,7 @@ Modes = function(options) {
         })
         .enter()
         .append('input')
-        .attr('class', 'mode')
+        .attr('class', 'mode btn btn-default')
         .attr('type', 'button')
         .attr('value', acc('label'))
         .on('click', function(d, i) {

@@ -1,51 +1,75 @@
 <head>
     <title>www</title>
+    
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
     <script type="text/javascript" src="/js/dygraph-combined.js"></script>
     <script type="text/javascript" src="/js/namespace.js"></script>
     <script type="text/javascript" src="/js/array-utils.js"></script>
+    
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 </head>
 
 <template name="colors">
-    <div class="row">
-        <div class="span5">
-            <div class="sliders span3"></div>
-            <div class="modes span2"></div>
-            <div id="paths-div" class="svg-div">
-                <svg id="paths"></svg>
-            </div>
-            <div id="trail-div" class="svg-div">
-                <svg id="trail"></svg>
-            </div>
-        </div>
-        <div id="pixels-div" class="span8">
-            <div id="buttons" class="span5">
-                <div class="row">
-                    <div style="width:40%;float:left;">
-                        <div id="page-buttons" class="row unspan">
-                            <input id="pause-button" type="button" value="Pause" />
-                            <input id="step-button" type="button" value="Step" />
+    <div class="colors container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Color Output</div>
+                    <div class="panel-body">
+                        <div class="modes"></div>
+                        <div class="sliders"></div>
+                        <div id="paths-div" class="svg-div">
+                            <svg id="paths"></svg>
                         </div>
-                        {{>range}}
-                    </div>
-                    <div id="pixels-buttons" style="width:60%;float:left;">
-                        <input id="spiral-button" type="button" value="Spiral" />
-                        <input id="line-button" type="button" value="Line" />
-                        <input id="spiral-grid-button" type="button" value="Grid Spiral" />
-                        <input id="hilbert-button" type="button" value="Hilbert" />
-                        <input id="snake-button" type="button" value="Snake" />
-                        <input id="sine-button" type="button" value="Sine" />
-                        <input id="random-button" type="button" value="Random" />
-                    </div>
-                </div>
-                <div class="row" id="lower-right">
-                    <div class="span5">
-                        <svg id="pixels"></svg>
+                        <div id="trail-div" class="svg-div">
+                            <svg id="trail"></svg>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="middle" class="span3 unspan">
-                {{>picker}}
-                {{>fps}}
+            <div id="pixels-div" class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Visualization</div>
+                    <div class="panel-body">
+                        <div id="page-buttons" class="row">
+                            <div class="col-md-6">
+                                <input class="btn btn-default" id="pause-button" type="button" value="Pause" />
+                                <input class="btn btn-default" id="step-button" type="button" value="Step" />
+                            </div>
+                            <div class="col-md-6">
+                                {{>range}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="pixels-buttons">
+                            <input id="spiral-button" class="btn btn-default" type="button" value="Spiral" />
+                            <input id="line-button" class="btn btn-default" type="button" value="Line" />
+                            <input id="spiral-grid-button" class="btn btn-default" type="button" value="Grid Spiral" />
+                            <input id="hilbert-button" class="btn btn-default" type="button" value="Hilbert" />
+                            <input id="snake-button" class="btn btn-default" type="button" value="Snake" />
+                            <input id="sine-button" class="btn btn-default" type="button" value="Sine" />
+                            <input id="random-button" class="btn btn-default" type="button" value="Random" />
+                        </div>
+                        <div class="svg-div">
+                            <svg id="pixels"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Color Picker</div>
+                    <div class="panel-body">
+                        {{>picker}}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Perf</div>
+                    <div class="panel-body">
+                        {{>fps}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -65,7 +89,7 @@
 
 <template name="fps">
     <div id="fps-graph"></div>
-    <div id="last-timings-graph"></div>
+    <div id="last-timings-graph" style="width:100%"></div>
 </template>
 
 <template name="colorThumbnail">
@@ -85,7 +109,7 @@
         {{#each colors}}
             {{position}}
             <div class="slider-div svg-div row">
-                <div class="span3">
+                <div class="col-md-12">
                     <svg class="slider">
                         <g class="numlines">
                             <rect width="100%" class="clicker"></rect>
@@ -96,11 +120,11 @@
                             <text>{{value}}</text>
                         </g>
                     </svg>
-                </div>
-                <div class="slider-button-div">
-                    {{#each button}}
-                    <input class="mode" type="button" value="{{label}}" />
-                    {{/each}}
+                    <div class="slider-button-div">
+                        {{#each button}}
+                        <input class="mode" type="button" value="{{label}}" />
+                        {{/each}}
+                    </div>
                 </div>
             </div>
         {{/each}}
