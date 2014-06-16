@@ -5,3 +5,5 @@ libraries/Test
 *.iml
 www/.meteor
 www/packages
+.project
+.cproject
