@@ -1,7 +1,7 @@
 #include "SPI.h"
 #include "Adafruit_WS2801.h"
 #include "color_array.h"
-#include <utils.h>
+#include "utils.h"
 
 #include "strip.h"
 
@@ -60,7 +60,7 @@ Example sketch for driving Adafruit WS2801 pixels!
 //Adafruit_WS2801 strip = Adafruit_WS2801(25, dataPin, clockPin, WS2801_GRB);
 //Adafruit_WS2801 strip = Adafruit_WS2801(25, WS2801_GRB);
 
-#include <MemoryFree.h>
+#include "MemoryFree.h"
 
 Strip *s = NULL;
 
