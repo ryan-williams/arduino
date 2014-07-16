@@ -119,8 +119,13 @@ ColorArray colorArray(
   offNum, off
 );
 
+bool ledOn = false;
+
+int led = 13;
 void setup() {
-  pinMode(13, OUTPUT);
+  pinMode(led, OUTPUT);
+  digitalWrite(led, LOW);
+
   Serial.begin(9600);
 
   s = new Strip();
@@ -156,6 +161,7 @@ int gvv = 0;
 int bvv = 1;
 
 void loop() {
+
   rv = clamp(rv + rvv, -maxV, maxV);
   gv = clamp(gv + gvv, -maxV, maxV);
   bv = clamp(bv + bvv, -maxV, maxV);
@@ -180,20 +186,39 @@ void loop() {
       (byte)clamp((int)(B(c) + bv), 0, maxBrightness)
     );
 
-  PC(c)P(" ")PT(rv,gv,bv)
+  //PC(c)P(" ")PT(rv,gv,bv)
 
-   //randomPerturb(s->pixels[0], 10, 100);
-  // ++colorArray;
-  // s->blendRight(1)->show();
+  char incomingByte = Serial.read();
+  if (incomingByte == '1') {
+    P("available: ")PL(Serial.available())
+    byte cr = Serial.read();
+    byte cg = Serial.read();
+    byte cb = Serial.read();
+    // int cr = clamp((int)Serial.read(), 0, maxBrightness);
+    // int cg = clamp((int)Serial.read(), 0, maxBrightness);
+    // int cb = clamp((int)Serial.read(), 0, maxBrightness);
+    PT(cr,cg,cb) NL
+    s->pixels[0] = C(cr, cg, cb);
+    if (ledOn) {
+      digitalWrite(led, LOW);
+    } else {
+      digitalWrite(led, HIGH);
+    }
+    ledOn = !ledOn;
+  }
 
-  // for (int i = 30; i <50; ++i) {
-  //   PC(s->pixels[i])P(" ")
-  // }NL
+     //randomPerturb(s->pixels[0], 10, 100);
+    // ++colorArray;
+    // s->blendRight(1)->show();
+
+    // for (int i = 30; i <50; ++i) {
+    //   PC(s->pixels[i])P(" ")
+    // }NL
 
   s->rotate(1, false)->show();
-  // curColorIdx = (curColorIdx + 1) % numColors;
-  // s->show();
-  // delay(40);
+    // curColorIdx = (curColorIdx + 1) % numColors;
+    // s->show();
+    // delay(40);
 }
 
 /* Helper functions */
