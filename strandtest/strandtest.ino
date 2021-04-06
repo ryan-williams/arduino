@@ -191,8 +191,11 @@ void loop() {
   char incomingByte = Serial.read();
   if (incomingByte == '1') {
     P("available: ")PL(Serial.available())
+    Serial.read();
     byte cr = Serial.read();
+    Serial.read();
     byte cg = Serial.read();
+    Serial.read();
     byte cb = Serial.read();
     // int cr = clamp((int)Serial.read(), 0, maxBrightness);
     // int cg = clamp((int)Serial.read(), 0, maxBrightness);

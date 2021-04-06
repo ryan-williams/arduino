@@ -222,7 +222,7 @@ runColorDisplay = function() {
       });
       if (foundNewPos) {
         Colors.update({_id: id}, { $unset: unsetObj });
-        serialWriteColor.apply(this, [0,1,2].map(function(idx) { return unsetObj[idx + '.newPosition']; }));
+        serialWriteColor.apply(this, [0,1,2].map(function(idx) { return nr[idx].newPosition; }));
       }
       if (invalidated) {
         frames.invalidateLookAhead();
